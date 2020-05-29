@@ -1,0 +1,27 @@
+{
+  "name": "APIProyecto",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": { 
+    "express": "^4.17.1",
+    "pg": "^8.2.1",
+    "morgan": "^1.10.0",
+    "node-fetch": "^2.6.0",
+    "underscore": "^1.10.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ignaciodentti/APIProyecto.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ignaciodentti/APIProyecto/issues"
+  },
+  "homepage": "https://github.com/ignaciodentti/APIProyecto#readme"
+}
