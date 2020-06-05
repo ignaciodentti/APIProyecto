@@ -1,6 +1,7 @@
 create database puntosDeInteres;
 
 create table puntoDeInteres(
+    id int,
     nombre text,
     descripcion text,
     categoria text,
@@ -8,4 +9,4 @@ create table puntoDeInteres(
 );
 
 insert into puntoDeInteres values
-    ('bartolo', 'bar resto', 'comida', 'san martin y 3 de febrero');
+    ('1','bartolo', 'bar resto', 'comida', 'san martin y 3 de febrero');

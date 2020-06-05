@@ -1,12 +1,12 @@
-const {Router}= require('express');
-const router =Router();
-const {getUsers, createUsers, getUsersByID, deleteUsers, updateUsers} =require('../controladores/index.controlers');
+const {Router} = require('express');
+const router = Router();
+const {getPDI, createPDI, getPDIByID, deletePDI, updatePDI} =require('../controladores/index.controlers');
 
-router.get('/users', getUsers);
-router.post('/users', createUsers);
-router.get('/users/:id', getUsersByID);
-router.detele('/users/:id', deleteUsers);
-router.put('/users/:id', updateUsers);
+//router.get('/', getPDI);
+router.post('/pdi', createPDI);
+//router.get('/pdi/:id', getPDIByID);
+//router.delete('/pdi/:id', deletePDI);
+//router.put('/pdi/:id', updatePDI);
 
 
 
