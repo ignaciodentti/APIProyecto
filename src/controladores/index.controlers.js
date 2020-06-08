@@ -41,8 +41,8 @@ const getPDIByID = (req,res) => {
 
 const updatePDI = (req,res) => {
     const id = req.params.id;
-    const {nombre, categoria} = req.body;
-    const respuesta = pool.query('UPDATE puntodeinteres SET nombre=$1, categoria=$2 WHERE id=$3', [nombre, categoria, id])
+    const { nombre, descripcion, categoria, direccion} = req.body;
+    const respuesta = pool.query('UPDATE puntodeinteres SET nombre=$1, descripcion=$2, categoria=$3, direccion=$4 WHERE id=$5', [ nombre,  descripcion,categoria, direccion, id])
     .then(respuesta => console.log(respuesta))
     .then(res.json(`Punto de interes ${id} actualizado con exito `));
 };
