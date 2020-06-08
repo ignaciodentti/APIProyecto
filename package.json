@@ -6,11 +6,12 @@
   "scripts": {
     "dev": "src/index.js"
   },
-  "dependencies": { 
+  "dependencies": {
+    "cors": "^2.8.5",
     "express": "^4.17.1",
-    "pg": "^8.2.1",
     "morgan": "^1.10.0",
     "node-fetch": "^2.6.0",
+    "pg": "^8.2.1",
     "underscore": "^1.10.2"
   },
   "repository": {

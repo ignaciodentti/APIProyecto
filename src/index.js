@@ -1,5 +1,11 @@
+const cors = require('cors');
 const express = require('express');
 const app= express();
+
+
+const config = require('./config');
+
+app.use(cors({ origin: true }));
 
 app.listen(3000);
 console.log('Server on port 3000');

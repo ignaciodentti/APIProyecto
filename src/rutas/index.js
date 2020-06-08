@@ -4,8 +4,8 @@ const {getPDI, createPDI, getPDIByID, deletePDI, updatePDI} =require('../control
 
 router.get('/', getPDI);
 router.post('/', createPDI);
-router.get('/:id', getPDIByID);
-router.delete('/:id', deletePDI);
+router.get('/getid/:id', getPDIByID);
+router.delete('/delete/:id', deletePDI);
 router.put('/:id', updatePDI);
 
 
