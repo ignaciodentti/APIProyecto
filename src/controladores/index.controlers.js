@@ -3,7 +3,7 @@ const {Pool} = require('pg');
 const pool= new Pool({
     host:'localhost',
     user:'postgres',
-    password: 'nadia1998',
+    password: 'postgre',
     database: 'puntosdeinteres',
     port: '5432'
 });
@@ -16,12 +16,12 @@ const getPDI = (req,res) => {
 
 const createPDI = (req,res) => {
     const {id, nombre, descripcion, categoria, direccion} = req.body;
-    const respuesta = pool.query('INSERT INTO puntodeinteres {id, nombre, descripcion, categoria, direccion} VALUES ($1, $2, $3,$4, $5)', [id, nombre, descripcion, categoria, direccion])
+    const respuesta = pool.query('INSERT INTO puntodeinteres (id, nombre, descripcion, categoria, direccion) VALUES ($1, $2, $3,$4, $5)', [id, nombre, descripcion, categoria, direccion])
     .then(respuesta => console.log(respuesta))
     .then(res.json({
         message: 'Punto de interes agregado con exito',
         body: {
-                puntodeinteres: (id, nombre, descripcion, categoria, direccion)
+                puntodeinteres: {id, nombre, descripcion, categoria, direccion}
               }
     }))
 };
