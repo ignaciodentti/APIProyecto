@@ -1,7 +1,7 @@
 create database puntosDeInteres;
 
 create table puntoDeInteres(
-    id int,
+    id serial NOT NULL PRIMARY KEY,
     nombre text,
     descripcion text,
     categoria text,
