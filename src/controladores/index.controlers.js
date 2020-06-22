@@ -48,6 +48,4 @@ const updatePDI = (req,res) => {
 };
 
 
-
-
 module.exports = {getPDI, createPDI, getPDIByID, deletePDI, updatePDI}
