@@ -6,8 +6,6 @@ router.get('/get/', getPDI);
 router.post('/post/', createPDI);
 router.get('/getid/:id', getPDIByID);
 router.delete('/delete/:id', deletePDI);
-router.put('/:id', updatePDI);
-
-
+router.put('/put/:id', updatePDI);
 
 module.exports= router;
