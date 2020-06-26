@@ -3,20 +3,21 @@ const {Pool} = require('pg');
 const pool= new Pool({
     host:'localhost',
     user:'postgres',
-    password: 'postgre',
+    password: '',
     database: 'puntosdeinteres',
     port: '5432'
 });
 
 
 const getPDI = (req,res) => {
-    const respuesta = pool.query('SELECT * FROM puntodeinteres')
+    const respuesta = pool.query('SELECT * FROM puntodeinteres WHERE baja=false')
     .then(respuesta => res.status(200).json(respuesta.rows));
 };
 
 const createPDI = (req,res) => {
-    const {nombre, descripcion, categoria, direccion, telefono, horaApertura, horaCierre, precio } = req.body;
-    const respuesta = pool.query('INSERT INTO puntodeinteres ( nombre, descripcion, categoria, direccion, telefono, horaApertura, horaCierre, precio) VALUES ( $1, $2,$3, $4, $5, $6, $7, $8)', [ nombre, descripcion, categoria, direccion, telefono, horaApertura, horaCierre, precio])
+    baja = false;
+    const {nombre, descripcion, categoria, direccion, telefono, horaApertura, horaCierre, precio} = req.body;
+    const respuesta = pool.query('INSERT INTO puntodeinteres (nombre, descripcion, categoria, direccion, telefono, horaApertura, horaCierre, precio, baja) VALUES ( $1, $2,$3, $4, $5, $6, $7, $8, $9)', [ nombre, descripcion, categoria, direccion, telefono, horaApertura, horaCierre, precio, baja])
     .then(respuesta => console.log(respuesta))
     .then(res.json({
         message: 'Punto de interes agregado con exito',
@@ -28,7 +29,8 @@ const createPDI = (req,res) => {
 
 const deletePDI = (req,res) => {
     const id= req.params.id
-    const respuesta = pool.query('DELETE FROM puntodeinteres WHERE id = $1',[id] )
+    baja = true;
+    const respuesta = pool.query('UPDATE puntodeinteres SET baja=$1 WHERE id=$2', [baja, id])
     .then(respuesta => console.log(respuesta))
     .then(res.json(`Punto de interes ${id} eliminado con exito `));
 };

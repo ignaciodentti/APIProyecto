@@ -9,7 +9,8 @@ create table puntoDeInteres(
     telefono text NULL,
     horaApertura time NULL,
     horaCierre time NULL,
-    precio numeric NULL
+    precio numeric NULL,
+    baja boolean
  );
 
 insert into puntoDeInteres values
