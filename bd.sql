@@ -12,6 +12,3 @@ create table puntoDeInteres(
     precio numeric NULL,
     baja boolean
  );
-
-insert into puntoDeInteres values
-    ('1','bartolo', 'bar resto', 'comida', 'san martin y 3 de febrero');

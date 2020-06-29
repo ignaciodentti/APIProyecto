@@ -3,7 +3,7 @@ const {Pool} = require('pg');
 const pool= new Pool({
     host:'localhost',
     user:'postgres',
-    password: '',
+    password: 'postgre',
     database: 'puntosdeinteres',
     port: '5432'
 });
@@ -43,8 +43,8 @@ const getPDIByID = (req,res) => {
 
 const updatePDI = (req,res) => {
     const id = req.params.id;
-    const {nombre, descripcion, categoria, direccion, telefono, horaApertura, horaCierre, precio } = req.body;
-    const respuesta = pool.query('UPDATE puntodeinteres SET nombre=$1, descripcion=$2, categoria=$3, direccion=$4, telefono=$5, horaApertura=$6, horaCierre=$7, precio=$8  WHERE id=$9', [ nombre,  descripcion,categoria, direccion,telefono, horaApertura, horaCierre, precio, id])
+    const {nombre, descripcion, categoria, direccion, telefono, horaapertura, horacierre, precio } = req.body;
+    const respuesta = pool.query('UPDATE puntodeinteres SET nombre=$1, descripcion=$2, categoria=$3, direccion=$4, telefono=$5, horaapertura=$6, horacierre=$7, precio=$8  WHERE id=$9', [ nombre,  descripcion,categoria, direccion, telefono, horaapertura, horacierre, precio, id])
     .then(respuesta => console.log(respuesta))
     .then(res.json(`Punto de interes ${id} actualizado con exito `));
 };
