@@ -67,5 +67,13 @@ const createEvento = (req,res) => {
     }))
 };
 
+const deleteEvento = (req,res) => {
+    const id= req.params.id
+    baja = true;
+    const respuesta = pool.query('UPDATE eventos SET baja=$1 WHERE id=$2', [baja, id])
+    .then(respuesta => console.log(respuesta))
+    .then(res.json(`Evento ${id} eliminado con exito `));
+};
 
-module.exports = {getPDI, createPDI, getPDIByID, deletePDI, updatePDI, getEvento, createEvento}
+
+module.exports = {getPDI, createPDI, getPDIByID, deletePDI, updatePDI, getEvento, createEvento, deleteEvento}

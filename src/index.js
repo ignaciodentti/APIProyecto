@@ -16,5 +16,5 @@ app.use(express.urlencoded({extended: false}));
 
 //rutas
 app.use(require('./rutas/index'));
-app.use('/api/pdi',require('./rutas/index'));
+app.use('/api',require('./rutas/index'));
 
