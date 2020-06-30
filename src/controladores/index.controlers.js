@@ -3,7 +3,7 @@ const {Pool} = require('pg');
 const pool= new Pool({
     host:'localhost',
     user:'postgres',
-    password: 'postgre',
+    password: 'nadia1998',
     database: 'puntosdeinteres',
     port: '5432'
 });
@@ -49,5 +49,23 @@ const updatePDI = (req,res) => {
     .then(res.json(`Punto de interes ${id} actualizado con exito `));
 };
 
+const getEvento = (req,res) => {
+    const respuesta = pool.query('SELECT * FROM eventos WHERE baja=false')
+    .then(respuesta => res.status(200).json(respuesta.rows));
+};
 
-module.exports = {getPDI, createPDI, getPDIByID, deletePDI, updatePDI}
+const createEvento = (req,res) => {
+    baja = false;
+    const {nombre, descripcion, categoria, direccion, fechaInicio, fechaFin, horaApertura, horaCierre, precio} = req.body;
+    const respuesta = pool.query('INSERT INTO eventos (nombre, descripcion, categoria, direccion, fechaInicio, fechaFin, horaApertura, horaCierre, precio, baja) VALUES ( $1, $2,$3, $4, $5, $6, $7, $8, $9, $10)', [ nombre, descripcion, categoria, direccion, fechaInicio, fechaFin, horaApertura, horaCierre, precio, baja])
+    .then(respuesta => console.log(respuesta))
+    .then(res.json({
+        message: 'Evento agregado con exito',
+        body: {
+                evento: {nombre, descripcion, categoria, direccion, fechaInicio, fechaFin, horaApertura, horaCierre, precio}
+              }
+    }))
+};
+
+
+module.exports = {getPDI, createPDI, getPDIByID, deletePDI, updatePDI, getEvento, createEvento}
