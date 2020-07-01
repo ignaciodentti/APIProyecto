@@ -3,7 +3,7 @@ const {Pool} = require('pg');
 const pool= new Pool({
     host:'localhost',
     user:'postgres',
-    password: 'nadia1998',
+    password: 'postgre',
     database: 'puntosdeinteres',
     port: '5432'
 });
@@ -75,5 +75,12 @@ const deleteEvento = (req,res) => {
     .then(res.json(`Evento ${id} eliminado con exito `));
 };
 
+const updateEvento = (req,res) => {
+    const id = req.params.id;
+    const {nombre, descripcion, categoria, direccion, fechainicio, fechafin, horaapertura, horacierre, precio} = req.body;
+    const respuesta = pool.query('UPDATE eventos SET nombre=$1, descripcion=$2, categoria=$3, direccion=$4, fechainicio=$5, fechafin=$6, horaapertura=$7, horacierre=$8, precio=$9  WHERE id=$10', [nombre, descripcion, categoria, direccion, fechainicio, fechafin, horaapertura, horacierre, precio, id])
+    .then(respuesta => console.log(respuesta))
+    .then(res.json(`Evento ${id} actualizado con exito `));
+};
 
-module.exports = {getPDI, createPDI, getPDIByID, deletePDI, updatePDI, getEvento, createEvento, deleteEvento}
+module.exports = {getPDI, createPDI, getPDIByID, deletePDI, updatePDI, getEvento, createEvento, deleteEvento, updateEvento}
