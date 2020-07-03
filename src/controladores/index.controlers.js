@@ -1,9 +1,10 @@
 const {Pool} = require('pg');
+const jwt = require('jsonwebtoken');
 
 const pool= new Pool({
     host:'localhost',
     user:'postgres',
-    password: 'postgre',
+    password: 'nadia1998',
     database: 'puntosdeinteres',
     port: '5432'
 });
@@ -83,4 +84,39 @@ const updateEvento = (req,res) => {
     .then(res.json(`Evento ${id} actualizado con exito `));
 };
 
-module.exports = {getPDI, createPDI, getPDIByID, deletePDI, updatePDI, getEvento, createEvento, deleteEvento, updateEvento}
+
+const login = (req,res ) => {
+    const user = {id: 3};
+    const token = jwt.sign({user}, 'my_secret_key'); //en el segundo parametro va la variable de entorno, esta linea genera el token para el usuario
+    res.json({token});
+};
+
+const rutasegura = (req,res) => {
+    jwt.verify(req.token, 'my_secret_key', (err,data)=> {
+        if (err) {
+            res.sendStatus(403);
+        } else{
+            res.json({
+                text: 'protected', 
+                data
+            })
+        }
+    })
+};
+
+function ensureToken (req,res, next){
+    const bearedHeader = req.headers['authorization'];
+    console.log(bearedHeader);
+    if (typeof bearedHeader !== 'undefined') {
+        const beared = bearedHeader.split(" ");
+        const bearedToken = beared[1];
+        req.token = bearedToken;
+        console.log(bearedToken);
+        next();
+    } else 
+    {
+        res.sendStatus(403);
+    }
+};
+
+module.exports = {getPDI, createPDI, getPDIByID, deletePDI, updatePDI, getEvento, createEvento, deleteEvento, updateEvento, login, rutasegura, ensureToken}
