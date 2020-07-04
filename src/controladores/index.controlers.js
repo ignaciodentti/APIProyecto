@@ -1,10 +1,11 @@
 const {Pool} = require('pg');
 const jwt = require('jsonwebtoken');
+const { request } = require('express');
 
 const pool= new Pool({
     host:'localhost',
     user:'postgres',
-    password: 'nadia1998',
+    password: 'Notsag07100209Gaston14',
     database: 'puntosdeinteres',
     port: '5432'
 });
@@ -14,6 +15,12 @@ const getPDI = (req,res) => {
     const respuesta = pool.query('SELECT * FROM puntodeinteres WHERE baja=false')
     .then(respuesta => res.status(200).json(respuesta.rows));
 };
+
+const obtenerPorNombre = (req, res) => {
+    const nombrebuscar= req.params.name;
+    const respuesta = pool.query('SELECT * FROM puntodeinteres WHERE nombre LIKE $1', [nombrebuscar])
+    .then(respuesta => res.status(200).json(respuesta.rows));
+}
 
 const createPDI = (req,res) => {
     baja = false;
@@ -38,7 +45,7 @@ const deletePDI = (req,res) => {
 
 const getPDIByID = (req,res) => {
     const id =req.params.id;
-   const respuesta = pool.query('SELECT * FROM puntodeinteres WHERE id = $1', [id])
+    const respuesta = pool.query('SELECT * FROM puntodeinteres WHERE id = $1', [id])
    .then(respuesta => res.json(respuesta.rows));
 };
 
@@ -119,4 +126,4 @@ function ensureToken (req,res, next){
     }
 };
 
-module.exports = {getPDI, createPDI, getPDIByID, deletePDI, updatePDI, getEvento, createEvento, deleteEvento, updateEvento, login, rutasegura, ensureToken}
+module.exports = {getPDI, obtenerPorNombre, createPDI, getPDIByID, deletePDI, updatePDI, getEvento, createEvento, deleteEvento, updateEvento, login, rutasegura, ensureToken}
