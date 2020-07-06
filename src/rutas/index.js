@@ -1,9 +1,10 @@
 const {Router} = require('express');
 const router = Router();
-const {getPDI, obtenerPorNombre, createPDI, getPDIByID, deletePDI, updatePDI, getEvento, createEvento, deleteEvento, updateEvento, login, rutasegura, ensureToken} =require('../controladores/index.controlers');
+const {getPDI, obtenerPorNombre, obtenerPorCategoria, createPDI, getPDIByID, deletePDI, updatePDI, getEvento, createEvento, deleteEvento, updateEvento, login, rutasegura, ensureToken} =require('../controladores/index.controlers');
 
 router.get('/pdi/get/', getPDI);
 router.get('/pdi/nombre/:name', obtenerPorNombre);
+router.get('/pdi/getPorCategoria/:category', obtenerPorCategoria);
 router.post('/pdi/post/', createPDI);
 router.get('/pdi/getid/:id', getPDIByID);
 router.delete('/pdi/delete/:id', deletePDI);

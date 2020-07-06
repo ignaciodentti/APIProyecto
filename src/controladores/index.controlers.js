@@ -18,7 +18,13 @@ const getPDI = (req,res) => {
 
 const obtenerPorNombre = (req, res) => {
     const nombrebuscar= req.params.name;
-    const respuesta = pool.query('SELECT * FROM puntodeinteres WHERE nombre LIKE $1', [nombrebuscar])
+    const respuesta = pool.query('SELECT * FROM puntodeinteres WHERE baja = false AND nombre LIKE $1', [nombrebuscar])
+    .then(respuesta => res.status(200).json(respuesta.rows));
+}
+
+const obtenerPorCategoria = (req, res) => {
+    const categoriabuscar= req.params.category;
+    const respuesta = pool.query('SELECT * FROM puntodeinteres WHERE baja = false AND categoria LIKE $1', [categoriabuscar])
     .then(respuesta => res.status(200).json(respuesta.rows));
 }
 
@@ -126,4 +132,4 @@ function ensureToken (req,res, next){
     }
 };
 
-module.exports = {getPDI, obtenerPorNombre, createPDI, getPDIByID, deletePDI, updatePDI, getEvento, createEvento, deleteEvento, updateEvento, login, rutasegura, ensureToken}
+module.exports = {getPDI, obtenerPorNombre, obtenerPorCategoria, createPDI, getPDIByID, deletePDI, updatePDI, getEvento, createEvento, deleteEvento, updateEvento, login, rutasegura, ensureToken}
