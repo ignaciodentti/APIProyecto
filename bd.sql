@@ -26,3 +26,11 @@ create table eventos(
     precio numeric NULL,
     baja boolean
 );
+
+create table usuarios(
+    id serial not null PRIMARY KEY,
+    username text,
+    email text, 
+    password text,
+    baja boolean
+);

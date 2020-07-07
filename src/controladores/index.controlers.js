@@ -1,17 +1,19 @@
 const {Pool} = require('pg');
 const jwt = require('jsonwebtoken');
 const { request } = require('express');
+const bcrypt = require('bcryptjs');
+const { size, result } = require('underscore');
 
 const pool= new Pool({
     host:'localhost',
     user:'postgres',
-    password: 'Notsag07100209Gaston14',
+    password: 'nadia1998',
     database: 'puntosdeinteres',
     port: '5432'
 });
 
 
-const getPDI = (req,res) => {
+const getPDI = (_req,res) => {
     const respuesta = pool.query('SELECT * FROM puntodeinteres WHERE baja=false')
     .then(respuesta => res.status(200).json(respuesta.rows));
 };
@@ -63,7 +65,7 @@ const updatePDI = (req,res) => {
     .then(res.json(`Punto de interes ${id} actualizado con exito `));
 };
 
-const getEvento = (req,res) => {
+const getEvento = (_req,res) => {
     const respuesta = pool.query('SELECT * FROM eventos WHERE baja=false')
     .then(respuesta => res.status(200).json(respuesta.rows));
 };
@@ -109,11 +111,41 @@ const updateEvento = (req,res) => {
     .then(res.json(`Evento ${id} actualizado con exito `));
 };
 
+const signup = (req,res ) => {
+//signup
+    baja= false;
+    pool.query("SELECT id from usuarios where baja=false order by id desc",(err, result) => 
+        {  tam = result.rowCount; 
+            console.log(result.rowCount);
+            console.log('tam: ' + tam);
+    //salt = bcrypt.genSalt(10);
+    //passwordEncrptada = bcrypt.hash(password, salt);  //esto no anda todavia
+        const {username,password, email} = req.body;
+        const respuesta = pool.query('INSERT INTO usuarios (username, email ,password , baja) VALUES ( $1, $2,$3, $4)', [ username, email,password,  baja])
+        .then(respuesta => console.log(respuesta))
+        .then(token = jwt.sign(tam, process.env.SECRET_KEY || 'tokentest'))
+        .then(res.header('auth-token', token).json({
+        message: 'Usuario agregado con exito',
+        body: {
+                usuario: {username, email}
+                }})
+            )
+    } );
+ };
 
-const login = (req,res ) => {
-    const user = {id: 3};
-    const token = jwt.sign({user}, 'my_secret_key'); //en el segundo parametro va la variable de entorno, esta linea genera el token para el usuario
-    res.json({token});
+const signin = (_req,_res ) => {
+    
+};
+
+const profile = (_req,_res ) => {
+    
+};
+
+
+/* const login = (req,res ) => {
+    const user = req.bady; //aca va a el usuario completo
+    const token = jwt.sign({user.id}, 'my_secret_key'); //en el segundo parametro va la variable de entorno, esta linea genera el token para el usuario
+    res.header('auth-token', token).json({user});
 };
 
 const rutasegura = (req,res) => {
@@ -142,6 +174,11 @@ function ensureToken (req,res, next){
     {
         res.sendStatus(403);
     }
-};
+}; */
 
+
+<<<<<<< HEAD
 module.exports = {getPDI, obtenerPorNombre, obtenerPorCategoria, createPDI, getPDIByID, deletePDI, updatePDI, getEvento, getEventosPorCategoria, getEventosPorNombre, createEvento, deleteEvento, updateEvento, login, rutasegura, ensureToken}
+=======
+module.exports = {getPDI, obtenerPorNombre, obtenerPorCategoria, createPDI, getPDIByID, deletePDI, updatePDI, getEvento, createEvento, deleteEvento, updateEvento, signin, signup, profile}
+>>>>>>> aeb41f8a230d8a7f7421933528cb5834c78c3926
