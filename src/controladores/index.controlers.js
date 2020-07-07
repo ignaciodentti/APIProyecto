@@ -2,6 +2,7 @@ const {Pool} = require('pg');
 const jwt = require('jsonwebtoken');
 const { request } = require('express');
 const bcrypt = require('bcryptjs');
+const { size, result } = require('underscore');
 
 const pool= new Pool({
     host:'localhost',
@@ -12,7 +13,7 @@ const pool= new Pool({
 });
 
 
-const getPDI = (req,res) => {
+const getPDI = (_req,res) => {
     const respuesta = pool.query('SELECT * FROM puntodeinteres WHERE baja=false')
     .then(respuesta => res.status(200).json(respuesta.rows));
 };
@@ -64,7 +65,7 @@ const updatePDI = (req,res) => {
     .then(res.json(`Punto de interes ${id} actualizado con exito `));
 };
 
-const getEvento = (req,res) => {
+const getEvento = (_req,res) => {
     const respuesta = pool.query('SELECT * FROM eventos WHERE baja=false')
     .then(respuesta => res.status(200).json(respuesta.rows));
 };
@@ -101,29 +102,30 @@ const updateEvento = (req,res) => {
 const signup = (req,res ) => {
 //signup
     baja= false;
-    const obtener = pool.query('SELECT id FROM usuarios WHERE baja=false order by id DESC limit 1')
-    .then(obtener => (console.log(obtener.rows)));
-    const {username,password, email} = req.body;
-/*     salt = bcrypt.genSalt(10);
-    passwordEncrptada = bcrypt.hash(password, salt); */ //esto no anda todavia
-    const respuesta = pool.query('INSERT INTO usuarios (username, email ,password , baja) VALUES ( $1, $2,$3, $4)', [ username, email,password,  baja])
-    .then(respuesta => console.log(respuesta))
-    //token
-    .then(token = jwt.sign(username, process.env.SECRET_KEY || 'tokentest'))
-    .then(res.header('auth-token', token).json({
-    message: 'Usuario agregado con exito',
-    body: {
-            usuario: {username, email}
-          }})
-        )
+    pool.query("SELECT id from usuarios where baja=false order by id desc",(err, result) => 
+        {  tam = result.rowCount; 
+            console.log(result.rowCount);
+            console.log('tam: ' + tam);
+    //salt = bcrypt.genSalt(10);
+    //passwordEncrptada = bcrypt.hash(password, salt);  //esto no anda todavia
+        const {username,password, email} = req.body;
+        const respuesta = pool.query('INSERT INTO usuarios (username, email ,password , baja) VALUES ( $1, $2,$3, $4)', [ username, email,password,  baja])
+        .then(respuesta => console.log(respuesta))
+        .then(token = jwt.sign(tam, process.env.SECRET_KEY || 'tokentest'))
+        .then(res.header('auth-token', token).json({
+        message: 'Usuario agregado con exito',
+        body: {
+                usuario: {username, email}
+                }})
+            )
+    } );
+ };
 
-};
-
-const signin = (req,res ) => {
+const signin = (_req,_res ) => {
     
 };
 
-const profile = (req,res ) => {
+const profile = (_req,_res ) => {
     
 };
 
@@ -163,4 +165,4 @@ function ensureToken (req,res, next){
 }; */
 
 
-module.exports = {getPDI, obtenerPorNombre, createPDI, getPDIByID, deletePDI, updatePDI, getEvento, createEvento, deleteEvento, updateEvento, signin, signup, profile}
+module.exports = {getPDI, obtenerPorNombre, obtenerPorCategoria, createPDI, getPDIByID, deletePDI, updatePDI, getEvento, createEvento, deleteEvento, updateEvento, signin, signup, profile}
