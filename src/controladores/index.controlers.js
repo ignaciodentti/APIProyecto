@@ -116,29 +116,39 @@ const signup = (req,res ) => {
     baja= false;
     pool.query("SELECT id from usuarios where baja=false order by id desc",(err, result) => 
         {  tam = result.rowCount; 
-            console.log(result.rowCount);
-            console.log('tam: ' + tam);
-    //salt = bcrypt.genSalt(10);
-    //passwordEncrptada = bcrypt.hash(password, salt);  //esto no anda todavia
         const {username,password, email} = req.body;
-        const respuesta = pool.query('INSERT INTO usuarios (username, email ,password , baja) VALUES ( $1, $2,$3, $4)', [ username, email,password,  baja])
-        .then(respuesta => console.log(respuesta))
-        .then(token = jwt.sign(tam, process.env.SECRET_KEY || 'tokentest'))
-        .then(res.header('auth-token', token).json({
-        message: 'Usuario agregado con exito',
-        body: {
-                usuario: {username, email}
-                }})
-            )
-    } );
+        salt = bcrypt.genSalt(10);
+        bcrypt.hash(password,salt, function(err,data) {
+            if (data) {
+                passwordEncriptada= data;
+                const respuesta = pool.query('INSERT INTO usuarios (username, email ,password , baja) VALUES ( $1, $2,$3, $4)', [ username, email,passwordEncriptada,  baja])
+                .then(respuesta => console.log(respuesta))
+                .then(token = jwt.sign(tam, process.env.SECRET_KEY || 'tokentest'))
+                .then(res.header('auth-token', token).json({
+                message: 'Usuario agregado con exito',
+                body: {
+                        usuario: {username, email}
+                        }})
+                     )
+            }
+        }
+        )
+
+      
+     } );
  };
 
-const signin = (_req,_res ) => {
+const signin = (req,res ) => {
     
 };
 
-const profile = (_req,_res ) => {
+const profile = (req,res ) => {
     
+};
+
+
+const validarpass = (passNew, passwordVieja) => {
+   bcrypt.compare(passNew,passwordVieja);  //boolean true or false
 };
 
 
