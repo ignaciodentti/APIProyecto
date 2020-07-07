@@ -1,7 +1,7 @@
 const {Router} = require('express');
 const router = Router();
 
-const {getPDI, obtenerPorNombre, createPDI, getPDIByID, deletePDI, updatePDI, getEvento, createEvento, deleteEvento, updateEvento, signin,signup, profile} =require('../controladores/index.controlers');
+const {getPDI, obtenerPorNombre, obtenerPorCategoria, createPDI, getPDIByID, deletePDI, updatePDI, getEvento, createEvento, deleteEvento, updateEvento, signin,signup, profile} =require('../controladores/index.controlers');
 
 
 router.get('/pdi/get/', getPDI);
