@@ -1,9 +1,10 @@
 const cors = require('cors');
 const express = require('express');
 const app= express();
+const dotenv = require('dotenv');
 
 
-
+dotenv.config();
 app.use(cors({ origin: true }));
 
 app.listen(3000);

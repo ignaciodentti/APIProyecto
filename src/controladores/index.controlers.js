@@ -1,11 +1,12 @@
 const {Pool} = require('pg');
 const jwt = require('jsonwebtoken');
 const { request } = require('express');
+const bcrypt = require('bcryptjs');
 
 const pool= new Pool({
     host:'localhost',
     user:'postgres',
-    password: 'Notsag07100209Gaston14',
+    password: 'nadia1998',
     database: 'puntosdeinteres',
     port: '5432'
 });
@@ -91,11 +92,40 @@ const updateEvento = (req,res) => {
     .then(res.json(`Evento ${id} actualizado con exito `));
 };
 
+const signup = (req,res ) => {
+//signup
+    baja= false;
+    const obtener = pool.query('SELECT id FROM usuarios WHERE baja=false order by id DESC limit 1')
+    .then(obtener => (console.log(obtener.rows)));
+    const {username,password, email} = req.body;
+/*     salt = bcrypt.genSalt(10);
+    passwordEncrptada = bcrypt.hash(password, salt); */ //esto no anda todavia
+    const respuesta = pool.query('INSERT INTO usuarios (username, email ,password , baja) VALUES ( $1, $2,$3, $4)', [ username, email,password,  baja])
+    .then(respuesta => console.log(respuesta))
+    //token
+    .then(token = jwt.sign(username, process.env.SECRET_KEY || 'tokentest'))
+    .then(res.header('auth-token', token).json({
+    message: 'Usuario agregado con exito',
+    body: {
+            usuario: {username, email}
+          }})
+        )
 
-const login = (req,res ) => {
-    const user = {id: 3};
-    const token = jwt.sign({user}, 'my_secret_key'); //en el segundo parametro va la variable de entorno, esta linea genera el token para el usuario
-    res.json({token});
+};
+
+const signin = (req,res ) => {
+    
+};
+
+const profile = (req,res ) => {
+    
+};
+
+
+/* const login = (req,res ) => {
+    const user = req.bady; //aca va a el usuario completo
+    const token = jwt.sign({user.id}, 'my_secret_key'); //en el segundo parametro va la variable de entorno, esta linea genera el token para el usuario
+    res.header('auth-token', token).json({user});
 };
 
 const rutasegura = (req,res) => {
@@ -124,6 +154,6 @@ function ensureToken (req,res, next){
     {
         res.sendStatus(403);
     }
-};
+}; */
 
-module.exports = {getPDI, obtenerPorNombre, createPDI, getPDIByID, deletePDI, updatePDI, getEvento, createEvento, deleteEvento, updateEvento, login, rutasegura, ensureToken}
+module.exports = {getPDI, obtenerPorNombre, createPDI, getPDIByID, deletePDI, updatePDI, getEvento, createEvento, deleteEvento, updateEvento, signin, signup, profile}
