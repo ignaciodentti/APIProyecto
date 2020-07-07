@@ -1,12 +1,7 @@
 const {Router} = require('express');
 const router = Router();
-<<<<<<< HEAD
-const {getPDI, obtenerPorNombre, obtenerPorCategoria, createPDI, getPDIByID, deletePDI, updatePDI, getEvento, getEventosPorNombre, getEventosPorCategoria, createEvento, deleteEvento, updateEvento, login, rutasegura, ensureToken} =require('../controladores/index.controlers');
-=======
 
-const {getPDI, obtenerPorNombre, obtenerPorCategoria, createPDI, getPDIByID, deletePDI, updatePDI, getEvento, createEvento, deleteEvento, updateEvento, signin,signup, profile} =require('../controladores/index.controlers');
-
->>>>>>> aeb41f8a230d8a7f7421933528cb5834c78c3926
+const {getPDI, obtenerPorNombre, obtenerPorCategoria, createPDI, getPDIByID, deletePDI, updatePDI, getEvento, getEventosPorNombre, getEventosPorCategoria, createEvento, deleteEvento, updateEvento, signin,signup, profile} =require('../controladores/index.controlers');
 
 router.get('/pdi/get/', getPDI);
 router.get('/pdi/nombre/:name', obtenerPorNombre);
