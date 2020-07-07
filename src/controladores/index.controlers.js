@@ -162,8 +162,5 @@ function ensureToken (req,res, next){
     }
 }; */
 
-<<<<<<< HEAD
+
 module.exports = {getPDI, obtenerPorNombre, createPDI, getPDIByID, deletePDI, updatePDI, getEvento, createEvento, deleteEvento, updateEvento, signin, signup, profile}
-=======
-module.exports = {getPDI, obtenerPorNombre, obtenerPorCategoria, createPDI, getPDIByID, deletePDI, updatePDI, getEvento, createEvento, deleteEvento, updateEvento, login, rutasegura, ensureToken}
->>>>>>> 5c07a640595d32634cd55448aff5e3b3a555cd6a
