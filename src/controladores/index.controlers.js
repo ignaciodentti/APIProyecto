@@ -7,7 +7,7 @@ const { size, result } = require('underscore');
 const pool= new Pool({
     host:'localhost',
     user:'postgres',
-    password: 'nadia1998',
+    password: 'postgre',
     database: 'puntosdeinteres',
     port: '5432'
 });
@@ -114,29 +114,31 @@ const updateEvento = (req,res) => {
 const signup = (req,res ) => {
 //signup
     baja= false;
+    let salt;
     pool.query("SELECT id from usuarios where baja=false order by id desc",(err, result) => 
         {  tam = result.rowCount; 
-        const {username,password, email} = req.body;
-        salt = bcrypt.genSalt(10);
-        bcrypt.hash(password,salt, function(err,data) {
-            if (data) {
-                passwordEncriptada= data;
-                const respuesta = pool.query('INSERT INTO usuarios (username, email ,password , baja) VALUES ( $1, $2,$3, $4)', [ username, email,passwordEncriptada,  baja])
-                .then(respuesta => console.log(respuesta))
-                .then(token = jwt.sign(tam, process.env.SECRET_KEY || 'tokentest'))
-                .then(res.header('auth-token', token).json({
-                message: 'Usuario agregado con exito',
-                body: {
-                        usuario: {username, email}
+            const {username,password, email} = req.body;
+            salt = bcrypt.genSalt(3, function (err,data) {
+            salt = data;
+            console.log('data: '+ data);
+            console.log('salt: '+salt);
+            bcrypt.hash(password, salt, function(err,data) {
+                if (data) {
+                    passwordEncriptada= data;
+                    const respuesta = pool.query('INSERT INTO usuarios (username, email ,password , baja) VALUES ( $1, $2,$3, $4)', [ username, email,passwordEncriptada,  baja])
+                    .then(respuesta => console.log(respuesta))
+                    .then(token = jwt.sign(tam, process.env.SECRET_KEY || 'tokentest'))
+                    .then(res.header('auth-token', token).json({
+                    message: 'Usuario agregado con exito',
+                    body: {
+                            usuario: {username, email, passwordEncriptada, salt}
                         }})
-                     )
-            }
-        }
-        )
-
-      
-     } );
- };
+                    )
+                }
+            })
+        })
+    });
+};
 
 const signin = (req,res ) => {
     
