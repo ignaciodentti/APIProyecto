@@ -112,13 +112,11 @@ const updateEvento = (req,res) => {
 };
 
 const signup = (req,res ) => {
-//signup
     baja= false;
     pool.query("SELECT id from usuarios where baja=false order by id desc",(err, result) => 
         {  tam = result.rowCount; 
         const {username,password, email} = req.body;
-        salt = bcrypt.genSalt(10);
-        bcrypt.hash(password,salt, function(err,data) {
+        hash= bcrypt.hash(password,10, function(err,data) {
             if (data) {
                 passwordEncriptada= data;
                 const respuesta = pool.query('INSERT INTO usuarios (username, email ,password , baja) VALUES ( $1, $2,$3, $4)', [ username, email,passwordEncriptada,  baja])
@@ -127,8 +125,8 @@ const signup = (req,res ) => {
                 .then(res.header('auth-token', token).json({
                 message: 'Usuario agregado con exito',
                 body: {
-                        usuario: {username, email}
-                        }})
+                        usuario: {username, email, passwordEncriptada}
+                      }})
                      )
             }
         }
@@ -139,7 +137,24 @@ const signup = (req,res ) => {
  };
 
 const signin = (req,res ) => {
-    
+    email= req.body.email;
+    pool.query('SELECT * from usuarios WHERE email= $1', [email], (err, result) => 
+    {   if (result == null) 
+        {res.status(400).json('Email incorrecto')} 
+        else 
+        {res.status(200).send(result);
+        console.log(result.rows[0].password);
+        bcrypt.compare(req.body.password,result.rows[0].password, function(err,data) {
+            if (data) {
+                console.log('comparacion exitosa');
+
+            }
+            else
+            {console.log('contraseña no')}
+        });
+    }
+    }
+)
 };
 
 const profile = (req,res ) => {
@@ -186,5 +201,5 @@ function ensureToken (req,res, next){
     }
 }; */
 
-module.exports = {getPDI, obtenerPorNombre, obtenerPorCategoria, createPDI, getPDIByID, deletePDI, updatePDI, getEvento, getEventosPorNombre, getEventosPorCategoria, createEvento, deleteEvento, updateEvento, signin, signup, profile}
 
+module.exports = {getPDI, obtenerPorNombre, obtenerPorCategoria, createPDI, getPDIByID, deletePDI, updatePDI, getEvento, getEventosPorNombre, getEventosPorCategoria, createEvento, deleteEvento, updateEvento, signin, signup, profile}
