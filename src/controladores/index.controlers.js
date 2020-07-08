@@ -7,7 +7,7 @@ const { size, result } = require('underscore');
 const pool= new Pool({
     host:'localhost',
     user:'postgres',
-    password: 'postgre',
+    password: 'nadia1998',
     database: 'puntosdeinteres',
     port: '5432'
 });
@@ -115,12 +115,14 @@ const signup = (req,res ) => {
     baja= false;
     let salt;
     pool.query("SELECT id from usuarios where baja=false order by id desc",(err, result) => 
-        {  tam = result.rowCount; 
+        {  tam = result.rows[0].id + 1; 
             const {username,password, email} = req.body;
             salt = bcrypt.genSalt(3, function (err,data) {
             salt = data;
             console.log('data: '+ data);
             console.log('salt: '+salt);
+            console.log('tam:  '+ tam);
+            console.log('id select: ' + result.rows[0].id);
             bcrypt.hash(password, salt, function(err,data) {
                 if (data) {
                     passwordEncriptada= data;
@@ -140,24 +142,31 @@ const signup = (req,res ) => {
 };
 
 const signin = (req,res ) => {
-    email= req.body.email;
-    pool.query('SELECT * from usuarios WHERE email= $1', [email], (err, result) => 
-    {   if (result == null) 
-        {res.status(400).json('Email incorrecto')} 
+    username= req.body.username;
+    pool.query('SELECT * from usuarios WHERE username= $1', [username], (err, result) => 
+    {   if (result.rows[0] == null) 
+        {res.status(400).json('Username incorrecto')
+        console.log(result);
+        } 
         else 
-        {res.status(200).send(result);
-        console.log(result.rows[0].password);
+        {//res.status(200).send(result);
+        console.log('id del selecto: ' + result.rows[0].id);
+        tam= result.rows[0].id;
+        console.log('tam:  '+ tam);
         bcrypt.compare(req.body.password,result.rows[0].password, function(err,data) {
             if (data) {
                 console.log('comparacion exitosa');
-
-            }
+                token = jwt.sign(tam, process.env.SECRET_KEY || 'tokentest')
+                res.status(200).header('auth-token', token).json({
+                    message: 'Usuario logeado con exito'
+                        })
+                    }
             else
-            {console.log('contraseña no')}
-        });
-    }
-    }
-)
+            {res.status(400).json('Contraseña incorrecta')};
+        })
+        }
+    })    
+
 };
 
 const profile = (req,res ) => {

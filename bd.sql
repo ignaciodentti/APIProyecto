@@ -29,8 +29,8 @@ create table eventos(
 
 create table usuarios(
     id serial not null PRIMARY KEY,
-    username not null text,
+    username text not null,
     email text, 
-    password not null text,
+    password text not null,
     baja boolean
 );
