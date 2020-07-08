@@ -9,7 +9,8 @@ function tokenValidation(req,res,next) {
     else 
     {
         const payload = jwt.verify(token, process.env.SECRET_KEY || 'tokentest');
-        console.log(payload);
+        console.log(token);
+        return next();
     }
 
 } 

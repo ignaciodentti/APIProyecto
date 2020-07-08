@@ -156,7 +156,7 @@ const signin = (req,res ) => {
         bcrypt.compare(req.body.password,result.rows[0].password, function(err,data) {
             if (data) {
                 console.log('comparacion exitosa');
-                token = jwt.sign(tam, process.env.SECRET_KEY || 'tokentest', {expiresIn: 60})
+                token = jwt.sign(tam, process.env.SECRET_KEY || 'tokentest')
                 res.status(200).header('auth-token', token).json({
                     message: 'Usuario logeado con exito'
                         })
