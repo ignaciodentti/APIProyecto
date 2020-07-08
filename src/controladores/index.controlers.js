@@ -171,6 +171,7 @@ const signin = (req,res ) => {
 
 const profile = (req,res ) => {
     res.send('Perfil')
+    console.log('token en profile: ' + req.token);
 };
 
 
