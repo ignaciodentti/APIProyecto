@@ -2,6 +2,7 @@ const {Router} = require('express');
 const router = Router();
 
 const {getPDI, obtenerPorNombre, obtenerPorCategoria, createPDI, getPDIByID, deletePDI, updatePDI, getEvento, getEventosPorNombre, getEventosPorCategoria, createEvento, deleteEvento, updateEvento, signin,signup, profile} =require('../controladores/index.controlers');
+const {tokenValidation} = require('../libs/verificarToken')
 
 // puntos de interés
 router.get('/pdi/get/', getPDI);
@@ -23,6 +24,6 @@ router.put('/evento/update/:id', updateEvento);
 // autorización
 router.post('/auth/signin/', signin);
 router.post('/auth/signup/', signup);
-router.get('/auths/profile/',profile);
+router.get('/auth/profile/',tokenValidation,profile);
 
 module.exports= router;
