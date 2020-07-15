@@ -1,13 +1,13 @@
 const {Router} = require('express');
 const router = Router();
 
-const {getPDI, obtenerPorNombre, obtenerPorCategoria, createPDI, getPDIByID, deletePDI, updatePDI, getEvento, getEventosPorNombre, getEventosPorCategoria, createEvento, deleteEvento, updateEvento, signin,signup, profile} =require('../controladores/index.controlers');
+const {getPDI, obtenerPDIPorNombre, obtenerPDIPorCategoria, createPDI, getPDIByID, deletePDI, updatePDI, getEvento, getEventosPorNombre, getEventosPorCategoria, createEvento, deleteEvento, updateEvento, signin,signup, profile} =require('../controladores/index.controlers');
 const {tokenValidation} = require('../libs/verificarToken')
 
 // puntos de interés
 router.get('/pdi/get/', getPDI);
-router.get('/pdi/nombre/:name', obtenerPorNombre);
-router.get('/pdi/getPorCategoria/:category', obtenerPorCategoria);
+router.get('/pdi/nombre/:name', obtenerPDIPorNombre);
+router.get('/pdi/getPorCategoria/:category', obtenerPDIPorCategoria);
 router.post('/pdi/post/', createPDI);
 router.get('/pdi/getid/:id', getPDIByID);
 router.delete('/pdi/delete/:id', deletePDI);
