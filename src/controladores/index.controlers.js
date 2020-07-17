@@ -157,12 +157,11 @@ const signin = (req,res ) => {
         bcrypt.compare(req.body.password,result.rows[0].password, function(err,data) {
             if (data) {
                 console.log('comparacion exitosa');
-                token = jwt.sign(tam, process.env.SECRET_KEY || 'tokentest')
-                console.log(token);
-                res.status(200).header('auth-token', token).json({
-                    message: 'Usuario logeado con exito'
-                        })
-                    }
+                token = jwt.sign(tam, process.env.SECRET_KEY || 'tokentest');
+                res.header('auth-token', token);
+                res.status(200).header('Access-Control-Expose-Headers', 'auth-token').json('Usuario logeado con exito');
+
+            }
             else
             {res.status(400).json('Contraseña incorrecta')};
         })
