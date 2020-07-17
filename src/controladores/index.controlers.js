@@ -115,14 +115,15 @@ const signup = (req,res ) => {
     baja= false;
     let salt;
     pool.query("SELECT id from usuarios where baja=false order by id desc",(err, result) => 
-        {  tam = result.rows[0].id + 1; 
+        {  if (result.rows[0]==null) {tam=1 }
+            else {tam = result.rows[0].id + 1} 
             const {username,password, email} = req.body;
             salt = bcrypt.genSalt(3, function (err,data) {
             salt = data;
             console.log('data: '+ data);
             console.log('salt: '+salt);
             console.log('tam:  '+ tam);
-            console.log('id select: ' + result.rows[0].id);
+            //console.log('id select: ' + result.rows[0].id);
             bcrypt.hash(password, salt, function(err,data) {
                 if (data) {
                     passwordEncriptada= data;
@@ -150,13 +151,14 @@ const signin = (req,res ) => {
         } 
         else 
         {//res.status(200).send(result);
-        console.log('id del selecto: ' + result.rows[0].id);
+        console.log('id del select: ' + result.rows[0].id);
         tam= result.rows[0].id;
         console.log('tam:  '+ tam);
         bcrypt.compare(req.body.password,result.rows[0].password, function(err,data) {
             if (data) {
                 console.log('comparacion exitosa');
                 token = jwt.sign(tam, process.env.SECRET_KEY || 'tokentest')
+                console.log(token);
                 res.status(200).header('auth-token', token).json({
                     message: 'Usuario logeado con exito'
                         })
