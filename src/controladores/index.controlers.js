@@ -129,7 +129,7 @@ const signup = (req,res ) => {
                     passwordEncriptada= data;
                     const respuesta = pool.query('INSERT INTO usuarios (username, email ,password , baja) VALUES ( $1, $2,$3, $4)', [ username, email,passwordEncriptada,  baja])
                     .then(respuesta => console.log(respuesta))
-                    .then(token = jwt.sign(tam, process.env.SECRET_KEY || 'tokentest'))
+                    .then(token = jwt.sign(tam, process.env.SECRET_KEY || 'tokentest', {expiresIn: 60*60}))
                     .then(res.header('auth-token', token).json({
                     message: 'Usuario agregado con exito',
                     body: {
