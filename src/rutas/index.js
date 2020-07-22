@@ -1,7 +1,30 @@
 const {Router} = require('express');
 const router = Router();
 
-const {getPDI, obtenerPDIPorNombre, obtenerPDIPorCategoria, createPDI, getPDIByID, deletePDI, updatePDI, getEvento, getEventosPorNombre, getEventosPorCategoria, createEvento, deleteEvento, updateEvento, signin,signup, profile} =require('../controladores/index.controlers');
+const {
+    getPDI, 
+    obtenerPDIPorNombre, 
+    obtenerPDIPorCategoria,
+    createPDI, 
+    getPDIByID, 
+    deletePDI, 
+    updatePDI, 
+    getEvento, 
+    getEventosPorNombre, 
+    getEventosPorCategoria, 
+    createEvento, 
+    deleteEvento, 
+    updateEvento, 
+    signin,
+    signup, 
+    profile,
+    getCategoria,
+    createCategoria,
+    deleteCategoria,
+    getSubcategoria
+
+} =require('../controladores/index.controlers');
+
 const {tokenValidation} = require('../libs/verificarToken')
 
 // puntos de interés
@@ -20,6 +43,13 @@ router.get('/evento/getPorCategoria/:category', getEventosPorCategoria);
 router.post('/evento/post/', createEvento);
 router.delete('/evento/delete/:id', deleteEvento);
 router.put('/evento/update/:id', updateEvento);
+
+// categorias
+router.get('/categoria/get/', getCategoria);
+router.post('/categoria/post/', createCategoria);
+router.delete('/categoria/delete/:id', deleteCategoria);
+router.get('/subcategoria/get/', getSubcategoria);
+
 
 // autorización
 router.post('/auth/signin/', signin);

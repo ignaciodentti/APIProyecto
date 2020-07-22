@@ -7,7 +7,7 @@ const { size, result } = require('underscore');
 const pool= new Pool({
     host:'localhost',
     user:'postgres',
-    password: 'nadia1998',
+    password: 'postgre',
     database: 'puntosdeinteres',
     port: '5432'
 });
@@ -175,8 +175,36 @@ const profile = (req,res ) => {
     console.log('token en profile: ' + req.token);
 };
 
+const getCategoria=(req, res) => {
+    const respuesta = pool.query('SELECT * FROM categorias WHERE baja = false AND padre IS NULL')
+    .then(respuesta => res.status(200).json(respuesta.rows));
+}
 
+const createCategoria = (req,res) => {
+    baja = false;
+    const {nombre, padre} = req.body;
+    const respuesta = pool.query('INSERT INTO categorias (nombre, padre, baja) VALUES ($1, $2, $3)', [nombre, padre, baja])
+    .then(respuesta => console.log(respuesta))
+    .then(res.json({
+        message: 'categoria agregada con exito',
+        body: {
+                categoria: { nombre, padre }
+              }
+    }))
+};
 
+const deleteCategoria = (req,res) => {
+    const id= req.params.id
+    baja = true;
+    const respuesta = pool.query('UPDATE categorias SET baja=$1 WHERE id=$2', [baja, id])
+    .then(respuesta => console.log(respuesta))
+    .then(res.json(`Categoria ${id} eliminada con exito `));
+}
+
+const getSubcategoria=(req, res) => {
+    const respuesta = pool.query('SELECT * FROM categorias WHERE baja = false AND NOT padre IS NULL')
+    .then(respuesta => res.status(200).json(respuesta.rows));
+}
 /* const login = (req,res ) => {
     const user = req.bady; //aca va a el usuario completo
     const token = jwt.sign({user.id}, 'my_secret_key'); //en el segundo parametro va la variable de entorno, esta linea genera el token para el usuario
@@ -212,4 +240,25 @@ function ensureToken (req,res, next){
 }; */
 
 
-module.exports = {getPDI, obtenerPDIPorNombre, obtenerPDIPorCategoria, createPDI, getPDIByID, deletePDI, updatePDI, getEvento, getEventosPorNombre, getEventosPorCategoria, createEvento, deleteEvento, updateEvento, signin, signup, profile}
+module.exports = {
+    getPDI, 
+    obtenerPDIPorNombre, 
+    obtenerPDIPorCategoria, 
+    createPDI, 
+    getPDIByID, 
+    deletePDI, 
+    updatePDI, 
+    getEvento, 
+    getEventosPorNombre,
+    getEventosPorCategoria, 
+    createEvento, 
+    deleteEvento, 
+    updateEvento, 
+    signin, 
+    signup, 
+    profile,
+    getCategoria,
+    createCategoria,
+    deleteCategoria,
+    getSubcategoria
+}

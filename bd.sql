@@ -34,3 +34,10 @@ create table usuarios(
     password text not null,
     baja boolean
 );
+
+create table categorias(
+    id serial PRIMARY KEY,
+    nombre text not null,
+    padre text null,
+    baja boolean
+);
