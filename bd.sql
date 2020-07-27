@@ -1,4 +1,4 @@
-create database puntosDeInteres;
+create database ViviConcepcion;
 
 create table puntoDeInteres(
     id serial NOT NULL PRIMARY KEY,
@@ -14,8 +14,8 @@ create table puntoDeInteres(
     horaCierre time NULL,
     precio numeric null,
     email text null,
-    baja boolean,
-
+    baja boolean, 
+    estado boolean
  );
 
 create table eventos(
@@ -33,7 +33,8 @@ create table eventos(
     horaCierre time NULL,
     precio numeric null,
     email text null,
-    baja boolean
+    baja boolean, 
+    estado boolean
 );
 
 create table usuarios(
