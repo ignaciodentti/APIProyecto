@@ -18,12 +18,6 @@ const getPDI = (_req,res) => {
     .then(respuesta => res.status(200).json(respuesta.rows));
 };
 
-const obtenerPDIPorNombre = (req, res) => {
-    const nombrebuscar= req.params.name;
-    const respuesta = pool.query('SELECT * FROM puntodeinteres WHERE baja = false AND nombre LIKE $1', [nombrebuscar])
-    .then(respuesta => res.status(200).json(respuesta.rows));
-}
-
 const obtenerPDIPorCategoria = (req, res) => {
     const categoriabuscar= req.params.category;
     const respuesta = pool.query('SELECT * FROM puntodeinteres WHERE baja = false AND categoria LIKE $1', [categoriabuscar])
@@ -70,15 +64,9 @@ const getEvento = (_req,res) => {
     .then(respuesta => res.status(200).json(respuesta.rows));
 };
 
-const getEventosPorCategoria= (req, res) => {
+const obtenerEventosPorCategoria= (req, res) => {
     const categoriabuscar= req.params.category;
     const respuesta = pool.query('SELECT * FROM eventos WHERE baja = false AND categoria LIKE $1', [categoriabuscar])
-    .then(respuesta => res.status(200).json(respuesta.rows));
-}
-
-const getEventosPorNombre = (req, res) => {
-    const nombrebuscar= req.params.name;
-    const respuesta = pool.query('SELECT * FROM eventos WHERE baja = false AND nombre LIKE $1', [nombrebuscar])
     .then(respuesta => res.status(200).json(respuesta.rows));
 }
 
@@ -90,7 +78,7 @@ const createEvento = (req,res) => {
     .then(res.json({
         message: 'Evento agregado con exito',
         body: {
-                evento: {nombre, descripcion, categoria, direccion, fechaInicio, fechaFin, horaApertura, horaCierre, precio}
+                evento: {nombre, descripcion, categoria, calle, numero, fechaInicio, fechaFin, horaApertura, horaCierre, provincia, localidad, email, precio}
               }
     }))
 };
@@ -129,7 +117,7 @@ const signup = (req,res ) => {
                     passwordEncriptada= data;
                     const respuesta = pool.query('INSERT INTO usuarios (username, email ,password , baja) VALUES ( $1, $2,$3, $4)', [ username, email,passwordEncriptada,  baja])
                     .then(respuesta => console.log(respuesta))
-                    .then(token = jwt.sign(tam, process.env.SECRET_KEY || 'tokentest', {expiresIn: 60*60}))
+                    .then(token = jwt.sign(tam, process.env.SECRET_KEY || 'tokentest'))
                     .then(res.header('auth-token', token).json({
                     message: 'Usuario agregado con exito',
                     body: {
@@ -147,13 +135,13 @@ const signin = (req,res ) => {
     pool.query('SELECT * from usuarios WHERE username= $1', [username], (err, result) => 
     {   if (result.rows[0] == null) 
         {res.status(400).json('Username incorrecto')
-        console.log(result);
+        //console.log(result);
         } 
         else 
         {//res.status(200).send(result);
-        console.log('id del select: ' + result.rows[0].id);
+        //console.log('id del select: ' + result.rows[0].id);
         tam= result.rows[0].id;
-        console.log('tam:  '+ tam);
+        //console.log('tam:  '+ tam);
         bcrypt.compare(req.body.password,result.rows[0].password, function(err,data) {
             if (data) {
                 console.log('comparacion exitosa');
@@ -205,52 +193,17 @@ const getSubcategoria=(req, res) => {
     const respuesta = pool.query('SELECT * FROM categorias WHERE baja = false AND NOT padre IS NULL')
     .then(respuesta => res.status(200).json(respuesta.rows));
 }
-/* const login = (req,res ) => {
-    const user = req.bady; //aca va a el usuario completo
-    const token = jwt.sign({user.id}, 'my_secret_key'); //en el segundo parametro va la variable de entorno, esta linea genera el token para el usuario
-    res.header('auth-token', token).json({user});
-};
-
-const rutasegura = (req,res) => {
-    jwt.verify(req.token, 'my_secret_key', (err,data)=> {
-        if (err) {
-            res.sendStatus(403);
-        } else{
-            res.json({
-                text: 'protected', 
-                data
-            })
-        }
-    })
-};
-
-function ensureToken (req,res, next){
-    const bearedHeader = req.headers['authorization'];
-    console.log(bearedHeader);
-    if (typeof bearedHeader !== 'undefined') {
-        const beared = bearedHeader.split(" ");
-        const bearedToken = beared[1];
-        req.token = bearedToken;
-        console.log(bearedToken);
-        next();
-    } else 
-    {
-        res.sendStatus(403);
-    }
-}; */
 
 
 module.exports = {
-    getPDI, 
-    obtenerPDIPorNombre, 
-    obtenerPDIPorCategoria, 
+    getPDI,  
+    obtenerPDIPorCategoria,
     createPDI, 
     getPDIByID, 
     deletePDI, 
     updatePDI, 
     getEvento, 
-    getEventosPorNombre,
-    getEventosPorCategoria, 
+    obtenerEventosPorCategoria, 
     createEvento, 
     deleteEvento, 
     updateEvento, 
