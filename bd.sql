@@ -15,7 +15,7 @@ create table puntoDeInteres(
     precio numeric null,
     email text null,
     baja boolean, 
-    estado boolean
+    aprobado boolean
  );
 
 create table eventos(
@@ -34,7 +34,7 @@ create table eventos(
     precio numeric null,
     email text null,
     baja boolean, 
-    estado boolean
+    aprobado boolean
 );
 
 create table usuarios(

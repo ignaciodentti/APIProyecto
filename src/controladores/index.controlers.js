@@ -32,13 +32,13 @@ const obtenerPDIPorCategoria = (req, res) => {
 
 const createPDI = (req,res) => {
     baja = false;
-    const {nombre, descripcion, categoria, calle, numero, provincia, localidad, telefono, horaApertura, horaCierre, precio, email, estado} = req.body;
-    const respuesta = pool.query('INSERT INTO puntodeinteres (nombre, descripcion, categoria, calle, numero, provincia, localidad, telefono, horaApertura, horaCierre, precio, email, estado, baja) VALUES ( $1, $2,$3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)', [nombre, descripcion, categoria, calle, numero, provincia, localidad, telefono, horaApertura, horaCierre, precio, email, estado, baja])
+    const {nombre, descripcion, categoria, calle, numero, provincia, localidad, telefono, horaApertura, horaCierre, precio, email, aprobado} = req.body;
+    const respuesta = pool.query('INSERT INTO puntodeinteres (nombre, descripcion, categoria, calle, numero, provincia, localidad, telefono, horaApertura, horaCierre, precio, email, aprobado, baja) VALUES ( $1, $2,$3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)', [nombre, descripcion, categoria, calle, numero, provincia, localidad, telefono, horaApertura, horaCierre, precio, email, aprobado, baja])
     .then(respuesta => console.log(respuesta))
     .then(res.json({
         message: 'Punto de interes agregado con exito',
         body: {
-                puntodeinteres: {nombre, descripcion, categoria, calle, numero, provincia, localidad, telefono, horaApertura, horaCierre, precio, email, estado}
+                puntodeinteres: {nombre, descripcion, categoria, calle, numero, provincia, localidad, telefono, horaApertura, horaCierre, precio, email, aprobado}
               }
     }))
 };
@@ -84,8 +84,8 @@ const getEventosPorNombre = (req, res) => {
 
 const createEvento = (req,res) => {
     baja = false;
-    const {nombre, descripcion, categoria, calle, numero, fechaInicio, fechaFin, horaApertura, horaCierre, provincia, localidad, email, precio, estado} = req.body;
-    const respuesta = pool.query('INSERT INTO eventos (nombre, descripcion, categoria, calle, numero, fechaInicio, fechaFin, horaApertura, horaCierre, provincia, localidad, email, precio, estado, baja) VALUES ( $1, $2,$3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)', [nombre, descripcion, categoria, calle, numero, fechaInicio, fechaFin, horaApertura, horaCierre, provincia, localidad, email, precio, estado, baja])
+    const {nombre, descripcion, categoria, calle, numero, fechaInicio, fechaFin, horaApertura, horaCierre, provincia, localidad, email, precio, aprobado} = req.body;
+    const respuesta = pool.query('INSERT INTO eventos (nombre, descripcion, categoria, calle, numero, fechaInicio, fechaFin, horaApertura, horaCierre, provincia, localidad, email, precio, aprobado, baja) VALUES ( $1, $2,$3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)', [nombre, descripcion, categoria, calle, numero, fechaInicio, fechaFin, horaApertura, horaCierre, provincia, localidad, email, precio, aprobado, baja])
     .then(respuesta => console.log(respuesta))
     .then(res.json({
         message: 'Evento agregado con exito',
