@@ -3,14 +3,19 @@ create database puntosDeInteres;
 create table puntoDeInteres(
     id serial NOT NULL PRIMARY KEY,
     nombre varchar,
-    descripcion text,
+    descripcion text null,
     categoria text,
-    direccion text ,
+    calle text,
+    numero text null,
+    provincia text, 
+    localidad text, 
     telefono text NULL,
     horaApertura time NULL,
     horaCierre time NULL,
-    precio numeric NULL,
-    baja boolean
+    precio numeric null,
+    email text null,
+    baja boolean,
+
  );
 
 create table eventos(
@@ -18,12 +23,16 @@ create table eventos(
     nombre text, 
     descripcion text null,
     categoria text,
-    direccion text null,  
+    calle text,
+    numero text null,
+    provincia text, 
+    localidad text,   
     fechaInicio date null,
     fechaFin date null,  
     horaApertura time null,
     horaCierre time NULL,
-    precio numeric NULL,
+    precio numeric null,
+    email text null,
     baja boolean
 );
 
