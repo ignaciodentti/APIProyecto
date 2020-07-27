@@ -19,7 +19,9 @@ const {
     getCategoria,
     createCategoria,
     deleteCategoria,
-    getSubcategoria
+    getSubcategoria,
+    obtenerPDIPendientes,
+    obtenerEventosPendientes
 
 } =require('../controladores/index.controlers');
 
@@ -33,6 +35,7 @@ router.get('/pdi/getid/:id', getPDIByID);
 router.post('/pdi/post/', createPDI);
 router.delete('/pdi/delete/:id', deletePDI);
 router.put('/pdi/put/:id', updatePDI);
+router.get('/pdi/getPendientes', obtenerPDIPendientes);
 
 // eventos
 router.get('/evento/get/', getEvento);
@@ -41,6 +44,7 @@ router.get('/evento/categoria/:category', obtenerEventosPorCategoria);
 router.post('/evento/post/', createEvento);
 router.delete('/evento/delete/:id', deleteEvento);
 router.put('/evento/update/:id', updateEvento);
+router.get('/evento/getPendientes', obtenerEventosPendientes);
 
 // categorias
 router.get('/categoria/get/', getCategoria);

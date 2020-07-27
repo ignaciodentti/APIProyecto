@@ -8,19 +8,24 @@ const pool= new Pool({
     host:'localhost',
     user:'postgres',
     password: 'nadia1998',
-    database: 'ViviConcepcion',
+    database: 'viviconcepcion',
     port: '5432'
 });
 
 
 const getPDI = (_req,res) => {
-    const respuesta = pool.query('SELECT * FROM puntodeinteres WHERE baja=false')
+    const respuesta = pool.query('SELECT * FROM puntodeinteres WHERE baja=false AND aprobado=true')
     .then(respuesta => res.status(200).json(respuesta.rows));
 };
 
 const obtenerPDIPorCategoria = (req, res) => {
     const categoriabuscar= req.params.category;
-    const respuesta = pool.query('SELECT * FROM puntodeinteres WHERE baja = false AND categoria LIKE $1', [categoriabuscar])
+    const respuesta = pool.query('SELECT * FROM puntodeinteres WHERE baja = false AND categoria LIKE $1 AND aprobado=true', [categoriabuscar])
+    .then(respuesta => res.status(200).json(respuesta.rows));
+}
+
+const obtenerPDIPendientes = (req,res) => {
+    const respuesta = pool.query('SELECT * FROM puntodeinteres WHERE baja=false AND aprobado=false')
     .then(respuesta => res.status(200).json(respuesta.rows));
 }
 
@@ -47,26 +52,32 @@ const deletePDI = (req,res) => {
 
 const getPDIByID = (req,res) => {
     const id =req.params.id;
-    const respuesta = pool.query('SELECT * FROM puntodeinteres WHERE id = $1', [id])
+    const respuesta = pool.query('SELECT * FROM puntodeinteres WHERE id = $1 AND aprobado=true', [id])
    .then(respuesta => res.json(respuesta.rows));
 };
 
 const updatePDI = (req,res) => {
     const id = req.params.id;
-    const {nombre, descripcion, categoria, calle, numero, provincia, localidad, telefono, horaApertura, horaCierre, precio, email} = req.body;
-    const respuesta = pool.query('UPDATE puntodeinteres SET nombre=$1, descripcion=$2, categoria=$3, calle=$4, telefono=$5, horaapertura=$6, horacierre=$7, precio=$8, provincia=$9, localidad=$10, email=$11, numero=$12  WHERE id=$13', [ nombre,  descripcion,categoria, calle, telefono, horaapertura, horacierre, precio,provincia,localidad, email, numero, id])
+    const {nombre, descripcion, categoria, calle, numero, provincia, localidad, telefono, horaApertura, horaCierre, precio, email, aprobado} = req.body;
+    const respuesta = pool.query('UPDATE puntodeinteres SET nombre=$1, descripcion=$2, categoria=$3, calle=$4, telefono=$5, horaApertura=$6, horaCierre=$7, precio=$8, provincia=$9, localidad=$10, email=$11, numero=$12, aprobado=$14 WHERE id=$13', [ nombre, descripcion, categoria, calle, telefono, horaApertura, horaCierre, precio, provincia, localidad, email, numero, id, aprobado])
     .then(respuesta => console.log(respuesta))
     .then(res.json(`Punto de interes ${id} actualizado con exito `));
 };
 
 const getEvento = (_req,res) => {
-    const respuesta = pool.query('SELECT * FROM eventos WHERE baja=false')
+    const respuesta = pool.query('SELECT * FROM eventos WHERE baja=false AND aprobado=true')
     .then(respuesta => res.status(200).json(respuesta.rows));
 };
 
 const obtenerEventosPorCategoria= (req, res) => {
     const categoriabuscar= req.params.category;
-    const respuesta = pool.query('SELECT * FROM eventos WHERE baja = false AND categoria LIKE $1', [categoriabuscar])
+    const respuesta = pool.query('SELECT * FROM eventos WHERE baja = false AND categoria LIKE $1 AND aprobado=true', [categoriabuscar])
+    .then(respuesta => res.status(200).json(respuesta.rows));
+}
+
+
+const obtenerEventosPendientes = (req,res) => {
+    const respuesta = pool.query('SELECT * FROM eventos WHERE baja=false AND aprobado=false')
     .then(respuesta => res.status(200).json(respuesta.rows));
 }
 
@@ -78,7 +89,7 @@ const createEvento = (req,res) => {
     .then(res.json({
         message: 'Evento agregado con exito',
         body: {
-                evento: {nombre, descripcion, categoria, calle, numero, fechaInicio, fechaFin, horaApertura, horaCierre, provincia, localidad, email, precio}
+                evento: {nombre, descripcion, categoria, fechaInicio, fechaFin, horaApertura, horaCierre, precio}
               }
     }))
 };
@@ -93,8 +104,8 @@ const deleteEvento = (req,res) => {
 
 const updateEvento = (req,res) => {
     const id = req.params.id;
-    const {nombre, descripcion, categoria, calle, numero,provincia, localidad, fechainicio, fechafin, horaapertura, horacierre,email, precio} = req.body;
-    const respuesta = pool.query('UPDATE eventos SET nombre=$1, descripcion=$2, categoria=$3, calle=$4, numero=$5 , provincia= $6, localidad=$7, fechainicio=$8, fechafin=$9, horaapertura=$10, horacierre=$11, email=$12, precio=$13  WHERE id=$14', [nombre, descripcion, categoria, calle, numero,provincia, localidad, fechainicio, fechafin, horaapertura, horacierre,email, precio, id])
+    const {nombre, descripcion, categoria, calle, numero,provincia, localidad, fechainicio, fechafin, horaapertura, horacierre, email, precio, aprobado} = req.body;
+    const respuesta = pool.query('UPDATE eventos SET nombre=$1, descripcion=$2, categoria=$3, calle=$4, numero=$5 , provincia= $6, localidad=$7, fechainicio=$8, fechafin=$9, horaapertura=$10, horacierre=$11, email=$12, precio=$13, aprobado=$15  WHERE id=$14', [nombre, descripcion, categoria, calle, numero,provincia, localidad, fechainicio, fechafin, horaapertura, horacierre,email, precio, id, aprobado])
     .then(respuesta => console.log(respuesta))
     .then(res.json(`Evento ${id} actualizado con exito `));
 };
@@ -117,7 +128,7 @@ const signup = (req,res ) => {
                     passwordEncriptada= data;
                     const respuesta = pool.query('INSERT INTO usuarios (username, email ,password , baja) VALUES ( $1, $2,$3, $4)', [ username, email,passwordEncriptada,  baja])
                     .then(respuesta => console.log(respuesta))
-                    .then(token = jwt.sign(tam, process.env.SECRET_KEY || 'tokentest'))
+                    .then(token = jwt.sign(tam, process.env.SECRET_KEY || 'tokentest'/*, {expiresIn: 60*60}*/))
                     .then(res.header('auth-token', token).json({
                     message: 'Usuario agregado con exito',
                     body: {
@@ -213,5 +224,7 @@ module.exports = {
     getCategoria,
     createCategoria,
     deleteCategoria,
-    getSubcategoria
+    getSubcategoria,
+    obtenerEventosPendientes,
+    obtenerPDIPendientes
 }
