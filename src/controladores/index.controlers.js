@@ -7,8 +7,8 @@ const { size, result } = require('underscore');
 const pool= new Pool({
     host:'localhost',
     user:'postgres',
-    password: 'nadia1998',
-    database: 'ViviConcepcion',
+    password: 'postgre',
+    database: 'viviconcepcion',
     port: '5432'
 });
 
@@ -27,6 +27,11 @@ const obtenerPDIPorNombre = (req, res) => {
 const obtenerPDIPorCategoria = (req, res) => {
     const categoriabuscar= req.params.category;
     const respuesta = pool.query('SELECT * FROM puntodeinteres WHERE baja = false AND categoria LIKE $1', [categoriabuscar])
+    .then(respuesta => res.status(200).json(respuesta.rows));
+}
+
+const obtenerPDIPendientes = (req,res) => {
+    const respuesta = pool.query('SELECT * FROM puntodeinteres WHERE baja=false AND aprobado=false')
     .then(respuesta => res.status(200).json(respuesta.rows));
 }
 
@@ -82,6 +87,11 @@ const getEventosPorNombre = (req, res) => {
     .then(respuesta => res.status(200).json(respuesta.rows));
 }
 
+const obtenerEventosPendientes = (req,res) => {
+    const respuesta = pool.query('SELECT * FROM eventos WHERE baja=false AND aprobado=false')
+    .then(respuesta => res.status(200).json(respuesta.rows));
+}
+
 const createEvento = (req,res) => {
     baja = false;
     const {nombre, descripcion, categoria, calle, numero, fechaInicio, fechaFin, horaApertura, horaCierre, provincia, localidad, email, precio, aprobado} = req.body;
@@ -90,7 +100,7 @@ const createEvento = (req,res) => {
     .then(res.json({
         message: 'Evento agregado con exito',
         body: {
-                evento: {nombre, descripcion, categoria, direccion, fechaInicio, fechaFin, horaApertura, horaCierre, precio}
+                evento: {nombre, descripcion, categoria, fechaInicio, fechaFin, horaApertura, horaCierre, precio}
               }
     }))
 };
@@ -129,7 +139,7 @@ const signup = (req,res ) => {
                     passwordEncriptada= data;
                     const respuesta = pool.query('INSERT INTO usuarios (username, email ,password , baja) VALUES ( $1, $2,$3, $4)', [ username, email,passwordEncriptada,  baja])
                     .then(respuesta => console.log(respuesta))
-                    .then(token = jwt.sign(tam, process.env.SECRET_KEY || 'tokentest', {expiresIn: 60*60}))
+                    .then(token = jwt.sign(tam, process.env.SECRET_KEY || 'tokentest'/*, {expiresIn: 60*60}*/))
                     .then(res.header('auth-token', token).json({
                     message: 'Usuario agregado con exito',
                     body: {
@@ -260,5 +270,7 @@ module.exports = {
     getCategoria,
     createCategoria,
     deleteCategoria,
-    getSubcategoria
+    getSubcategoria,
+    obtenerEventosPendientes,
+    obtenerPDIPendientes
 }
