@@ -13,7 +13,6 @@ function tokenValidation(req,res,next) {
         req.token= token;
         return next();
     }
-
 } 
     
 

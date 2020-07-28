@@ -42,6 +42,7 @@ create table usuarios(
     username text not null,
     email text, 
     password text not null,
+    privilegios text[],
     baja boolean
 );
 
