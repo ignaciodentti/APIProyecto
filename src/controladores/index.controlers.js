@@ -7,7 +7,7 @@ const { size, result } = require('underscore');
 const pool = new Pool({
     host: 'localhost',
     user: 'postgres',
-    password: 'postgre',
+    password: 'nadia1998',
     database: 'viviconcepcion',
     port: '5432'
 });
@@ -20,7 +20,7 @@ const getPDI = (_req, res) => {
 
 const obtenerPDIPorCategoria = (req, res) => {
     const categoriabuscar = req.params.category;
-    const respuesta = pool.query('SELECT * FROM puntodeinteres WHERE baja = false AND categoria LIKE $1 AND aprobado=true', [categoriabuscar])
+    const respuesta = pool.query('SELECT  puntodeinteres.nombre, puntodeinteres.descripcion, puntodeinteres.categoria, puntodeinteres.calle, puntodeinteres.numero, puntodeinteres.provincia, puntodeinteres.localidad, puntodeinteres.telefono, puntodeinteres.horaApertura, puntodeinteres.horaCierre, puntodeinteres.precio, puntodeinteres.email, puntodeinteres.diasAbierto, puntodeinteres.baja FROM categorias INNER JOIN puntodeinteres ON puntodeinteres.categoria = categorias.nombre WHERE puntodeinteres.baja = false AND puntodeinteres.categoria LIKE $1 AND puntodeinteres.aprobado=true AND categorias.nombre LIKE $1 AND categorias.padre IS NOT NULL', [categoriabuscar])
         .then(respuesta => res.status(200).json(respuesta.rows));
 }
 
