@@ -71,7 +71,7 @@ const getEvento = (_req, res) => {
 
 const obtenerEventosPorCategoria = (req, res) => {
     const categoriabuscar = req.params.category;
-    const respuesta = pool.query('SELECT * FROM eventos WHERE baja = false AND categoria LIKE $1 AND aprobado=true', [categoriabuscar])
+    const respuesta = pool.query('SELECT  eventos.nombre, eventos.descripcion, eventos.categoria, eventos.calle, eventos.numero, eventos.fechaInicio, eventos.fechaFin, eventos.horaApertura, eventos.horaCierre, eventos.provincia, eventos.localidad, eventos.email, eventos.precio, eventos.baja FROM categorias INNER JOIN eventos ON eventos.categoria = categorias.nombre WHERE eventos.baja = false AND eventos.aprobado=true AND categorias.padre LIKE $1 UNION SELECT eventos.nombre, eventos.descripcion, eventos.categoria, eventos.calle, eventos.numero, eventos.fechaInicio, eventos.fechaFin, eventos.horaApertura, eventos.horaCierre, eventos.provincia, eventos.localidad, eventos.email, eventos.precio, eventos.baja FROM categorias INNER JOIN eventos ON eventos.categoria = categorias.nombre WHERE eventos.baja = false AND eventos.aprobado=true AND eventos.categoria LIKE $1 AND categorias.nombre LIKE $1', [categoriabuscar])
         .then(respuesta => res.status(200).json(respuesta.rows));
 }
 
