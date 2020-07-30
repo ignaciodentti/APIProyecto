@@ -171,10 +171,6 @@ const signin = (req, res) => {
 
 };
 
-const profile = (req, res) => {
-    res.send('Perfil')
-    console.log('token en profile: ' + req.token);
-};
 
 const getCategoria = (req, res) => {
     const respuesta = pool.query('SELECT * FROM categorias WHERE baja = false AND padre IS NULL')
@@ -221,7 +217,6 @@ module.exports = {
     updateEvento,
     signin,
     signup,
-    profile,
     getCategoria,
     createCategoria,
     deleteCategoria,
