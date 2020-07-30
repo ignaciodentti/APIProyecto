@@ -33,7 +33,7 @@ router.get('/pdi/categoria/:category', obtenerPDIPorCategoria);
 router.get('/pdi/getid/:id', getPDIByID);
 router.post('/pdi/post/', createPDI);
 router.delete('/pdi/delete/:id', deletePDI);
-router.put('/pdi/put/:id', updatePDI);
+router.put('/pdi/put/:id',tokenValidation, updatePDI);
 router.get('/pdi/getPendientes', obtenerPDIPendientes);
 
 // eventos
