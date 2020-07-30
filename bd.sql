@@ -40,7 +40,7 @@ create table eventos(
 
 create table usuarios(
     id serial not null PRIMARY KEY,
-    username text not null,
+    username text not null UNIQUE,
     email text, 
     password text not null,
     privilegios text[],

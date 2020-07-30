@@ -7,9 +7,9 @@ const { size, result } = require('underscore');
 const pool = new Pool({
     host: 'localhost',
     user: 'postgres',
-    password: 'nadia1998',
+    password: 'kevin111',
     database: 'viviconcepcion',
-    port: '5432'
+    port: '5433'
 });
 
 
@@ -127,7 +127,7 @@ const signup = (req, res) => {
                     passwordEncriptada = data;
                     const respuesta = pool.query('INSERT INTO usuarios (username, email ,password , baja, privilegios) VALUES ($1, $2, $3, $4, $5)', [username, email, passwordEncriptada, baja, privilegios])
                         .then(respuesta => console.log(respuesta))
-                        .then(token = jwt.sign(tam, process.env.SECRET_KEY || 'tokentest'/*, {expiresIn: 60*60}*/))
+                        .then(token = jwt.sign(tam, process.env.SECRET_KEY || 'tokentest'/*, {expiresIn: 60*60}*/)) 
                         .then(res.header('auth-token', token).json({
                             message: 'Usuario agregado con exito',
                             body: {
@@ -138,7 +138,7 @@ const signup = (req, res) => {
                 }
             })
         })
-    });
+    });        
 };
 
 const signin = (req, res) => {
