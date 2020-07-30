@@ -7,7 +7,7 @@ const { size, result } = require('underscore');
 const pool = new Pool({
     host: 'localhost',
     user: 'postgres',
-    password: 'nadia1998',
+    password: 'postgre',
     database: 'viviconcepcion',
     port: '5432'
 });
