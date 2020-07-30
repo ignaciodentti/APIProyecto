@@ -27,13 +27,13 @@ const {
 const {tokenValidation} = require('../libs/verificarToken')
 
 // puntos de interés
-router.get('/pdi/get/', getPDI);
-router.get('/pdi/categoria/:category', obtenerPDIPorCategoria);
+router.get('/pdi/get/', tokenValidation, getPDI);
+router.get('/pdi/categoria/:category', tokenValidation, obtenerPDIPorCategoria);
 router.get('/pdi/getid/:id', getPDIByID);
-router.post('/pdi/post/', createPDI);
-router.delete('/pdi/delete/:id', deletePDI);
+router.post('/pdi/post/', tokenValidation,createPDI);
+router.delete('/pdi/delete/:id',tokenValidation, deletePDI);
 router.put('/pdi/put/:id',tokenValidation, updatePDI);
-router.get('/pdi/getPendientes', obtenerPDIPendientes);
+router.get('/pdi/getPendientes',tokenValidation, obtenerPDIPendientes);
 
 // eventos
 router.get('/evento/get/',tokenValidation ,getEvento);
