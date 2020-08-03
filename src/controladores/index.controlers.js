@@ -31,8 +31,8 @@ const obtenerPDIPendientes = (req, res) => {
 
 const createPDI = (req, res) => {
     baja = false;
-    const { nombre, descripcion, categoria, calle, numero, provincia, localidad, telefono, horaApertura, horaCierre, precio, email, aprobado, diasAbierto } = req.body;
-    const respuesta = pool.query('INSERT INTO puntodeinteres (nombre, descripcion, categoria, calle, numero, provincia, localidad, telefono, horaApertura, horaCierre, precio, email, aprobado, baja, diasAbierto) VALUES ( $1, $2,$3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)', [nombre, descripcion, categoria, calle, numero, provincia, localidad, telefono, horaApertura, horaCierre, precio, email, aprobado, baja, diasAbierto])
+    const { nombre, descripcion, categoria, calle, numero, provincia, localidad, telefono, horaApertura, horaCierre, precio, email, aprobado, diasAbierto, lat, long} = req.body;
+    const respuesta = pool.query('INSERT INTO puntodeinteres (nombre, descripcion, categoria, calle, numero, provincia, localidad, telefono, horaApertura, horaCierre, precio, email, aprobado, baja, diasAbierto, lat, long) VALUES ( $1, $2,$3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17)', [nombre, descripcion, categoria, calle, numero, provincia, localidad, telefono, horaApertura, horaCierre, precio, email, aprobado, baja, diasAbierto, lat, long])
         .then(respuesta => console.log(respuesta))
         .then(res.json({
             message: 'Punto de interes agregado con exito',
@@ -58,8 +58,8 @@ const getPDIByID = (req, res) => {
 
 const updatePDI = (req, res) => {
     const id = req.params.id;
-    const { nombre, descripcion, categoria, calle, numero, provincia, localidad, telefono, horaApertura, horaCierre, precio, email, aprobado, diasAbierto } = req.body;
-    const respuesta = pool.query('UPDATE puntodeinteres SET nombre=$1, descripcion=$2, categoria=$3, calle=$4, telefono=$5, horaApertura=$6, horaCierre=$7, precio=$8, provincia=$9, localidad=$10, email=$11, numero=$12, aprobado=$14, diasAbierto = $15 WHERE id=$13', [nombre, descripcion, categoria, calle, telefono, horaApertura, horaCierre, precio, provincia, localidad, email, numero, id, aprobado, diasAbierto])
+    const { nombre, descripcion, categoria, calle, numero, provincia, localidad, telefono, horaApertura, horaCierre, precio, email, aprobado, diasAbierto, lat, long } = req.body;
+    const respuesta = pool.query('UPDATE puntodeinteres SET nombre=$1, descripcion=$2, categoria=$3, calle=$4, telefono=$5, horaApertura=$6, horaCierre=$7, precio=$8, provincia=$9, localidad=$10, email=$11, numero=$12, aprobado=$14, diasAbierto = $15, lat=$16, long=$17 WHERE id=$13', [nombre, descripcion, categoria, calle, telefono, horaApertura, horaCierre, precio, provincia, localidad, email, numero, id, aprobado, diasAbierto,lat, long])
         .then(respuesta => console.log(respuesta))
         .then(res.json(`Punto de interes ${id} actualizado con exito `));
 };
@@ -83,8 +83,8 @@ const obtenerEventosPendientes = (req, res) => {
 
 const createEvento = (req, res) => {
     baja = false;
-    const { nombre, descripcion, categoria, calle, numero, fechaInicio, fechaFin, horaApertura, horaCierre, provincia, localidad, email, precio, aprobado } = req.body;
-    const respuesta = pool.query('INSERT INTO eventos (nombre, descripcion, categoria, calle, numero, fechaInicio, fechaFin, horaApertura, horaCierre, provincia, localidad, email, precio, aprobado, baja) VALUES ( $1, $2,$3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)', [nombre, descripcion, categoria, calle, numero, fechaInicio, fechaFin, horaApertura, horaCierre, provincia, localidad, email, precio, aprobado, baja])
+    const { nombre, descripcion, categoria, calle, numero, fechaInicio, fechaFin, horaApertura, horaCierre, provincia, localidad, email, precio, aprobado,lat, long } = req.body;
+    const respuesta = pool.query('INSERT INTO eventos (nombre, descripcion, categoria, calle, numero, fechaInicio, fechaFin, horaApertura, horaCierre, provincia, localidad, email, precio, aprobado, lat, long, baja) VALUES ( $1, $2,$3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17)', [nombre, descripcion, categoria, calle, numero, fechaInicio, fechaFin, horaApertura, horaCierre, provincia, localidad, email, precio, aprobado,lat, long, baja])
         .then(respuesta => console.log(respuesta))
         .then(res.json({
             message: 'Evento agregado con exito',
@@ -104,8 +104,8 @@ const deleteEvento = (req, res) => {
 
 const updateEvento = (req, res) => {
     const id = req.params.id;
-    const { nombre, descripcion, categoria, calle, numero, provincia, localidad, fechainicio, fechafin, horaapertura, horacierre, email, precio, aprobado } = req.body;
-    const respuesta = pool.query('UPDATE eventos SET nombre=$1, descripcion=$2, categoria=$3, calle=$4, numero=$5 , provincia= $6, localidad=$7, fechainicio=$8, fechafin=$9, horaapertura=$10, horacierre=$11, email=$12, precio=$13, aprobado=$15  WHERE id=$14', [nombre, descripcion, categoria, calle, numero, provincia, localidad, fechainicio, fechafin, horaapertura, horacierre, email, precio, id, aprobado])
+    const { nombre, descripcion, categoria, calle, numero, provincia, localidad, fechainicio, fechafin, horaapertura, horacierre, email, precio, aprobado, lat, long } = req.body;
+    const respuesta = pool.query('UPDATE eventos SET nombre=$1, descripcion=$2, categoria=$3, calle=$4, numero=$5 , provincia= $6, localidad=$7, fechainicio=$8, fechafin=$9, horaapertura=$10, horacierre=$11, email=$12, precio=$13, aprobado=$15, lat=$16, long=$17  WHERE id=$14', [nombre, descripcion, categoria, calle, numero, provincia, localidad, fechainicio, fechafin, horaapertura, horacierre, email, precio, id, aprobado,lat, long])
         .then(respuesta => console.log(respuesta))
         .then(res.json(`Evento ${id} actualizado con exito `));
 };
@@ -122,9 +122,9 @@ const signup = (req, res) => {
                 const { username, password, email, privilegios } = req.body;
                 salt = bcrypt.genSalt(3, function (err, data) {
                     salt = data;
-                    console.log('data: ' + data);
-                    console.log('salt: ' + salt);
-                    console.log('tam:  ' + tam);
+                    //console.log('data: ' + data);
+                    //console.log('salt: ' + salt);
+                    //console.log('tam:  ' + tam);
                     bcrypt.hash(password, salt, function (err, data) {
                         if (data) {
                             passwordEncriptada = data;

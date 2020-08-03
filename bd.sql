@@ -16,7 +16,9 @@ create table puntoDeInteres(
     email text null,
     baja boolean, 
     aprobado boolean,
-    diasAbierto text[]
+    diasAbierto text[], 
+    lat text, 
+    long text
  );
 
 create table eventos(
@@ -35,7 +37,9 @@ create table eventos(
     precio numeric null,
     email text null,
     baja boolean, 
-    aprobado boolean
+    aprobado boolean,
+    lat text, 
+    long text
 );
 
 create table usuarios(
