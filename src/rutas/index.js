@@ -1,5 +1,6 @@
-const {Router} = require('express');
+const {Router, static} = require('express');
 const router = Router();
+
 
 const {
     getPDI, 
@@ -20,9 +21,12 @@ const {
     deleteCategoria,
     getSubcategoria,
     obtenerPDIPendientes,
-    obtenerEventosPendientes
-
+    obtenerEventosPendientes,
+    getImagenes,
+    postImagenes
 } =require('../controladores/index.controlers');
+
+
 
 const {tokenValidation} = require('../libs/verificarToken')
 
@@ -52,5 +56,10 @@ router.get('/subcategoria/get/', getSubcategoria);
 // autorización
 router.post('/auth/signin/', signin);
 router.post('/auth/signup/', signup);
+
+//imagenes
+router.get('/', getImagenes);
+
+router.post('/upload', postImagenes);
 
 module.exports= router;

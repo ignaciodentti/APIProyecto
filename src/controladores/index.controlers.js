@@ -3,6 +3,10 @@ const jwt = require('jsonwebtoken');
 const { request } = require('express');
 const bcrypt = require('bcryptjs');
 const { size, result } = require('underscore');
+const crypto = require("crypto");
+
+
+
 
 const pool = new Pool({
     host: 'localhost',
@@ -11,6 +15,8 @@ const pool = new Pool({
     database: 'viviconcepcion',
     port: '5432'
 });
+
+
 
 
 const getPDI = (_req, res) => {
@@ -116,21 +122,15 @@ const signup = (req, res) => {
     username = req.body.username;
     pool.query('SELECT * from usuarios WHERE username= $1', [username], (err, result) => {
         if (result.rows[0] == null) {
-            pool.query("SELECT id from usuarios where baja=false order by id desc", (err, result) => {
-                if (result.rows[0] == null) { tam = 1 }
-                else { tam = result.rows[0].id + 1 }
                 const { username, password, email, privilegios } = req.body;
                 salt = bcrypt.genSalt(3, function (err, data) {
                     salt = data;
-                    //console.log('data: ' + data);
-                    //console.log('salt: ' + salt);
-                    //console.log('tam:  ' + tam);
                     bcrypt.hash(password, salt, function (err, data) {
                         if (data) {
                             passwordEncriptada = data;
                             const respuesta = pool.query('INSERT INTO usuarios (username, email ,password , baja, privilegios) VALUES ($1, $2, $3, $4, $5)', [username, email, passwordEncriptada, baja, privilegios])
                                 .then(respuesta => console.log(respuesta))
-                                .then(token = jwt.sign(tam, process.env.SECRET_KEY || 'tokentest'/*, {expiresIn: 60*60}*/))
+                                .then(token = jwt.sign(crypto.randomBytes(8).toString("hex"), process.env.SECRET_KEY || 'tokentest'/*, {expiresIn: 60*60}*/))
                                 .then(res.header('auth-token', token).json({
                                     message: 'Usuario agregado con exito',
                                     body: {
@@ -141,7 +141,6 @@ const signup = (req, res) => {
                         }
                     })
                 })
-            });
         }
         else {res.status(500).json('Usuario existente')}
     })
@@ -156,11 +155,10 @@ const signin = (req, res) => {
             res.status(400).json('Username incorrecto')
         }
         else {
-            tam = result.rows[0].id;
             bcrypt.compare(req.body.password, result.rows[0].password, function (err, data) {
                 if (data) {
                     console.log('comparacion exitosa');
-                    token = jwt.sign(tam, process.env.SECRET_KEY || 'tokentest');
+                    token = jwt.sign(crypto.randomBytes(8).toString("hex"), process.env.SECRET_KEY || 'tokentest');
                     res.header('auth-token', token);
                     res.status(200).header('Access-Control-Expose-Headers', 'auth-token').json(result.rows[0].privilegios);
                 }
@@ -203,6 +201,15 @@ const getSubcategoria = (req, res) => {
         .then(respuesta => res.status(200).json(respuesta.rows));
 }
 
+const getImagenes = (req,res) => {
+    res.render('index');
+}
+
+const postImagenes = (req,res) => {
+    console.log(req.file);
+    res.send('subido');
+}
+
 module.exports = {
     getPDI,
     obtenerPDIPorCategoria,
@@ -222,5 +229,7 @@ module.exports = {
     deleteCategoria,
     getSubcategoria,
     obtenerEventosPendientes,
-    obtenerPDIPendientes
+    obtenerPDIPendientes, 
+    getImagenes, 
+    postImagenes
 }
