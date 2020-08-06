@@ -1,12 +1,12 @@
 const { Pool } = require('pg');
 const jwt = require('jsonwebtoken');
-const { request } = require('express');
+const { } = require('express');
 const bcrypt = require('bcryptjs');
-const { size, result } = require('underscore');
 const crypto = require("crypto");
-
-
-
+const multer = require("multer");
+const path = require ('path');
+const { token } = require('morgan');
+//const { size, result } = require('underscore');
 
 const pool = new Pool({
     host: 'localhost',
@@ -16,8 +16,25 @@ const pool = new Pool({
     port: '5432'
 });
 
+//asigna a la imagen que guarda el nombre original
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {cb(null, './src/imagenes')},
+    filename: (req, file, cb) => {
+        cb(null, crypto.randomBytes(16).toString("hex")+ path.extname(file.originalname).toLocaleLowerCase());
+    }
+});
 
-
+const upload= multer({
+    storage: storage,
+    dest: './imagenes',
+    fileFilter: (req,file, cb) => {
+        const filetypes = /jpeg|jpg|png|gif/;
+        const minetype = filetypes.test(file.mimetype);
+        const extname = filetypes.test(path.extname(file.originalname));
+        if (minetype && extname) { return cb(null,true);}
+        cb("Error: Archivo debe ser una imagen valida"); 
+    }
+ }) 
 
 const getPDI = (_req, res) => {
     const respuesta = pool.query('SELECT * FROM puntodeinteres WHERE baja=false AND aprobado=true')
@@ -157,9 +174,11 @@ const signin = (req, res) => {
         else {
             bcrypt.compare(req.body.password, result.rows[0].password, function (err, data) {
                 if (data) {
-                    console.log('comparacion exitosa');
-                    token = jwt.sign(crypto.randomBytes(8).toString("hex"), process.env.SECRET_KEY || 'tokentest');
-                    res.header('auth-token', token);
+                   
+                    const payload = {check: true}
+                    token2 = jwt.sign(crypto.randomBytes(8).toString("hex"), process.env.SECRET_KEY || 'tokentest');
+                    console.log('Usuario logueado: ' + req.body.username + ' con el token: ' + token2);
+                    res.header('auth-token', token2);
                     res.status(200).header('Access-Control-Expose-Headers', 'auth-token').json(result.rows[0].privilegios);
                 }
                 else { res.status(400).json('Contraseña incorrecta') };
@@ -201,14 +220,14 @@ const getSubcategoria = (req, res) => {
         .then(respuesta => res.status(200).json(respuesta.rows));
 }
 
-const getImagenes = (req,res) => {
-    res.render('index');
+ const getImagenes = (req,res) => {
+    return res.send('Este es el home');
 }
 
 const postImagenes = (req,res) => {
-    console.log(req.file);
-    res.send('subido');
-}
+    console.log(`${req.hostname} \ ${req.file.path}`)
+    return res.send(req.file);
+} 
 
 module.exports = {
     getPDI,
@@ -231,5 +250,6 @@ module.exports = {
     obtenerEventosPendientes,
     obtenerPDIPendientes, 
     getImagenes, 
-    postImagenes
+    postImagenes, 
+    upload
 }

@@ -1,5 +1,6 @@
-const {Router, static} = require('express');
+const {Router} = require('express');
 const router = Router();
+
 
 
 const {
@@ -21,14 +22,15 @@ const {
     deleteCategoria,
     getSubcategoria,
     obtenerPDIPendientes,
-    obtenerEventosPendientes,
-    getImagenes,
-    postImagenes
+    obtenerEventosPendientes, 
+    getImagenes, 
+    postImagenes, 
+    upload
 } =require('../controladores/index.controlers');
 
-
-
 const {tokenValidation} = require('../libs/verificarToken')
+
+
 
 // puntos de interés
 router.get('/pdi/get/', tokenValidation, getPDI);
@@ -58,8 +60,7 @@ router.post('/auth/signin/', signin);
 router.post('/auth/signup/', signup);
 
 //imagenes
-router.get('/', getImagenes);
-
-router.post('/upload', postImagenes);
+router.get('/imagenes/get', getImagenes);
+router.post('/imagenes/post', upload.single('file') ,postImagenes);
 
 module.exports= router;
