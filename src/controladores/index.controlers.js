@@ -11,7 +11,7 @@ const { token } = require('morgan');
 const pool = new Pool({
     host: 'localhost',
     user: 'postgres',
-    password: 'nadia1998',
+    password: 'postgre',
     database: 'viviconcepcion',
     port: '5432'
 });
@@ -29,8 +29,8 @@ const upload= multer({
     dest: './imagenes',
     fileFilter: (req,file, cb) => {
         const filetypes = /jpeg|jpg|png|gif/;
-        const minetype = filetypes.test(file.mimetype);
-        const extname = filetypes.test(path.extname(file.originalname));
+        const minetype = filetypes.test((file.mimetype).toLowerCase());
+        const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
         if (minetype && extname) { return cb(null,true);}
         cb("Error: Archivo debe ser una imagen valida"); 
     }
@@ -225,7 +225,9 @@ const getSubcategoria = (req, res) => {
 }
 
 const postImagenes = (req,res) => {
-    console.log(`${req.hostname} \ ${req.file.path}`)
+    console.log(req.body);
+    console.log(req.file);
+    console.log(req.body.body);
     return res.send(req.file);
 } 
 
