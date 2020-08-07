@@ -8,6 +8,11 @@ const path = require ('path');
 const { token } = require('morgan');
 //const { size, result } = require('underscore');
 
+//ésta es la ruta de la carpeta en donde se guardan las imágenes (ruta relativa desde ésta carpeta).
+const folderImagen = './src/imagenes'
+
+ 
+
 const pool = new Pool({
     host: 'localhost',
     user: 'postgres',
@@ -15,26 +20,6 @@ const pool = new Pool({
     database: 'viviconcepcion',
     port: '5432'
 });
-
-//asigna a la imagen que guarda el nombre original
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {cb(null, './src/imagenes')},
-    filename: (req, file, cb) => {
-        cb(null, crypto.randomBytes(16).toString("hex")+ path.extname(file.originalname).toLocaleLowerCase());
-    }
-});
-
-const upload= multer({
-    storage: storage,
-    dest: './imagenes',
-    fileFilter: (req,file, cb) => {
-        const filetypes = /jpeg|jpg|png|gif/;
-        const minetype = filetypes.test((file.mimetype).toLowerCase());
-        const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
-        if (minetype && extname) { return cb(null,true);}
-        cb("Error: Archivo debe ser una imagen valida"); 
-    }
- }) 
 
 const getPDI = (_req, res) => {
     const respuesta = pool.query('SELECT * FROM puntodeinteres WHERE baja=false AND aprobado=true')
@@ -225,11 +210,33 @@ const getSubcategoria = (req, res) => {
 }
 
 const postImagenes = (req,res) => {
-    console.log(req.body);
-    console.log(req.file);
-    console.log(req.body.body);
+    console.log('PostImagenes');
     return res.send(req.file);
 } 
+
+//asigna a la imagen que guarda el nombre original
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {cb(null, folderImagen)}, 
+    filename: (req, file, cb) => {
+        const nombre = req.header('nombre');
+        console.log('EL NOMBRE DE IMAGEN ES: '+nombre);
+        cb(null, /*crypto.randomBytes(16).toString("hex")*/nombre+ path.extname(file.originalname).toLocaleLowerCase());
+        console.log('storage');
+    }
+});
+
+const upload= multer({
+    storage: storage,
+    dest: './imagenes',
+    fileFilter: (req,file, cb) => {
+        console.log('upload');
+        const filetypes = /jpeg|jpg|png|gif/;
+        const minetype = filetypes.test((file.mimetype).toLowerCase());
+        const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
+        if (minetype && extname) { return cb(null,true);}
+        cb("Error: Archivo debe ser una imagen valida"); 
+    }
+ }) 
 
 module.exports = {
     getPDI,
