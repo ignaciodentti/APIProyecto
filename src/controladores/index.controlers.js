@@ -16,7 +16,7 @@ const folderImagen = './src/imagenes/'
 const pool = new Pool({
     host: 'localhost',
     user: 'postgres',
-    password: 'postgre',
+    password: 'nadia1998',
     database: 'viviconcepcion',
     port: '5432'
 });
@@ -28,7 +28,7 @@ const getPDI = (_req, res) => {
 
 const obtenerPDIPorCategoria = (req, res) => {
     const categoriabuscar = req.params.category;
-    const respuesta = pool.query('SELECT puntodeinteres.nombre, puntodeinteres.descripcion, puntodeinteres.categoria, puntodeinteres.calle, puntodeinteres.numero, puntodeinteres.provincia, puntodeinteres.localidad, puntodeinteres.telefono, puntodeinteres.horaApertura, puntodeinteres.horaCierre, puntodeinteres.precio, puntodeinteres.email, puntodeinteres.diasAbierto, puntodeinteres.baja FROM categorias INNER JOIN puntodeinteres ON puntodeinteres.categoria = categorias.nombre WHERE puntodeinteres.baja = false AND puntodeinteres.aprobado=true AND categorias.padre LIKE $1 UNION SELECT puntodeinteres.nombre, puntodeinteres.descripcion, puntodeinteres.categoria, puntodeinteres.calle, puntodeinteres.numero, puntodeinteres.provincia, puntodeinteres.localidad, puntodeinteres.telefono, puntodeinteres.horaApertura, puntodeinteres.horaCierre, puntodeinteres.precio, puntodeinteres.email, puntodeinteres.diasAbierto, puntodeinteres.baja FROM categorias INNER JOIN puntodeinteres ON puntodeinteres.categoria = categorias.nombre WHERE puntodeinteres.baja = false AND puntodeinteres.aprobado=true AND puntodeinteres.categoria LIKE $1 AND categorias.nombre LIKE $1', [categoriabuscar])
+    const respuesta = pool.query('SELECT puntodeinteres.nombre, puntodeinteres.descripcion, puntodeinteres.categoria, puntodeinteres.calle, puntodeinteres.numero, puntodeinteres.provincia, puntodeinteres.localidad, puntodeinteres.telefono, puntodeinteres.horaApertura, puntodeinteres.horaCierre, puntodeinteres.precio, puntodeinteres.email, puntodeinteres.diasAbierto, puntodeinteres.baja FROM categorias INNER JOIN puntodeinteres ON puntodeinteres.categoria = categorias.nombre WHERE puntodeinteres.baja = false AND puntodeinteres.aprobado=true AND categorias.padre LIKE $1 UNION SELECT puntodeinteres.nombre, puntodeinteres.descripcion, puntodeinteres.categoria, puntodeinteres.calle, puntodeinteres.numero, puntodeinteres.provincia, puntodeinteres.localidad, puntodeinteres.telefono, puntodeinteres.precio, puntodeinteres.email, puntodeinteres.diasAbierto, puntodeinteres.baja FROM categorias INNER JOIN puntodeinteres ON puntodeinteres.categoria = categorias.nombre WHERE puntodeinteres.baja = false AND puntodeinteres.aprobado=true AND puntodeinteres.categoria LIKE $1 AND categorias.nombre LIKE $1', [categoriabuscar])
         .then(respuesta => res.status(200).json(respuesta.rows));
 }
 
@@ -39,7 +39,7 @@ const obtenerPDIPendientes = (req, res) => {
 
 const createPDI = (req, res) => {
     baja = false;
-    const { nombre, descripcion, categoria, calle, numero, provincia, localidad, telefono, horaapertura, horacierre, precio, email, aprobado, diasAbierto, lat, long, imagenes } = req.body;
+    const { nombre, descripcion, categoria, calle, numero, provincia, localidad, telefono, precio, email, aprobado, diasAbierto, lat, long, imagenes } = req.body;
 
     rutasImg = new Array(imagenes.length);
     console.log(imagenes.length);
@@ -48,13 +48,10 @@ const createPDI = (req, res) => {
         rutasImg[index] = folderImagen + nombre + index +'.'+ ext;
     }
 
-    const respuesta = pool.query('INSERT INTO puntodeinteres (nombre, descripcion, categoria, calle, numero, provincia, localidad, telefono, horaapertura, horacierre, precio, email, aprobado, baja, diasAbierto, imagenes, lat, long) VALUES ( $1, $2,$3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18)', [nombre, descripcion, categoria, calle, numero, provincia, localidad, telefono, horaapertura, horacierre, precio, email, aprobado, baja, diasAbierto, rutasImg, lat, long])
+    const respuesta = pool.query('INSERT INTO puntodeinteres (nombre, descripcion, categoria, calle, numero, provincia, localidad, telefono, precio, email, aprobado, baja, diasAbierto, imagenes, lat, long) VALUES ( $1, $2,$3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16)', [nombre, descripcion, categoria, calle, numero, provincia, localidad, telefono, precio, email, aprobado, baja, diasAbierto, rutasImg, lat, long])
         .then(respuesta => console.log(respuesta))
         .then(res.json({
-            message: 'Punto de interes agregado con exito',
-            body: {
-                puntodeinteres: { nombre, descripcion, categoria, calle, numero, provincia, localidad, telefono, horaapertura, horacierre, precio, email, aprobado }
-            }
+            message: 'Punto de interes agregado con exito'
         }))
 };
 
@@ -78,8 +75,8 @@ const getPDIByID = (req, res) => {
 
 const updatePDI = (req, res) => {
     const id = req.params.id;
-    const { nombre, descripcion, categoria, calle, numero, provincia, localidad, telefono, horaapertura, horacierre, precio, email, aprobado, diasAbierto, lat, long } = req.body;
-    const respuesta = pool.query('UPDATE puntodeinteres SET nombre=$1, descripcion=$2, categoria=$3, calle=$4, telefono=$5, horaapertura=$6, horacierre=$7, precio=$8, provincia=$9, localidad=$10, email=$11, numero=$12, aprobado=$14, diasAbierto = $15, lat=$16, long=$17 WHERE id=$13', [nombre, descripcion, categoria, calle, telefono, horaapertura, horacierre, precio, provincia, localidad, email, numero, id, aprobado, diasAbierto, lat, long])
+    const { nombre, descripcion, categoria, calle, numero, provincia, localidad, telefono, precio, email, aprobado, diasAbierto, lat, long } = req.body;
+    const respuesta = pool.query('UPDATE puntodeinteres SET nombre=$1, descripcion=$2, categoria=$3, calle=$4, numero=$5, provincia=$6, localidad=$7, telefono=$8, precio=$9, email=$10, aprobado=$11, diasAbierto=$12, lat=$13, long=$14 WHERE id =$15', [ nombre, descripcion, categoria, calle, numero, provincia, localidad, telefono, precio, email, aprobado, diasAbierto, lat, long, id])
         .then(respuesta => console.log(respuesta))
         .then(res.json(`Punto de interes ${id} actualizado con exito `));
 };

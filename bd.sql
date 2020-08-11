@@ -10,15 +10,14 @@ create table puntoDeInteres(
     provincia text, 
     localidad text, 
     telefono text NULL,
-    horaapertura text NULL,
-    horacierre text NULL,
     precio numeric null,
     email text null,
     baja boolean, 
     aprobado boolean,
-    diasAbierto text[], 
+    diasAbierto text[] NULL, 
     lat text, 
-    long text
+    long text, 
+    imagenes text[]
  );
 
 create table eventos(
