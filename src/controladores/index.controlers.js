@@ -4,14 +4,14 @@ const { } = require('express');
 const bcrypt = require('bcryptjs');
 const crypto = require("crypto");
 const multer = require("multer");
-const path = require ('path');
+const path = require('path');
 const { token } = require('morgan');
 //const { size, result } = require('underscore');
 
 //ésta es la ruta de la carpeta en donde se guardan las imágenes (ruta relativa desde ésta carpeta).
-const folderImagen = './src/imagenes'
+const folderImagen = './src/imagenes/'
 
- 
+
 
 const pool = new Pool({
     host: 'localhost',
@@ -39,8 +39,16 @@ const obtenerPDIPendientes = (req, res) => {
 
 const createPDI = (req, res) => {
     baja = false;
-    const { nombre, descripcion, categoria, calle, numero, provincia, localidad, telefono, horaapertura, horacierre, precio, email, aprobado, diasAbierto, lat, long} = req.body;
-    const respuesta = pool.query('INSERT INTO puntodeinteres (nombre, descripcion, categoria, calle, numero, provincia, localidad, telefono, horaapertura, horacierre, precio, email, aprobado, baja, diasAbierto, lat, long) VALUES ( $1, $2,$3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17)', [nombre, descripcion, categoria, calle, numero, provincia, localidad, telefono, horaapertura, horacierre, precio, email, aprobado, baja, diasAbierto, lat, long])
+    const { nombre, descripcion, categoria, calle, numero, provincia, localidad, telefono, horaapertura, horacierre, precio, email, aprobado, diasAbierto, lat, long, imagenes } = req.body;
+
+    rutasImg = new Array(imagenes.length);
+    console.log(imagenes.length);
+    for (let index = 0; index < imagenes.length; index++) {
+        ext = getFileExtension3(imagenes[index]);
+        rutasImg[index] = folderImagen + nombre + index +'.'+ ext;
+    }
+
+    const respuesta = pool.query('INSERT INTO puntodeinteres (nombre, descripcion, categoria, calle, numero, provincia, localidad, telefono, horaapertura, horacierre, precio, email, aprobado, baja, diasAbierto, imagenes, lat, long) VALUES ( $1, $2,$3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18)', [nombre, descripcion, categoria, calle, numero, provincia, localidad, telefono, horaapertura, horacierre, precio, email, aprobado, baja, diasAbierto, rutasImg, lat, long])
         .then(respuesta => console.log(respuesta))
         .then(res.json({
             message: 'Punto de interes agregado con exito',
@@ -49,6 +57,10 @@ const createPDI = (req, res) => {
             }
         }))
 };
+
+function getFileExtension3(filename) {
+    return filename.slice((filename.lastIndexOf(".") - 1 >>> 0) + 2);
+}
 
 const deletePDI = (req, res) => {
     const id = req.params.id
@@ -67,7 +79,7 @@ const getPDIByID = (req, res) => {
 const updatePDI = (req, res) => {
     const id = req.params.id;
     const { nombre, descripcion, categoria, calle, numero, provincia, localidad, telefono, horaapertura, horacierre, precio, email, aprobado, diasAbierto, lat, long } = req.body;
-    const respuesta = pool.query('UPDATE puntodeinteres SET nombre=$1, descripcion=$2, categoria=$3, calle=$4, telefono=$5, horaapertura=$6, horacierre=$7, precio=$8, provincia=$9, localidad=$10, email=$11, numero=$12, aprobado=$14, diasAbierto = $15, lat=$16, long=$17 WHERE id=$13', [nombre, descripcion, categoria, calle, telefono, horaapertura, horacierre, precio, provincia, localidad, email, numero, id, aprobado, diasAbierto,lat, long])
+    const respuesta = pool.query('UPDATE puntodeinteres SET nombre=$1, descripcion=$2, categoria=$3, calle=$4, telefono=$5, horaapertura=$6, horacierre=$7, precio=$8, provincia=$9, localidad=$10, email=$11, numero=$12, aprobado=$14, diasAbierto = $15, lat=$16, long=$17 WHERE id=$13', [nombre, descripcion, categoria, calle, telefono, horaapertura, horacierre, precio, provincia, localidad, email, numero, id, aprobado, diasAbierto, lat, long])
         .then(respuesta => console.log(respuesta))
         .then(res.json(`Punto de interes ${id} actualizado con exito `));
 };
@@ -91,8 +103,8 @@ const obtenerEventosPendientes = (req, res) => {
 
 const createEvento = (req, res) => {
     baja = false;
-    const { nombre, descripcion, categoria, calle, numero, fechainicio, fechafin, horaapertura, horacierre, provincia, localidad, email, precio, aprobado,lat, long } = req.body;
-    const respuesta = pool.query('INSERT INTO eventos (nombre, descripcion, categoria, calle, numero, fechainicio, fechafin, horaapertura, horacierre, provincia, localidad, email, precio, aprobado, lat, long, baja) VALUES ( $1, $2,$3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17)', [nombre, descripcion, categoria, calle, numero, fechainicio, fechafin, horaapertura, horacierre, provincia, localidad, email, precio, aprobado,lat, long, baja])
+    const { nombre, descripcion, categoria, calle, numero, fechainicio, fechafin, horaapertura, horacierre, provincia, localidad, email, precio, aprobado, lat, long } = req.body;
+    const respuesta = pool.query('INSERT INTO eventos (nombre, descripcion, categoria, calle, numero, fechainicio, fechafin, horaapertura, horacierre, provincia, localidad, email, precio, aprobado, lat, long, baja) VALUES ( $1, $2,$3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17)', [nombre, descripcion, categoria, calle, numero, fechainicio, fechafin, horaapertura, horacierre, provincia, localidad, email, precio, aprobado, lat, long, baja])
         .then(respuesta => console.log(respuesta))
         .then(res.json({
             message: 'Evento agregado con exito',
@@ -113,7 +125,7 @@ const deleteEvento = (req, res) => {
 const updateEvento = (req, res) => {
     const id = req.params.id;
     const { nombre, descripcion, categoria, calle, numero, provincia, localidad, fechainicio, fechafin, horaapertura, horacierre, email, precio, aprobado, lat, long } = req.body;
-    const respuesta = pool.query('UPDATE eventos SET nombre=$1, descripcion=$2, categoria=$3, calle=$4, numero=$5 , provincia= $6, localidad=$7, fechainicio=$8, fechafin=$9, horaapertura=$10, horacierre=$11, email=$12, precio=$13, aprobado=$15, lat=$16, long=$17  WHERE id=$14', [nombre, descripcion, categoria, calle, numero, provincia, localidad, fechainicio, fechafin, horaapertura, horacierre, email, precio, id, aprobado,lat, long])
+    const respuesta = pool.query('UPDATE eventos SET nombre=$1, descripcion=$2, categoria=$3, calle=$4, numero=$5 , provincia= $6, localidad=$7, fechainicio=$8, fechafin=$9, horaapertura=$10, horacierre=$11, email=$12, precio=$13, aprobado=$15, lat=$16, long=$17  WHERE id=$14', [nombre, descripcion, categoria, calle, numero, provincia, localidad, fechainicio, fechafin, horaapertura, horacierre, email, precio, id, aprobado, lat, long])
         .then(respuesta => console.log(respuesta))
         .then(res.json(`Evento ${id} actualizado con exito `));
 };
@@ -124,29 +136,29 @@ const signup = (req, res) => {
     username = req.body.username;
     pool.query('SELECT * from usuarios WHERE username= $1', [username], (err, result) => {
         if (result.rows[0] == null) {
-                const { username, password, email, privilegios } = req.body;
-                salt = bcrypt.genSalt(3, function (err, data) {
-                    salt = data;
-                    bcrypt.hash(password, salt, function (err, data) {
-                        if (data) {
-                            passwordEncriptada = data;
-                            const respuesta = pool.query('INSERT INTO usuarios (username, email ,password , baja, privilegios) VALUES ($1, $2, $3, $4, $5)', [username, email, passwordEncriptada, baja, privilegios])
-                                .then(respuesta => console.log(respuesta))
-                                .then(token = jwt.sign(crypto.randomBytes(8).toString("hex"), process.env.SECRET_KEY || 'tokentest'/*, {expiresIn: 60*60}*/))
-                                .then(res.header('auth-token', token).json({
-                                    message: 'Usuario agregado con exito',
-                                    body: {
-                                        usuario: { username, email, passwordEncriptada, salt }
-                                    }
-                                })
-                                )
-                        }
-                    })
+            const { username, password, email, privilegios } = req.body;
+            salt = bcrypt.genSalt(3, function (err, data) {
+                salt = data;
+                bcrypt.hash(password, salt, function (err, data) {
+                    if (data) {
+                        passwordEncriptada = data;
+                        const respuesta = pool.query('INSERT INTO usuarios (username, email ,password , baja, privilegios) VALUES ($1, $2, $3, $4, $5)', [username, email, passwordEncriptada, baja, privilegios])
+                            .then(respuesta => console.log(respuesta))
+                            .then(token = jwt.sign(crypto.randomBytes(8).toString("hex"), process.env.SECRET_KEY || 'tokentest'/*, {expiresIn: 60*60}*/))
+                            .then(res.header('auth-token', token).json({
+                                message: 'Usuario agregado con exito',
+                                body: {
+                                    usuario: { username, email, passwordEncriptada, salt }
+                                }
+                            })
+                            )
+                    }
                 })
+            })
         }
-        else {res.status(500).json('Usuario existente')}
+        else { res.status(500).json('Usuario existente') }
     })
-    
+
 };
 
 
@@ -159,8 +171,8 @@ const signin = (req, res) => {
         else {
             bcrypt.compare(req.body.password, result.rows[0].password, function (err, data) {
                 if (data) {
-                   
-                    const payload = {check: true}
+
+                    const payload = { check: true }
                     token2 = jwt.sign(crypto.randomBytes(8).toString("hex"), process.env.SECRET_KEY || 'tokentest');
                     console.log('Usuario logueado: ' + req.body.username + ' con el token: ' + token2);
                     res.header('auth-token', token2);
@@ -205,38 +217,52 @@ const getSubcategoria = (req, res) => {
         .then(respuesta => res.status(200).json(respuesta.rows));
 }
 
- const getImagenes = (req,res) => {
-    return res.send('Este es el home');
+const getImagenes = (req, res) => {
+    const nombrePDI = req.params.nombre;
+    console.log(nombrePDI);
+    const respuesta = pool.query('SELECT imagenes FROM puntodeinteres WHERE puntodeinteres.nombre = $1 AND baja = false', [nombrePDI])
+        .then((respuesta) => {
+            console.log('RESPUESTA: ')
+            console.log(respuesta.rows);
+            for (let index = 0; index < respuesta.rows.length; index++) {
+                console.log('RESPUESTA.ROWS INDEX');
+                console.log(respuesta.rows[index].imagenes[index]);
+                res.sendFile(respuesta.rows[index].imagenes[index], { root: './' });
+            }
+        })
+
 }
 
-const postImagenes = (req,res) => {
+const postImagenes = (req, res) => {
     console.log('PostImagenes');
     return res.send(req.file);
-} 
+}
 
 //asigna a la imagen que guarda el nombre original
 const storage = multer.diskStorage({
-    destination: (req, file, cb) => {cb(null, folderImagen)}, 
+    destination: (req, file, cb) => { cb(null, folderImagen) },
     filename: (req, file, cb) => {
         const nombre = req.header('nombre');
-        console.log('EL NOMBRE DE IMAGEN ES: '+nombre);
-        cb(null, /*crypto.randomBytes(16).toString("hex")*/nombre+ path.extname(file.originalname).toLocaleLowerCase());
+        const ext = req.header('extension');
+        img = nombre + path.extname(file.originalname).toLocaleLowerCase();
+        console.log('EL NOMBRE DE IMAGEN ES: ' + nombre);
+        cb(null, img);
         console.log('storage');
     }
 });
 
-const upload= multer({
+const upload = multer({
     storage: storage,
     dest: './imagenes',
-    fileFilter: (req,file, cb) => {
+    fileFilter: (req, file, cb) => {
         console.log('upload');
         const filetypes = /jpeg|jpg|png|gif/;
         const minetype = filetypes.test((file.mimetype).toLowerCase());
         const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
-        if (minetype && extname) { return cb(null,true);}
-        cb("Error: Archivo debe ser una imagen valida"); 
+        if (minetype && extname) { return cb(null, true); }
+        cb("Error: Archivo debe ser una imagen valida");
     }
- }) 
+})
 
 module.exports = {
     getPDI,
@@ -257,8 +283,8 @@ module.exports = {
     deleteCategoria,
     getSubcategoria,
     obtenerEventosPendientes,
-    obtenerPDIPendientes, 
-    getImagenes, 
-    postImagenes, 
+    obtenerPDIPendientes,
+    getImagenes,
+    postImagenes,
     upload
 }

@@ -60,7 +60,7 @@ router.post('/auth/signin/', signin);
 router.post('/auth/signup/', signup);
 
 //imagenes
-router.get('/imagenes/get', getImagenes);
+router.get('/imagenes/get/:nombre', getImagenes);
 router.post('/imagenes/post', upload.single('file') ,postImagenes);
 
 module.exports= router;
