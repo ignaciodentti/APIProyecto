@@ -23,9 +23,11 @@ const {
     getSubcategoria,
     obtenerPDIPendientes,
     obtenerEventosPendientes, 
-    getImagenes, 
+    getImagenesPDI,
+    getImagenesEvento, 
     postImagenes, 
-    upload
+    uploadIMGEvento,
+    uploadIMGPDI
 } =require('../controladores/index.controlers');
 
 const {tokenValidation} = require('../libs/verificarToken')
@@ -60,7 +62,9 @@ router.post('/auth/signin/', signin);
 router.post('/auth/signup/', signup);
 
 //imagenes
-router.get('/imagenes/get/:nombre', getImagenes);
-router.post('/imagenes/post', upload.single('file') ,postImagenes);
+router.get('/pdi/imagenes/get/:nombre', getImagenesPDI);
+router.get('/evento/imagenes/get/:nombre', getImagenesEvento)
+router.post('/pdi/imagenes/post', uploadIMGPDI.single('file') ,postImagenes);
+router.post('/evento/imagenes/post', uploadIMGEvento.single('file'), postImagenes);
 
 module.exports= router;
