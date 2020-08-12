@@ -10,13 +10,15 @@ const { } = require('morgan');
 
 //ésta es la ruta de la carpeta en donde se guardan las imágenes (ruta relativa desde ésta carpeta).
 const folderImagen = './src/imagenes/'
+const folderImagenPDI = './src/imagenes/PDI/'
+const folderImagenEvento = './src/imagenes/evento/'
 
 
 
 const pool = new Pool({
     host: 'localhost',
     user: 'postgres',
-    password: 'nadia1998',
+    password: 'postgre',
     database: 'viviconcepcion',
     port: '5432'
 });
@@ -45,7 +47,7 @@ const createPDI = (req, res) => {
     console.log(imagenes.length);
     for (let index = 0; index < imagenes.length; index++) {
         ext = getFileExtension3(imagenes[index]);
-        rutasImg[index] = folderImagen + nombre + index +'.'+ ext;
+        rutasImg[index] = folderImagenPDI + nombre + index +'.'+ ext;
     }
 
     const respuesta = pool.query('INSERT INTO puntodeinteres (nombre, descripcion, categoria, calle, numero, provincia, localidad, telefono, precio, email, aprobado, baja, diasAbierto, imagenes, lat, long) VALUES ( $1, $2,$3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16)', [nombre, descripcion, categoria, calle, numero, provincia, localidad, telefono, precio, email, aprobado, baja, diasAbierto, rutasImg, lat, long])
@@ -100,8 +102,16 @@ const obtenerEventosPendientes = (req, res) => {
 
 const createEvento = (req, res) => {
     baja = false;
-    const { nombre, descripcion, categoria, calle, numero, fechainicio, fechafin, horaapertura, horacierre, provincia, localidad, email, precio, aprobado, lat, long } = req.body;
-    const respuesta = pool.query('INSERT INTO eventos (nombre, descripcion, categoria, calle, numero, fechainicio, fechafin, horaapertura, horacierre, provincia, localidad, email, precio, aprobado, lat, long, baja) VALUES ( $1, $2,$3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17)', [nombre, descripcion, categoria, calle, numero, fechainicio, fechafin, horaapertura, horacierre, provincia, localidad, email, precio, aprobado, lat, long, baja])
+    const { nombre, descripcion, categoria, calle, numero, fechainicio, fechafin, horaapertura, horacierre, provincia, localidad, email, precio, aprobado, lat, long, imagenes } = req.body;
+
+    rutasImg = new Array(imagenes.length);
+    console.log(imagenes.length);
+    for (let index = 0; index < imagenes.length; index++) {
+        ext = getFileExtension3(imagenes[index]);
+        rutasImg[index] = folderImagenEvento + nombre + index +'.'+ ext;
+    }
+
+    const respuesta = pool.query('INSERT INTO eventos (nombre, descripcion, categoria, calle, numero, fechainicio, fechafin, horaapertura, horacierre, provincia, localidad, email, precio, aprobado, lat, long, baja, imagenes) VALUES ( $1, $2,$3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18)', [nombre, descripcion, categoria, calle, numero, fechainicio, fechafin, horaapertura, horacierre, provincia, localidad, email, precio, aprobado, lat, long, baja, rutasImg])
         .then(respuesta => console.log(respuesta))
         .then(res.json({
             message: 'Evento agregado con exito',
@@ -214,10 +224,26 @@ const getSubcategoria = (req, res) => {
         .then(respuesta => res.status(200).json(respuesta.rows));
 }
 
-const getImagenes = (req, res) => {
+const getImagenesPDI = (req, res) => {
     const nombrePDI = req.params.nombre;
     console.log(nombrePDI);
     const respuesta = pool.query('SELECT imagenes FROM puntodeinteres WHERE puntodeinteres.nombre = $1 AND baja = false', [nombrePDI])
+        .then((respuesta) => {
+            console.log('RESPUESTA: ')
+            console.log(respuesta.rows);
+            for (let index = 0; index < respuesta.rows.length; index++) {
+                console.log('RESPUESTA.ROWS INDEX');
+                console.log(respuesta.rows[index].imagenes[index]);
+                res.sendFile(respuesta.rows[index].imagenes[index], { root: './' });
+            }
+        })
+
+}
+
+const getImagenesEvento = (req, res) => {
+    const nombreEvento = req.params.nombre;
+    console.log(nombreEvento);
+    const respuesta = pool.query('SELECT imagenes FROM eventos WHERE eventos.nombre = $1 AND baja = false', [nombreEvento])
         .then((respuesta) => {
             console.log('RESPUESTA: ')
             console.log(respuesta.rows);
@@ -236,8 +262,8 @@ const postImagenes = (req, res) => {
 }
 
 //asigna a la imagen que guarda el nombre original
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => { cb(null, folderImagen) },
+const storagePDI = multer.diskStorage({
+    destination: (req, file, cb) => { cb(null, folderImagenPDI) },
     filename: (req, file, cb) => {
         const nombre = req.header('nombre');
         const ext = req.header('extension');
@@ -248,8 +274,33 @@ const storage = multer.diskStorage({
     }
 });
 
-const upload = multer({
-    storage: storage,
+const storageEvento = multer.diskStorage({
+    destination: (req, file, cb) => { cb(null, folderImagenEvento) },
+    filename: (req, file, cb) => {
+        const nombre = req.header('nombre');
+        const ext = req.header('extension');
+        img = nombre + path.extname(file.originalname).toLocaleLowerCase();
+        console.log('EL NOMBRE DE IMAGEN ES: ' + nombre);
+        cb(null, img);
+        console.log('storage');
+    }
+});
+
+const uploadIMGPDI = multer({
+    storage: storagePDI,
+    dest: './imagenes',
+    fileFilter: (req, file, cb) => {
+        console.log('upload');
+        const filetypes = /jpeg|jpg|png|gif/;
+        const minetype = filetypes.test((file.mimetype).toLowerCase());
+        const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
+        if (minetype && extname) { return cb(null, true); }
+        cb("Error: Archivo debe ser una imagen valida");
+    }
+})
+
+const uploadIMGEvento = multer({
+    storage: storageEvento,
     dest: './imagenes',
     fileFilter: (req, file, cb) => {
         console.log('upload');
@@ -281,7 +332,9 @@ module.exports = {
     getSubcategoria,
     obtenerEventosPendientes,
     obtenerPDIPendientes,
-    getImagenes,
+    getImagenesPDI,
+    getImagenesEvento,
     postImagenes,
-    upload
+    uploadIMGEvento,
+    uploadIMGPDI
 }
