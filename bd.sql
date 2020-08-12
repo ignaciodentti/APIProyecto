@@ -38,7 +38,8 @@ create table eventos(
     baja boolean, 
     aprobado boolean,
     lat text, 
-    long text
+    long text,
+    imagenes text[]
 );
 
 create table usuarios(
