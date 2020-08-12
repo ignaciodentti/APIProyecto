@@ -5,7 +5,7 @@ const bcrypt = require('bcryptjs');
 const crypto = require("crypto");
 const multer = require("multer");
 const path = require('path');
-const { token } = require('morgan');
+const { } = require('morgan');
 //const { size, result } = require('underscore');
 
 //ésta es la ruta de la carpeta en donde se guardan las imágenes (ruta relativa desde ésta carpeta).
@@ -28,7 +28,7 @@ const getPDI = (_req, res) => {
 
 const obtenerPDIPorCategoria = (req, res) => {
     const categoriabuscar = req.params.category;
-    const respuesta = pool.query('SELECT puntodeinteres.nombre, puntodeinteres.descripcion, puntodeinteres.categoria, puntodeinteres.calle, puntodeinteres.numero, puntodeinteres.provincia, puntodeinteres.localidad, puntodeinteres.telefono, puntodeinteres.horaApertura, puntodeinteres.horaCierre, puntodeinteres.precio, puntodeinteres.email, puntodeinteres.diasAbierto, puntodeinteres.baja FROM categorias INNER JOIN puntodeinteres ON puntodeinteres.categoria = categorias.nombre WHERE puntodeinteres.baja = false AND puntodeinteres.aprobado=true AND categorias.padre LIKE $1 UNION SELECT puntodeinteres.nombre, puntodeinteres.descripcion, puntodeinteres.categoria, puntodeinteres.calle, puntodeinteres.numero, puntodeinteres.provincia, puntodeinteres.localidad, puntodeinteres.telefono, puntodeinteres.precio, puntodeinteres.email, puntodeinteres.diasAbierto, puntodeinteres.baja FROM categorias INNER JOIN puntodeinteres ON puntodeinteres.categoria = categorias.nombre WHERE puntodeinteres.baja = false AND puntodeinteres.aprobado=true AND puntodeinteres.categoria LIKE $1 AND categorias.nombre LIKE $1', [categoriabuscar])
+    const respuesta = pool.query('SELECT puntodeinteres.nombre, puntodeinteres.descripcion, puntodeinteres.categoria, puntodeinteres.calle, puntodeinteres.numero, puntodeinteres.provincia, puntodeinteres.localidad, puntodeinteres.telefono, puntodeinteres.precio, puntodeinteres.email, puntodeinteres.diasAbierto, puntodeinteres.baja FROM categorias INNER JOIN puntodeinteres ON puntodeinteres.categoria = categorias.nombre WHERE puntodeinteres.baja = false AND puntodeinteres.aprobado=true AND categorias.padre LIKE $1 UNION SELECT puntodeinteres.nombre, puntodeinteres.descripcion, puntodeinteres.categoria, puntodeinteres.calle, puntodeinteres.numero, puntodeinteres.provincia, puntodeinteres.localidad, puntodeinteres.telefono, puntodeinteres.precio, puntodeinteres.email, puntodeinteres.diasAbierto, puntodeinteres.baja FROM categorias INNER JOIN puntodeinteres ON puntodeinteres.categoria = categorias.nombre WHERE puntodeinteres.baja = false AND puntodeinteres.aprobado=true AND puntodeinteres.categoria LIKE $1 AND categorias.nombre LIKE $1', [categoriabuscar])
         .then(respuesta => res.status(200).json(respuesta.rows));
 }
 
@@ -141,8 +141,8 @@ const signup = (req, res) => {
                         passwordEncriptada = data;
                         const respuesta = pool.query('INSERT INTO usuarios (username, email ,password , baja, privilegios) VALUES ($1, $2, $3, $4, $5)', [username, email, passwordEncriptada, baja, privilegios])
                             .then(respuesta => console.log(respuesta))
-                            .then(token = jwt.sign(crypto.randomBytes(8).toString("hex"), process.env.SECRET_KEY || 'tokentest'/*, {expiresIn: 60*60}*/))
-                            .then(res.header('auth-token', token).json({
+                            .then(token3 = jwt.sign(crypto.randomBytes(8).toString("hex"), process.env.SECRET_KEY || 'tokentest'/*, {expiresIn: 60*60}*/))
+                            .then(res.header('auth-token', token3).json({
                                 message: 'Usuario agregado con exito',
                                 body: {
                                     usuario: { username, email, passwordEncriptada, salt }
