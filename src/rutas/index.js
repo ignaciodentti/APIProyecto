@@ -27,7 +27,9 @@ const {
     getImagenesEvento, 
     postImagenes, 
     uploadIMGEvento,
-    uploadIMGPDI
+    uploadIMGPDI,
+    getImagenPDI,
+    getImagenEvento
 } =require('../controladores/index.controlers');
 
 const {tokenValidation} = require('../libs/verificarToken')
@@ -62,8 +64,10 @@ router.post('/auth/signin/', signin);
 router.post('/auth/signup/', signup);
 
 //imagenes
-router.get('/pdi/imagenes/get/:nombre', getImagenesPDI);
-router.get('/evento/imagenes/get/:nombre', getImagenesEvento)
+router.get('/pdi/imagenes/get/:nombre', getImagenesPDI);   //devuelve arreglo con rutas a la API de todas las imagenes.
+router.get('/evento/imagenes/get/:nombre', getImagenesEvento) // ditto, pero para eventos.
+router.get('/pdi/imagen/:nombre', getImagenPDI) // devuelve una imagen en particular de un PDI.
+router.get('/evento/imagen/:nombre', getImagenEvento) // devuelve una imagen en particular de un PDI.
 router.post('/pdi/imagenes/post', uploadIMGPDI.single('file') ,postImagenes);
 router.post('/evento/imagenes/post', uploadIMGEvento.single('file'), postImagenes);
 

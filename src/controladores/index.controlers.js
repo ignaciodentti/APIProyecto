@@ -47,7 +47,7 @@ const createPDI = (req, res) => {
     console.log(imagenes.length);
     for (let index = 0; index < imagenes.length; index++) {
         ext = getFileExtension3(imagenes[index]);
-        rutasImg[index] = folderImagenPDI + nombre + index +'.'+ ext;
+        rutasImg[index] = folderImagenPDI + nombre + index + '.' + ext;
     }
 
     const respuesta = pool.query('INSERT INTO puntodeinteres (nombre, descripcion, categoria, calle, numero, provincia, localidad, telefono, precio, email, aprobado, baja, diasAbierto, imagenes, lat, long) VALUES ( $1, $2,$3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16)', [nombre, descripcion, categoria, calle, numero, provincia, localidad, telefono, precio, email, aprobado, baja, diasAbierto, rutasImg, lat, long])
@@ -59,6 +59,10 @@ const createPDI = (req, res) => {
 
 function getFileExtension3(filename) {
     return filename.slice((filename.lastIndexOf(".") - 1 >>> 0) + 2);
+}
+
+function nameFromPath(str) {
+    return str.split('\\').pop().split('/').pop();
 }
 
 const deletePDI = (req, res) => {
@@ -78,7 +82,7 @@ const getPDIByID = (req, res) => {
 const updatePDI = (req, res) => {
     const id = req.params.id;
     const { nombre, descripcion, categoria, calle, numero, provincia, localidad, telefono, precio, email, aprobado, diasAbierto, lat, long } = req.body;
-    const respuesta = pool.query('UPDATE puntodeinteres SET nombre=$1, descripcion=$2, categoria=$3, calle=$4, numero=$5, provincia=$6, localidad=$7, telefono=$8, precio=$9, email=$10, aprobado=$11, diasAbierto=$12, lat=$13, long=$14 WHERE id =$15', [ nombre, descripcion, categoria, calle, numero, provincia, localidad, telefono, precio, email, aprobado, diasAbierto, lat, long, id])
+    const respuesta = pool.query('UPDATE puntodeinteres SET nombre=$1, descripcion=$2, categoria=$3, calle=$4, numero=$5, provincia=$6, localidad=$7, telefono=$8, precio=$9, email=$10, aprobado=$11, diasAbierto=$12, lat=$13, long=$14 WHERE id =$15', [nombre, descripcion, categoria, calle, numero, provincia, localidad, telefono, precio, email, aprobado, diasAbierto, lat, long, id])
         .then(respuesta => console.log(respuesta))
         .then(res.json(`Punto de interes ${id} actualizado con exito `));
 };
@@ -108,7 +112,7 @@ const createEvento = (req, res) => {
     console.log(imagenes.length);
     for (let index = 0; index < imagenes.length; index++) {
         ext = getFileExtension3(imagenes[index]);
-        rutasImg[index] = folderImagenEvento + nombre + index +'.'+ ext;
+        rutasImg[index] = folderImagenEvento + nombre + index + '.' + ext;
     }
 
     const respuesta = pool.query('INSERT INTO eventos (nombre, descripcion, categoria, calle, numero, fechainicio, fechafin, horaapertura, horacierre, provincia, localidad, email, precio, aprobado, lat, long, baja, imagenes) VALUES ( $1, $2,$3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18)', [nombre, descripcion, categoria, calle, numero, fechainicio, fechafin, horaapertura, horacierre, provincia, localidad, email, precio, aprobado, lat, long, baja, rutasImg])
@@ -228,16 +232,25 @@ const getImagenesPDI = (req, res) => {
     const nombrePDI = req.params.nombre;
     console.log(nombrePDI);
     const respuesta = pool.query('SELECT imagenes FROM puntodeinteres WHERE puntodeinteres.nombre = $1 AND baja = false', [nombrePDI])
-        .then((respuesta) => {
-            console.log('RESPUESTA: ')
-            console.log(respuesta.rows);
-            for (let index = 0; index < respuesta.rows.length; index++) {
-                console.log('RESPUESTA.ROWS INDEX');
-                console.log(respuesta.rows[index].imagenes[index]);
-                res.sendFile(respuesta.rows[index].imagenes[index], { root: './' });
-            }
-        })
+    .then((respuesta) => {
+        console.log('RESPUESTA: ')
+        console.log(respuesta.rows);
+        let jsonRes = respuesta.rows[0];
 
+        for (let index = 0; index < jsonRes.imagenes.length; index++) {
+
+            let fileName = nameFromPath(jsonRes.imagenes[index]);               //obtengo el nombre de la imagen
+            fileName = 'http://localhost:3000/api/pdi/imagen/' + fileName       //lo concateno al enlace para obtenerlo.
+
+            jsonRes.imagenes[index] = fileName;
+        }
+        res.json(jsonRes);
+    })
+}
+
+const getImagenPDI = (req, res) => {
+    const fileName = req.params.nombre;
+    res.sendFile(fileName, { root: './src/imagenes/PDI' });
 }
 
 const getImagenesEvento = (req, res) => {
@@ -247,13 +260,23 @@ const getImagenesEvento = (req, res) => {
         .then((respuesta) => {
             console.log('RESPUESTA: ')
             console.log(respuesta.rows);
-            for (let index = 0; index < respuesta.rows.length; index++) {
-                console.log('RESPUESTA.ROWS INDEX');
-                console.log(respuesta.rows[index].imagenes[index]);
-                res.sendFile(respuesta.rows[index].imagenes[index], { root: './' });
-            }
-        })
+            let jsonRes = respuesta.rows[0];
 
+            for (let index = 0; index < jsonRes.imagenes.length; index++) {
+
+                let fileName = nameFromPath(jsonRes.imagenes[index]);                   //obtengo el nombre de la imagen
+                fileName = 'http://localhost:3000/api/evento/imagen/' + fileName        //lo concateno al enlace para obtenerlo.
+
+                jsonRes.imagenes[index] = fileName;
+
+            }
+            res.json(jsonRes);
+        })
+}
+
+const getImagenEvento = (req, res) => {
+    const fileName = req.params.nombre;
+    res.sendFile(fileName, { root: './src/imagenes/evento' });
 }
 
 const postImagenes = (req, res) => {
@@ -336,5 +359,7 @@ module.exports = {
     getImagenesEvento,
     postImagenes,
     uploadIMGEvento,
-    uploadIMGPDI
+    uploadIMGPDI,
+    getImagenPDI,
+    getImagenEvento
 }
