@@ -46,27 +46,26 @@ const createPDI = (req, res) => {
     const { nombre, descripcion, categoria, calle, numero, provincia, localidad, telefono, precio, email, aprobado, diasAbierto, lat, long, imagenes } = req.body;
 
     rutasImg = new Array(imagenes.length);
-    console.log(imagenes.length);
-    for (let index = 0; index < imagenes.length; index++) {
-        ext = getFileExtension3(imagenes[index]);
-        rutasImg[index] = folderImagenPDI + nombre + index + '.' + ext;
-    }
 
     const respuesta = pool.query('INSERT INTO puntodeinteres (nombre, descripcion, categoria, calle, numero, provincia, localidad, telefono, precio, email, aprobado, baja, diasAbierto, imagenes, lat, long) VALUES ( $1, $2,$3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16)', [nombre, descripcion, categoria, calle, numero, provincia, localidad, telefono, precio, email, aprobado, baja, diasAbierto, rutasImg, lat, long])
         .then(respuesta => console.log(respuesta))
-        .then(res.json({
-            message: 'Punto de interes agregado con exito'
-        })
-    )
+        .then(
+            pool.query('SELECT * FROM puntodeinteres ORDER BY id desc limit 1')
+                .then(resp => {
+                    app.locals.idPDI = resp.rows[0].id;
+                    console.log('app.locals.idPDI: ' + app.locals.idPDI);
+                    res.json({
+                        message: 'Punto de interes agregado con exito',
+                        id: app.locals.idPDI
+                    });
+                    app.locals.idPDI = '';
+                }
+                )
+        )
 
-    pool.query('SELECT * FROM puntodeinteres ORDER BY id desc limit 1')
-        .then(resp => {
-            app.locals.idPDI = resp.rows[0].idPDI;
-            next();
-        }
-    )
 
-};
+
+}
 
 const createHorarios = (req, res) => {
     console.log('app en horarios:' + app.locals.idPDI);
