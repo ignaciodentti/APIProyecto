@@ -1,11 +1,13 @@
 const { Pool } = require('pg');
 const jwt = require('jsonwebtoken');
-const { } = require('express');
+//const { } = require('express');
 const bcrypt = require('bcryptjs');
 const crypto = require("crypto");
 const multer = require("multer");
 const path = require('path');
 const { } = require('morgan');
+const express = require('express');
+const app = express();
 //const { size, result } = require('underscore');
 
 //ésta es la ruta de la carpeta en donde se guardan las imágenes (ruta relativa desde ésta carpeta).
@@ -54,8 +56,21 @@ const createPDI = (req, res) => {
         .then(respuesta => console.log(respuesta))
         .then(res.json({
             message: 'Punto de interes agregado con exito'
-        }))
+        })
+    )
+
+    pool.query('SELECT * FROM puntodeinteres ORDER BY id desc limit 1')
+        .then(resp => {
+            app.locals.idPDI = resp.rows[0].idPDI;
+            next();
+        }
+    )
+
 };
+
+const createHorarios = (req, res) => {
+    console.log('app en horarios:' + app.locals.idPDI);
+}
 
 function getFileExtension3(filename) {
     return filename.slice((filename.lastIndexOf(".") - 1 >>> 0) + 2);
@@ -232,20 +247,20 @@ const getImagenesPDI = (req, res) => {
     const nombrePDI = req.params.nombre;
     console.log(nombrePDI);
     const respuesta = pool.query('SELECT imagenes FROM puntodeinteres WHERE puntodeinteres.nombre = $1 AND baja = false', [nombrePDI])
-    .then((respuesta) => {
-        console.log('RESPUESTA: ')
-        console.log(respuesta.rows);
-        let jsonRes = respuesta.rows[0];
+        .then((respuesta) => {
+            console.log('RESPUESTA: ')
+            console.log(respuesta.rows);
+            let jsonRes = respuesta.rows[0];
 
-        for (let index = 0; index < jsonRes.imagenes.length; index++) {
+            for (let index = 0; index < jsonRes.imagenes.length; index++) {
 
-            let fileName = nameFromPath(jsonRes.imagenes[index]);               //obtengo el nombre de la imagen
-            fileName = 'http://localhost:3000/api/pdi/imagen/' + fileName       //lo concateno al enlace para obtenerlo.
+                let fileName = nameFromPath(jsonRes.imagenes[index]);               //obtengo el nombre de la imagen
+                fileName = 'http://localhost:3000/api/pdi/imagen/' + fileName       //lo concateno al enlace para obtenerlo.
 
-            jsonRes.imagenes[index] = fileName;
-        }
-        res.json(jsonRes);
-    })
+                jsonRes.imagenes[index] = fileName;
+            }
+            res.json(jsonRes);
+        })
 }
 
 const getImagenPDI = (req, res) => {
@@ -353,5 +368,6 @@ module.exports = {
     uploadIMGEvento,
     uploadIMGPDI,
     getImagenPDI,
-    getImagenEvento
+    getImagenEvento,
+    createHorarios
 }

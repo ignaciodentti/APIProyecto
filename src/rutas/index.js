@@ -29,7 +29,8 @@ const {
     uploadIMGEvento,
     uploadIMGPDI,
     getImagenPDI,
-    getImagenEvento
+    getImagenEvento,
+    createHorarios
 } =require('../controladores/index.controlers');
 
 const {tokenValidation} = require('../libs/verificarToken')
@@ -40,7 +41,7 @@ const {tokenValidation} = require('../libs/verificarToken')
 router.get('/pdi/get/', tokenValidation, getPDI);
 router.get('/pdi/categoria/:category', tokenValidation, obtenerPDIPorCategoria);
 router.get('/pdi/getid/:id', getPDIByID);
-router.post('/pdi/post/', tokenValidation,createPDI);
+router.post('/pdi/post/', tokenValidation,createPDI,createHorarios);
 router.delete('/pdi/delete/:id',tokenValidation, deletePDI);
 router.put('/pdi/put/:id',tokenValidation, updatePDI);
 router.get('/pdi/getPendientes',tokenValidation, obtenerPDIPendientes);

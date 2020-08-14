@@ -57,3 +57,22 @@ create table categorias(
     padre text null,
     baja boolean
 );
+
+create table horarios(
+    id serial not null PRIMARY KEY,
+    idpdi numeric not null,
+    lunesAp text,
+    lunesCie text, 
+    martesAp text,
+    martesCie text,
+    miercolesAp text,
+    miercolesCie text,
+    juevesAp text,
+    juevesCie text,
+    viernesAp text,
+    viernesCie text,
+    sabadoAp text,
+    sabadoCie text,
+    domingoAp text,
+    domingoCie text
+);
