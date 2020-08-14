@@ -280,20 +280,16 @@ const getImagenEvento = (req, res) => {
 }
 
 const postImagenes = (req, res) => {
-    console.log('PostImagenes');
     return res.send(req.file);
 }
 
-//asigna a la imagen que guarda el nombre original
 const storagePDI = multer.diskStorage({
     destination: (req, file, cb) => { cb(null, folderImagenPDI) },
     filename: (req, file, cb) => {
         const nombre = req.header('nombre');
-        const ext = req.header('extension');
         img = nombre + path.extname(file.originalname).toLocaleLowerCase();
         console.log('EL NOMBRE DE IMAGEN ES: ' + nombre);
         cb(null, img);
-        console.log('storage');
     }
 });
 
@@ -301,11 +297,9 @@ const storageEvento = multer.diskStorage({
     destination: (req, file, cb) => { cb(null, folderImagenEvento) },
     filename: (req, file, cb) => {
         const nombre = req.header('nombre');
-        const ext = req.header('extension');
         img = nombre + path.extname(file.originalname).toLocaleLowerCase();
         console.log('EL NOMBRE DE IMAGEN ES: ' + nombre);
         cb(null, img);
-        console.log('storage');
     }
 });
 
@@ -313,7 +307,6 @@ const uploadIMGPDI = multer({
     storage: storagePDI,
     dest: './imagenes',
     fileFilter: (req, file, cb) => {
-        console.log('upload');
         const filetypes = /jpeg|jpg|png|gif/;
         const minetype = filetypes.test((file.mimetype).toLowerCase());
         const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
@@ -326,7 +319,6 @@ const uploadIMGEvento = multer({
     storage: storageEvento,
     dest: './imagenes',
     fileFilter: (req, file, cb) => {
-        console.log('upload');
         const filetypes = /jpeg|jpg|png|gif/;
         const minetype = filetypes.test((file.mimetype).toLowerCase());
         const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
