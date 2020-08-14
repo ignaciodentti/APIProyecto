@@ -14,7 +14,6 @@ create table puntoDeInteres(
     email text null,
     baja boolean, 
     aprobado boolean,
-    diasAbierto text[] NULL, 
     lat text, 
     long text, 
     imagenes text[]
