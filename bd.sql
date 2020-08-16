@@ -38,7 +38,8 @@ create table eventos(
     aprobado boolean,
     lat text, 
     long text,
-    imagenes text[]
+    imagenes text[], 
+    idhorario numeric
 );
 
 create table usuarios(
@@ -59,7 +60,6 @@ create table categorias(
 
 create table horarios(
     id serial not null PRIMARY KEY,
-    idpdi numeric not null,
     lunesAp text,
     lunesCie text, 
     martesAp text,

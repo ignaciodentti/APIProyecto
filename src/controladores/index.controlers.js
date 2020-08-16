@@ -43,41 +43,43 @@ const obtenerPDIPendientes = (req, res) => {
 
 const createPDI = (req, res) => {
     baja = false;
-    const { nombre, descripcion, categoria, calle, numero, provincia, localidad, telefono, precio, email, aprobado,  lat, long, imagenes } = req.body;
+    const { nombre, descripcion, categoria, calle, numero, provincia, localidad, telefono, precio, email, aprobado, lat, long, imagenes, idhorario } = req.body;
 
     rutasImg = new Array(imagenes.length);
 
-    const respuesta = pool.query('INSERT INTO puntodeinteres (nombre, descripcion, categoria, calle, numero, provincia, localidad, telefono, precio, email, aprobado, baja, imagenes, lat, long) VALUES ( $1, $2,$3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)', [nombre, descripcion, categoria, calle, numero, provincia, localidad, telefono, precio, email, aprobado, baja, rutasImg, lat, long])
+    const respuesta = pool.query('INSERT INTO puntodeinteres (nombre, descripcion, categoria, calle, numero, provincia, localidad, telefono, precio, email, aprobado, baja, imagenes, lat, long, idhorario) VALUES ( $1, $2,$3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16)', [nombre, descripcion, categoria, calle, numero, provincia, localidad, telefono, precio, email, aprobado, baja, rutasImg, lat, long,idhorario])
         .then(respuesta => console.log(respuesta))
-        .then(pool.query('SELECT * FROM puntodeinteres ORDER BY id desc limit 1')
-                .then(resp => {
-                    app.locals.idPDI = resp.rows[0].id;
-                    console.log('app.locals.idPDI: ' + app.locals.idPDI);
-                    res.json({
-                        id: app.locals.idPDI
-                    });
-                    app.locals.idPDI = '';
-                }
-                ));
+        .then(res.json({ message: 'Evento agregado con exito' }));
+
 
 }
 
 const createHorarios = (req, res) => {
-    const {idpdi, lunesAp , lunesCie , martesAp ,martesCie ,miercolesAp ,miercolesCie ,juevesAp ,juevesCie ,viernesAp ,viernesCie ,sabadoAp ,sabadoCie ,domingoAp ,domingoCie } = req.body
-    const respuesta = pool.query('INSERT INTO horarios (idpdi, lunesAp , lunesCie , martesAp ,martesCie ,miercolesAp ,miercolesCie ,juevesAp ,juevesCie ,viernesAp ,viernesCie ,sabadoAp ,sabadoCie ,domingoAp ,domingoCie) VALUES ( $1, $2,$3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)', [idpdi, lunesAp , lunesCie , martesAp ,martesCie ,miercolesAp ,miercolesCie ,juevesAp ,juevesCie ,viernesAp ,viernesCie ,sabadoAp ,sabadoCie ,domingoAp ,domingoCie])
-    .then(respuesta => console.log(respuesta));
+    const { lunesAp, lunesCie, martesAp, martesCie, miercolesAp, miercolesCie, juevesAp, juevesCie, viernesAp, viernesCie, sabadoAp, sabadoCie, domingoAp, domingoCie } = req.body
+    const respuesta = pool.query('INSERT INTO horarios (lunesAp , lunesCie , martesAp ,martesCie ,miercolesAp ,miercolesCie ,juevesAp ,juevesCie ,viernesAp ,viernesCie ,sabadoAp ,sabadoCie ,domingoAp ,domingoCie) VALUES ( $1, $2,$3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)', [lunesAp, lunesCie, martesAp, martesCie, miercolesAp, miercolesCie, juevesAp, juevesCie, viernesAp, viernesCie, sabadoAp, sabadoCie, domingoAp, domingoCie])
+        .then(respuesta => console.log(respuesta))
+        .then(pool.query('SELECT * FROM horarios ORDER BY id desc limit 1')
+            .then(resp => {
+                app.locals.idhorario = resp.rows[0].id;
+                console.log('app.locals.idhorario: ' + app.locals.idhorario);
+                res.json({
+                    id: app.locals.idhorario
+                });
+                app.locals.idhorario = '';
+            }
+            ))
 }
 
 const getHorarioByID = (req, res) => {
-    const idpdi = req.params.id;
-    const respuesta = pool.query('SELECT * FROM horarios WHERE idpdi = $1', [idpdi])
+    const id = req.params.id;
+    const respuesta = pool.query('SELECT * FROM horarios WHERE id = $1', [id])
         .then(respuesta => res.status(200).json(respuesta.rows));
 };
 
 const updateHorario = (req, res) => {
     const idpdi = req.params.id;
-    const {lunesAp , lunesCie , martesAp ,martesCie ,miercolesAp ,miercolesCie ,juevesAp ,juevesCie ,viernesAp ,viernesCie ,sabadoAp ,sabadoCie ,domingoAp ,domingoCie} = req.body;
-    const respuesta = pool.query('UPDATE horarios SET lunesap=$1, lunescie=$2, martesap=$3, martescie=$4, miercolesap=$5 , miercolescie= $6, juevesap=$7, juevescie=$8, viernesap=$9, viernescie=$10, sabadoap=$11, sabadocie=$12, domingoap=$13, domingocie=$14  WHERE idpdi=$15', [ lunesAp , lunesCie , martesAp ,martesCie ,miercolesAp ,miercolesCie ,juevesAp ,juevesCie ,viernesAp ,viernesCie ,sabadoAp ,sabadoCie ,domingoAp ,domingoCie, idpdi])
+    const { lunesAp, lunesCie, martesAp, martesCie, miercolesAp, miercolesCie, juevesAp, juevesCie, viernesAp, viernesCie, sabadoAp, sabadoCie, domingoAp, domingoCie } = req.body;
+    const respuesta = pool.query('UPDATE horarios SET lunesap=$1, lunescie=$2, martesap=$3, martescie=$4, miercolesap=$5 , miercolescie= $6, juevesap=$7, juevescie=$8, viernesap=$9, viernescie=$10, sabadoap=$11, sabadocie=$12, domingoap=$13, domingocie=$14  WHERE idpdi=$15', [lunesAp, lunesCie, martesAp, martesCie, miercolesAp, miercolesCie, juevesAp, juevesCie, viernesAp, viernesCie, sabadoAp, sabadoCie, domingoAp, domingoCie, idpdi])
         .then(respuesta => console.log(respuesta))
         .then(res.json(`Horario del ${idpdi} actualizado con exito `));
 };
