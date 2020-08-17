@@ -16,7 +16,8 @@ create table puntoDeInteres(
     aprobado boolean,
     lat text, 
     long text, 
-    imagenes text[]
+    imagenes text[],
+    idhorario numeric
  );
 
 create table eventos(
@@ -38,8 +39,7 @@ create table eventos(
     aprobado boolean,
     lat text, 
     long text,
-    imagenes text[], 
-    idhorario numeric
+    imagenes text[]
 );
 
 create table usuarios(
@@ -59,6 +59,7 @@ create table categorias(
 );
 
 create table horarios(
+
     id serial not null PRIMARY KEY,
     lunesAp text,
     lunesCie text, 

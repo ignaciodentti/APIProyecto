@@ -20,7 +20,7 @@ const folderImagenEvento = './src/imagenes/evento/'
 const pool = new Pool({
     host: 'localhost',
     user: 'postgres',
-    password: 'nadia1998',
+    password: 'postgre',
     database: 'viviconcepcion',
     port: '5432'
 });
@@ -47,10 +47,9 @@ const createPDI = (req, res) => {
 
     rutasImg = new Array(imagenes.length);
 
-    const respuesta = pool.query('INSERT INTO puntodeinteres (nombre, descripcion, categoria, calle, numero, provincia, localidad, telefono, precio, email, aprobado, baja, imagenes, lat, long, idhorario) VALUES ( $1, $2,$3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16)', [nombre, descripcion, categoria, calle, numero, provincia, localidad, telefono, precio, email, aprobado, baja, rutasImg, lat, long,idhorario])
+    const respuesta = pool.query('INSERT INTO puntodeinteres (nombre, descripcion, categoria, calle, numero, provincia, localidad, telefono, precio, email, aprobado, baja, imagenes, lat, long, idhorario) VALUES ( $1, $2,$3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16)', [nombre, descripcion, categoria, calle, numero, provincia, localidad, telefono, precio, email, aprobado, baja, rutasImg, lat, long, idhorario])
         .then(respuesta => console.log(respuesta))
         .then(res.json({ message: 'Evento agregado con exito' }));
-
 
 }
 
@@ -315,18 +314,9 @@ const storagePDI = multer.diskStorage({
     destination: (req, file, cb) => { cb(null, folderImagenPDI) },
     filename: (req, file, cb) => {
         const nombre = req.header('nombre');
-        const idPDI = req.header('id');
         img = nombre + path.extname(file.originalname).toLocaleLowerCase();
         console.log('EL NOMBRE DE IMAGEN ES: ' + img);
-        console.log('EL id ES '+idPDI);
-        const respuesta = pool.query('SELECT imagenes FROM puntodeinteres WHERE puntodeinteres.id = $1 AND baja = false', [idPDI])
-        .then((respuesta) => {
-            console.log('respuesta en STORAGEPDI');
-            console.log(respuesta);
-            respuesta.rows[0].imagenes.push(folderImagenPDI+img);
-            const actualizar = pool.query('UPDATE puntodeinteres SET imagenes = $1 WHERE id = $2',[respuesta.rows[0].imagenes, idPDI])
-            .then((actualizar)=> cb(null, img))
-        })
+        cb(null, img);
     }
 })
 
