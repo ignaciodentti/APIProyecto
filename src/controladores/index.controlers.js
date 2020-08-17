@@ -60,11 +60,8 @@ const createPDI = (req, res) => {
                     });
                     app.locals.idPDI = '';
                 }
-                )
+            )
         )
-
-
-
 }
 
 const createHorarios = (req, res) => {
@@ -301,11 +298,20 @@ const storagePDI = multer.diskStorage({
     destination: (req, file, cb) => { cb(null, folderImagenPDI) },
     filename: (req, file, cb) => {
         const nombre = req.header('nombre');
+        const idPDI = req.header('id');
         img = nombre + path.extname(file.originalname).toLocaleLowerCase();
-        console.log('EL NOMBRE DE IMAGEN ES: ' + nombre);
-        cb(null, img);
+        console.log('EL NOMBRE DE IMAGEN ES: ' + img);
+        console.log('EL id ES '+idPDI);
+        const respuesta = pool.query('SELECT imagenes FROM puntodeinteres WHERE puntodeinteres.id = $1 AND baja = false', [idPDI])
+        .then((respuesta) => {
+            console.log('respuesta en STORAGEPDI');
+            console.log(respuesta);
+            respuesta.rows[0].imagenes.push(folderImagenPDI+img);
+            const actualizar = pool.query('UPDATE puntodeinteres SET imagenes = $1 WHERE id = $2',[respuesta.rows[0].imagenes, idPDI])
+            .then((actualizar)=> cb(null, img))
+        })
     }
-});
+})
 
 const storageEvento = multer.diskStorage({
     destination: (req, file, cb) => { cb(null, folderImagenEvento) },
