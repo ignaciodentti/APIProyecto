@@ -30,7 +30,9 @@ const {
     uploadIMGPDI,
     getImagenPDI,
     getImagenEvento,
-    createHorarios
+    createHorarios, 
+    updateHorario, 
+    getHorarioByID
 } =require('../controladores/index.controlers');
 
 const {tokenValidation} = require('../libs/verificarToken')
@@ -41,7 +43,7 @@ const {tokenValidation} = require('../libs/verificarToken')
 router.get('/pdi/get/', tokenValidation, getPDI);
 router.get('/pdi/categoria/:category', tokenValidation, obtenerPDIPorCategoria);
 router.get('/pdi/getid/:id', getPDIByID);
-router.post('/pdi/post/', tokenValidation,createPDI,createHorarios);
+router.post('/pdi/post/', tokenValidation,createPDI);
 router.delete('/pdi/delete/:id',tokenValidation, deletePDI);
 router.put('/pdi/put/:id',tokenValidation, updatePDI);
 router.get('/pdi/getPendientes',tokenValidation, obtenerPDIPendientes);
@@ -71,5 +73,10 @@ router.get('/pdi/imagen/:nombre', getImagenPDI) // devuelve una imagen en partic
 router.get('/evento/imagen/:nombre', getImagenEvento) // devuelve una imagen en particular de un PDI.
 router.post('/pdi/imagenes/post', uploadIMGPDI.single('file') ,postImagenes);
 router.post('/evento/imagenes/post', uploadIMGEvento.single('file'), postImagenes);
+
+//horarios 
+router.get('/horarios/get/:id',getHorarioByID);
+router.post('/horarios/post', createHorarios);
+router.put('/horarios/put/:id',updateHorario);
 
 module.exports= router;

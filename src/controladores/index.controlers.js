@@ -20,7 +20,7 @@ const folderImagenEvento = './src/imagenes/evento/'
 const pool = new Pool({
     host: 'localhost',
     user: 'postgres',
-    password: 'postgre',
+    password: 'nadia1998',
     database: 'viviconcepcion',
     port: '5432'
 });
@@ -32,7 +32,7 @@ const getPDI = (_req, res) => {
 
 const obtenerPDIPorCategoria = (req, res) => {
     const categoriabuscar = req.params.category;
-    const respuesta = pool.query('SELECT puntodeinteres.nombre, puntodeinteres.descripcion, puntodeinteres.categoria, puntodeinteres.calle, puntodeinteres.numero, puntodeinteres.provincia, puntodeinteres.localidad, puntodeinteres.telefono, puntodeinteres.precio, puntodeinteres.email, puntodeinteres.diasAbierto, puntodeinteres.baja FROM categorias INNER JOIN puntodeinteres ON puntodeinteres.categoria = categorias.nombre WHERE puntodeinteres.baja = false AND puntodeinteres.aprobado=true AND categorias.padre LIKE $1 UNION SELECT puntodeinteres.nombre, puntodeinteres.descripcion, puntodeinteres.categoria, puntodeinteres.calle, puntodeinteres.numero, puntodeinteres.provincia, puntodeinteres.localidad, puntodeinteres.telefono, puntodeinteres.precio, puntodeinteres.email, puntodeinteres.diasAbierto, puntodeinteres.baja FROM categorias INNER JOIN puntodeinteres ON puntodeinteres.categoria = categorias.nombre WHERE puntodeinteres.baja = false AND puntodeinteres.aprobado=true AND puntodeinteres.categoria LIKE $1 AND categorias.nombre LIKE $1', [categoriabuscar])
+    const respuesta = pool.query('SELECT puntodeinteres.nombre, puntodeinteres.descripcion, puntodeinteres.categoria, puntodeinteres.calle, puntodeinteres.numero, puntodeinteres.provincia, puntodeinteres.localidad, puntodeinteres.telefono, puntodeinteres.precio, puntodeinteres.email, puntodeinteres.baja FROM categorias INNER JOIN puntodeinteres ON puntodeinteres.categoria = categorias.nombre WHERE puntodeinteres.baja = false AND puntodeinteres.aprobado=true AND categorias.padre LIKE $1 UNION SELECT puntodeinteres.nombre, puntodeinteres.descripcion, puntodeinteres.categoria, puntodeinteres.calle, puntodeinteres.numero, puntodeinteres.provincia, puntodeinteres.localidad, puntodeinteres.telefono, puntodeinteres.precio, puntodeinteres.email, puntodeinteres.baja FROM categorias INNER JOIN puntodeinteres ON puntodeinteres.categoria = categorias.nombre WHERE puntodeinteres.baja = false AND puntodeinteres.aprobado=true AND puntodeinteres.categoria LIKE $1 AND categorias.nombre LIKE $1', [categoriabuscar])
         .then(respuesta => res.status(200).json(respuesta.rows));
 }
 
@@ -43,30 +43,47 @@ const obtenerPDIPendientes = (req, res) => {
 
 const createPDI = (req, res) => {
     baja = false;
-    const { nombre, descripcion, categoria, calle, numero, provincia, localidad, telefono, precio, email, aprobado, diasAbierto, lat, long, imagenes } = req.body;
+    const { nombre, descripcion, categoria, calle, numero, provincia, localidad, telefono, precio, email, aprobado, lat, long, imagenes, idhorario } = req.body;
 
     rutasImg = new Array(imagenes.length);
 
-    const respuesta = pool.query('INSERT INTO puntodeinteres (nombre, descripcion, categoria, calle, numero, provincia, localidad, telefono, precio, email, aprobado, baja, diasAbierto, imagenes, lat, long) VALUES ( $1, $2,$3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16)', [nombre, descripcion, categoria, calle, numero, provincia, localidad, telefono, precio, email, aprobado, baja, diasAbierto, rutasImg, lat, long])
+    const respuesta = pool.query('INSERT INTO puntodeinteres (nombre, descripcion, categoria, calle, numero, provincia, localidad, telefono, precio, email, aprobado, baja, imagenes, lat, long, idhorario) VALUES ( $1, $2,$3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16)', [nombre, descripcion, categoria, calle, numero, provincia, localidad, telefono, precio, email, aprobado, baja, rutasImg, lat, long,idhorario])
         .then(respuesta => console.log(respuesta))
-        .then(
-            pool.query('SELECT * FROM puntodeinteres ORDER BY id desc limit 1')
-                .then(resp => {
-                    app.locals.idPDI = resp.rows[0].id;
-                    console.log('app.locals.idPDI: ' + app.locals.idPDI);
-                    res.json({
-                        message: 'Punto de interes agregado con exito',
-                        id: app.locals.idPDI
-                    });
-                    app.locals.idPDI = '';
-                }
-            )
-        )
+        .then(res.json({ message: 'Evento agregado con exito' }));
+
+
 }
 
 const createHorarios = (req, res) => {
-    console.log('app en horarios:' + app.locals.idPDI);
+    const { lunesAp, lunesCie, martesAp, martesCie, miercolesAp, miercolesCie, juevesAp, juevesCie, viernesAp, viernesCie, sabadoAp, sabadoCie, domingoAp, domingoCie } = req.body
+    const respuesta = pool.query('INSERT INTO horarios (lunesAp , lunesCie , martesAp ,martesCie ,miercolesAp ,miercolesCie ,juevesAp ,juevesCie ,viernesAp ,viernesCie ,sabadoAp ,sabadoCie ,domingoAp ,domingoCie) VALUES ( $1, $2,$3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)', [lunesAp, lunesCie, martesAp, martesCie, miercolesAp, miercolesCie, juevesAp, juevesCie, viernesAp, viernesCie, sabadoAp, sabadoCie, domingoAp, domingoCie])
+        .then(respuesta => console.log(respuesta))
+        .then(pool.query('SELECT * FROM horarios ORDER BY id desc limit 1')
+            .then(resp => {
+                app.locals.idhorario = resp.rows[0].id;
+                console.log('app.locals.idhorario: ' + app.locals.idhorario);
+                res.json({
+                    id: app.locals.idhorario
+                });
+                app.locals.idhorario = '';
+            }
+            ))
 }
+
+const getHorarioByID = (req, res) => {
+    const id = req.params.id;
+    const respuesta = pool.query('SELECT * FROM horarios WHERE id = $1', [id])
+        .then(respuesta => res.status(200).json(respuesta.rows));
+};
+
+const updateHorario = (req, res) => {
+    const idpdi = req.params.id;
+    const { lunesAp, lunesCie, martesAp, martesCie, miercolesAp, miercolesCie, juevesAp, juevesCie, viernesAp, viernesCie, sabadoAp, sabadoCie, domingoAp, domingoCie } = req.body;
+    const respuesta = pool.query('UPDATE horarios SET lunesap=$1, lunescie=$2, martesap=$3, martescie=$4, miercolesap=$5 , miercolescie= $6, juevesap=$7, juevescie=$8, viernesap=$9, viernescie=$10, sabadoap=$11, sabadocie=$12, domingoap=$13, domingocie=$14  WHERE idpdi=$15', [lunesAp, lunesCie, martesAp, martesCie, miercolesAp, miercolesCie, juevesAp, juevesCie, viernesAp, viernesCie, sabadoAp, sabadoCie, domingoAp, domingoCie, idpdi])
+        .then(respuesta => console.log(respuesta))
+        .then(res.json(`Horario del ${idpdi} actualizado con exito `));
+};
+
 
 function getFileExtension3(filename) {
     return filename.slice((filename.lastIndexOf(".") - 1 >>> 0) + 2);
@@ -92,8 +109,8 @@ const getPDIByID = (req, res) => {
 
 const updatePDI = (req, res) => {
     const id = req.params.id;
-    const { nombre, descripcion, categoria, calle, numero, provincia, localidad, telefono, precio, email, aprobado, diasAbierto, lat, long } = req.body;
-    const respuesta = pool.query('UPDATE puntodeinteres SET nombre=$1, descripcion=$2, categoria=$3, calle=$4, numero=$5, provincia=$6, localidad=$7, telefono=$8, precio=$9, email=$10, aprobado=$11, diasAbierto=$12, lat=$13, long=$14 WHERE id =$15', [nombre, descripcion, categoria, calle, numero, provincia, localidad, telefono, precio, email, aprobado, diasAbierto, lat, long, id])
+    const { nombre, descripcion, categoria, calle, numero, provincia, localidad, telefono, precio, email, aprobado, lat, long } = req.body;
+    const respuesta = pool.query('UPDATE puntodeinteres SET nombre=$1, descripcion=$2, categoria=$3, calle=$4, numero=$5, provincia=$6, localidad=$7, telefono=$8, precio=$9, email=$10, aprobado=$11, lat=$12, long=$13 WHERE id =$14', [nombre, descripcion, categoria, calle, numero, provincia, localidad, telefono, precio, email, aprobado, lat, long, id])
         .then(respuesta => console.log(respuesta))
         .then(res.json(`Punto de interes ${id} actualizado con exito `));
 };
@@ -374,5 +391,7 @@ module.exports = {
     uploadIMGPDI,
     getImagenPDI,
     getImagenEvento,
-    createHorarios
+    createHorarios,
+    getHorarioByID,
+    updateHorario
 }
