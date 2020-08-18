@@ -8,12 +8,15 @@ const path = require('path');
 const { } = require('morgan');
 const express = require('express');
 const app = express();
+var fs = require('fs');
 //const { size, result } = require('underscore');
 
 //ésta es la ruta de la carpeta en donde se guardan las imágenes (ruta relativa desde ésta carpeta).
 const folderImagen = './src/imagenes/'
 const folderImagenPDI = './src/imagenes/PDI/'
+const folderImagenPDIAbs = 'C:/Users/nacho/Documents/GitHub/APIProyecto/src/imagenes/PDI/'
 const folderImagenEvento = './src/imagenes/evento/'
+const folderImagenEventoAbs = 'C:/Users/nacho/Documents/GitHub/APIProyecto/src/imagenes/evento/'
 
 
 
@@ -105,8 +108,17 @@ function nameFromPath(str) {
 const deletePDI = (req, res) => {
     const id = req.params.id
     baja = true;
+    const query = pool.query('SELECT imagenes FROM puntodeinteres WHERE id =$1', [id])
+    .then((query)=>{
+        console.log(query.rows[0]);
+        query.rows[0].imagenes.forEach(element => {
+            pathImagen = folderImagenPDIAbs + nameFromPath(element);
+            console.log('path de imagen a borrar'+ pathImagen);
+            fs.unlink(pathImagen);
+        });
+    })
+
     const respuesta = pool.query('UPDATE puntodeinteres SET baja=$1 WHERE id=$2', [baja, id])
-        .then(respuesta => console.log(respuesta))
         .then(res.json(`Punto de interes ${id} eliminado con exito `));
 };
 
@@ -172,6 +184,17 @@ const createEvento = (req, res) => {
 const deleteEvento = (req, res) => {
     const id = req.params.id
     baja = true;
+
+    const query = pool.query('SELECT imagenes FROM eventos WHERE id =$1', [id])
+    .then((query)=>{
+        console.log(query.rows[0]);
+        query.rows[0].imagenes.forEach(element => {
+            pathImagen = folderImagenEventoAbs + nameFromPath(element);
+            console.log('path de imagen a borrar'+ pathImagen);
+            fs.unlink(pathImagen);
+        });
+    })
+
     const respuesta = pool.query('UPDATE eventos SET baja=$1 WHERE id=$2', [baja, id])
         .then(respuesta => console.log(respuesta))
         .then(res.json(`Evento ${id} eliminado con exito `));
