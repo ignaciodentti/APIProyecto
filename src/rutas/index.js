@@ -70,7 +70,7 @@ router.post('/auth/signup/', signup);
 router.get('/pdi/imagenes/get/:nombre', getImagenesPDI);   //devuelve arreglo con rutas a la API de todas las imagenes.
 router.get('/evento/imagenes/get/:nombre', getImagenesEvento) // ditto, pero para eventos.
 router.get('/pdi/imagen/:nombre', getImagenPDI) // devuelve una imagen en particular de un PDI.
-router.get('/evento/imagen/:nombre', getImagenEvento) // devuelve una imagen en particular de un PDI.
+router.get('/evento/imagen/:nombre', getImagenEvento) // ditto, para un evento.
 router.post('/pdi/imagenes/post', uploadIMGPDI.single('file') ,postImagenes);
 router.post('/evento/imagenes/post', uploadIMGEvento.single('file'), postImagenes);
 

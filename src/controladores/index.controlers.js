@@ -27,7 +27,14 @@ const pool = new Pool({
 
 const getPDI = (_req, res) => {
     const respuesta = pool.query('SELECT * FROM puntodeinteres WHERE baja=false AND aprobado=true')
-        .then(respuesta => res.status(200).json(respuesta.rows));
+        .then(respuesta => {
+            for (let i = 0; i < respuesta.rows.length; i++) {
+                for (let j = 0; j < respuesta.rows[i].imagenes.length; j++) {
+                    respuesta.rows[i].imagenes[j] = 'http://localhost:3000/api/pdi/imagen/' + nameFromPath(respuesta.rows[i].imagenes[j]);
+                }
+            }
+            res.status(200).json(respuesta.rows);
+        });
 };
 
 const obtenerPDIPorCategoria = (req, res) => {
@@ -46,6 +53,9 @@ const createPDI = (req, res) => {
     const { nombre, descripcion, categoria, calle, numero, provincia, localidad, telefono, precio, email, aprobado, lat, long, imagenes, idhorario } = req.body;
 
     rutasImg = new Array(imagenes.length);
+    for (let index = 0; index < rutasImg.length; index++) {
+        rutasImg[index] = folderImagenPDI + nombre + index + '.' + getFileExtension3(imagenes[index]).toLocaleLowerCase();
+    }
 
     const respuesta = pool.query('INSERT INTO puntodeinteres (nombre, descripcion, categoria, calle, numero, provincia, localidad, telefono, precio, email, aprobado, baja, imagenes, lat, long, idhorario) VALUES ( $1, $2,$3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16)', [nombre, descripcion, categoria, calle, numero, provincia, localidad, telefono, precio, email, aprobado, baja, rutasImg, lat, long, idhorario])
         .then(respuesta => console.log(respuesta))
@@ -116,7 +126,14 @@ const updatePDI = (req, res) => {
 
 const getEvento = (_req, res) => {
     const respuesta = pool.query('SELECT * FROM eventos WHERE baja=false AND aprobado=true')
-        .then(respuesta => res.status(200).json(respuesta.rows));
+        .then(respuesta => {
+            for (let i = 0; i < respuesta.rows.length; i++) {
+                for (let j = 0; j < respuesta.rows[i].imagenes.length; j++) {
+                    respuesta.rows[i].imagenes[j] = 'http://localhost:3000/api/evento/imagen/' + nameFromPath(respuesta.rows[i].imagenes[j]);
+                }
+            }
+            res.status(200).json(respuesta.rows);
+        })
 };
 
 const obtenerEventosPorCategoria = (req, res) => {
@@ -138,7 +155,7 @@ const createEvento = (req, res) => {
     rutasImg = new Array(imagenes.length);
     console.log(imagenes.length);
     for (let index = 0; index < imagenes.length; index++) {
-        ext = getFileExtension3(imagenes[index]);
+        ext = getFileExtension3(imagenes[index]).toLocaleLowerCase();
         rutasImg[index] = folderImagenEvento + nombre + index + '.' + ext;
     }
 
