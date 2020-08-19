@@ -14,16 +14,16 @@ var fs = require('fs');
 //ésta es la ruta de la carpeta en donde se guardan las imágenes (ruta relativa desde ésta carpeta).
 const folderImagen = './src/imagenes/'
 const folderImagenPDI = './src/imagenes/PDI/'
-const folderImagenPDIAbs = 'C:/Users/nacho/Documents/GitHub/APIProyecto/src/imagenes/PDI/'
+const folderImagenPDIAbs = 'C:/Users/nadia/Documents/APIProyecto/src/imagenes/PDI/'
 const folderImagenEvento = './src/imagenes/evento/'
-const folderImagenEventoAbs = 'C:/Users/nacho/Documents/GitHub/APIProyecto/src/imagenes/evento/'
+const folderImagenEventoAbs = 'C:/Users/nadia/Documents/APIProyecto/src/imagenes/evento/'
 
 
 
 const pool = new Pool({
     host: 'localhost',
     user: 'postgres',
-    password: 'postgre',
+    password: 'nadia1998',
     database: 'viviconcepcion',
     port: '5432'
 });
@@ -31,6 +31,7 @@ const pool = new Pool({
 const getPDI = (_req, res) => {
     const respuesta = pool.query('SELECT * FROM puntodeinteres WHERE baja=false AND aprobado=true')
         .then(respuesta => {
+            console.log(respuesta.rows);
             for (let i = 0; i < respuesta.rows.length; i++) {
                 for (let j = 0; j < respuesta.rows[i].imagenes.length; j++) {
                     respuesta.rows[i].imagenes[j] = 'http://localhost:3000/api/pdi/imagen/' + nameFromPath(respuesta.rows[i].imagenes[j]);
@@ -89,11 +90,11 @@ const getHorarioByID = (req, res) => {
 };
 
 const updateHorario = (req, res) => {
-    const idpdi = req.params.id;
+    const id = req.params.id;
     const { lunesAp, lunesCie, martesAp, martesCie, miercolesAp, miercolesCie, juevesAp, juevesCie, viernesAp, viernesCie, sabadoAp, sabadoCie, domingoAp, domingoCie } = req.body;
-    const respuesta = pool.query('UPDATE horarios SET lunesap=$1, lunescie=$2, martesap=$3, martescie=$4, miercolesap=$5 , miercolescie= $6, juevesap=$7, juevescie=$8, viernesap=$9, viernescie=$10, sabadoap=$11, sabadocie=$12, domingoap=$13, domingocie=$14  WHERE idpdi=$15', [lunesAp, lunesCie, martesAp, martesCie, miercolesAp, miercolesCie, juevesAp, juevesCie, viernesAp, viernesCie, sabadoAp, sabadoCie, domingoAp, domingoCie, idpdi])
+    const respuesta = pool.query('UPDATE horarios SET lunesap=$1, lunescie=$2, martesap=$3, martescie=$4, miercolesap=$5 , miercolescie= $6, juevesap=$7, juevescie=$8, viernesap=$9, viernescie=$10, sabadoap=$11, sabadocie=$12, domingoap=$13, domingocie=$14  WHERE id=$15', [lunesAp, lunesCie, martesAp, martesCie, miercolesAp, miercolesCie, juevesAp, juevesCie, viernesAp, viernesCie, sabadoAp, sabadoCie, domingoAp, domingoCie, id])
         .then(respuesta => console.log(respuesta))
-        .then(res.json(`Horario del ${idpdi} actualizado con exito `));
+        .then(res.json(`Horario del ${id} actualizado con exito `));
 };
 
 
