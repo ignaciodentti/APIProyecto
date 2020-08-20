@@ -396,29 +396,27 @@ const getImagenEvento = (req, res) => {
     res.sendFile(fileName, { root: './src/imagenes/evento' });
 }
 
-const postImagenes = (req, res, next) => {
+const postImagenes = (req, res) => {
     //return res.send(req.file);
     const nombre = req.file.filename;
     console.log(req.file);
     console.log(req.file.filename);
     rutaImg = req.file.destination + req.file.filename;
     const query = pool.query('INSERT INTO imagenes (ruta) VALUES ($1)', [rutaImg])
-        .then(respuesta => console.log(respuesta));
-    next();
+        .then(respuesta => console.log(respuesta))
+        .then(pool.query('SELECT * FROM imagenes ORDER BY id desc limit 1')
+            .then(respu => {
+                console.log(respu);
+                app.locals.idImagen = respu.rows[0].id;
+                console.log('app.locals.idImagen: ' + app.locals.idImagen);
+                res.json({
+                    id: app.locals.idImagen
+                });
+                app.locals.idImagen = '';
+            }))
 }
 
-const devolverid = (req, res) => {
-    console.log('pasa al devolver id')
-    pool.query('SELECT * FROM imagenes ORDER BY id desc limit 1')
-        .then(respu => {console.log(respu);
-            app.locals.idImagen = respu.rows[0].id;
-            console.log('app.locals.idImagen: ' + app.locals.idImagen);
-            res.json({
-                id: app.locals.idImagen
-            });
-            app.locals.idImagen = '';
-        });
-}
+
 
 
 
@@ -495,6 +493,5 @@ module.exports = {
     getImagenEvento,
     createHorarios,
     getHorarioByID,
-    updateHorario,
-    devolverid
+    updateHorario
 }
