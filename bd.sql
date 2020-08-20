@@ -79,5 +79,5 @@ create table horarios(
 
 create table imagenes(
     id serial not null PRIMARY KEY,
-    imagenes text[]
+    ruta text
 );
