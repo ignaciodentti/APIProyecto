@@ -14,9 +14,9 @@ var fs = require('fs');
 //ésta es la ruta de la carpeta en donde se guardan las imágenes (ruta relativa desde ésta carpeta).
 const folderImagen = './src/imagenes/'
 const folderImagenPDI = './src/imagenes/PDI/'
-const folderImagenPDIAbs = 'C:/Users/nacho/Documents/GitHub/APIProyecto/src/imagenes/PDI/' //REEMPLAZAR CON RUTA DEL SERVIDOR
+const folderImagenPDIAbs = 'C:/Users/nadia/Documents/APIProyecto/src/imagenes/PDI/' //REEMPLAZAR CON RUTA DEL SERVIDOR
 const folderImagenEvento = './src/imagenes/evento/'
-const folderImagenEventoAbs = 'C:/Users/nacho/Documents/GitHub/APIProyecto/src/imagenes/evento/' //REEMPLAZAR CON RUTA DEL SERVIDOR
+const folderImagenEventoAbs = 'C:/Users/nadia/Documents/APIProyecto/src/imagenes/evento/' //REEMPLAZAR CON RUTA DEL SERVIDOR
 
 
 
@@ -55,6 +55,7 @@ const obtenerPDIPendientes = (req, res) => {
 const createPDI = (req, res) => {
     baja = false;
     const { nombre, descripcion, categoria, calle, numero, provincia, localidad, telefono, precio, email, aprobado, lat, long, imagenes, idhorario } = req.body;
+    console.log('imagenes en pdi' + imagenes);
 
     const respuesta = pool.query('INSERT INTO puntodeinteres (nombre, descripcion, categoria, calle, numero, provincia, localidad, telefono, precio, email, aprobado, baja, imagenes, lat, long, idhorario) VALUES ( $1, $2,$3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16)', [nombre, descripcion, categoria, calle, numero, provincia, localidad, telefono, precio, email, aprobado, baja, imagenes, lat, long, idhorario])
         .then(respuesta => console.log(respuesta))
@@ -62,7 +63,7 @@ const createPDI = (req, res) => {
 
 }
 
-const createImagenes = (req, res) => {
+/* const createImagenes = (req, res) => {
     const nombre = req.header('nombre');
     const elemento = req.header('elemento');
     const imagenes = req.body;
@@ -79,7 +80,7 @@ const createImagenes = (req, res) => {
         for (let index = 0; index < rutasImg.length; index++) {
             rutasImg[index] = folderImagenEvento + nombre + index + '.' + getFileExtension3(imagenes[index]).toLocaleLowerCase();
         }
-    }
+    } 
 
     const respuesta = pool.query('INSERT INTO imagenes (imagenes) VALUES ($1)', [rutasImg])
         .then(respuesta => console.log(respuesta))
@@ -93,7 +94,7 @@ const createImagenes = (req, res) => {
                 app.locals.idImagen = '';
             }
             ))
-}
+}*/
 
 const createHorarios = (req, res) => {
     const { lunesAp, lunesCie, martesAp, martesCie, miercolesAp, miercolesCie, juevesAp, juevesCie, viernesAp, viernesCie, sabadoAp, sabadoCie, domingoAp, domingoCie } = req.body
@@ -363,6 +364,7 @@ const getImagenesPDI = (req, res) => {
         })
 }
 
+
 const getImagenPDI = (req, res) => {
     const fileName = req.params.nombre;
     res.sendFile(fileName, { root: './src/imagenes/PDI' });
@@ -394,30 +396,32 @@ const getImagenEvento = (req, res) => {
     res.sendFile(fileName, { root: './src/imagenes/evento' });
 }
 
-const postImagenes = (req, res) => {
+const postImagenes = (req, res, next) => {
     //return res.send(req.file);
     const nombre = req.file.filename;
     console.log(req.file);
     console.log(req.file.filename);
-    rutaImg = folderImagenPDI + req.file.filename;
-    const query = pool.query('INSERT INTO imagenes (ruta) VALUES ($1)', [rutaImg], (err, result) => {
-        pool.query('SELECT * FROM imagenes ORDER BY id desc limit 1')
-            .then(resp => {
-                app.locals.idImagen = resp.rows[0].id;
-                console.log('app.locals.idImagen: ' + app.locals.idImagen);
-                res.json({
-                    id: app.locals.idImagen
-                });
-                app.locals.idImagen = '';
-            }
-            )
-    })
-
+    rutaImg = req.file.destination + req.file.filename;
+    const query = pool.query('INSERT INTO imagenes (ruta) VALUES ($1)', [rutaImg])
+        .then(respuesta => console.log(respuesta));
+    next();
 }
 
-function insertarImagenes(params) {
-
+const devolverid = (req, res) => {
+    console.log('pasa al devolver id')
+    pool.query('SELECT * FROM imagenes ORDER BY id desc limit 1')
+        .then(respu => {console.log(respu);
+            app.locals.idImagen = respu.rows[0].id;
+            console.log('app.locals.idImagen: ' + app.locals.idImagen);
+            res.json({
+                id: app.locals.idImagen
+            });
+            app.locals.idImagen = '';
+        });
 }
+
+
+
 const storagePDI = multer.diskStorage({
     destination: (req, file, cb) => { cb(null, folderImagenPDI) },
     filename: (req, file, cb) => {
@@ -492,5 +496,5 @@ module.exports = {
     createHorarios,
     getHorarioByID,
     updateHorario,
-    createImagenes
+    devolverid
 }
