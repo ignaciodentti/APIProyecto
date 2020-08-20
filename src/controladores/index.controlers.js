@@ -14,9 +14,9 @@ var fs = require('fs');
 //ésta es la ruta de la carpeta en donde se guardan las imágenes (ruta relativa desde ésta carpeta).
 const folderImagen = './src/imagenes/'
 const folderImagenPDI = './src/imagenes/PDI/'
-const folderImagenPDIAbs = 'C:/Users/nacho/Documents/GitHub/APIProyecto/src/imagenes/PDI/'
+const folderImagenPDIAbs = 'C:/Users/nacho/Documents/GitHub/APIProyecto/src/imagenes/PDI/' //REEMPLAZAR CON RUTA DEL SERVIDOR
 const folderImagenEvento = './src/imagenes/evento/'
-const folderImagenEventoAbs = 'C:/Users/nacho/Documents/GitHub/APIProyecto/src/imagenes/evento/'
+const folderImagenEventoAbs = 'C:/Users/nacho/Documents/GitHub/APIProyecto/src/imagenes/evento/' //REEMPLAZAR CON RUTA DEL SERVIDOR
 
 
 
@@ -55,15 +55,43 @@ const createPDI = (req, res) => {
     baja = false;
     const { nombre, descripcion, categoria, calle, numero, provincia, localidad, telefono, precio, email, aprobado, lat, long, imagenes, idhorario } = req.body;
 
-    rutasImg = new Array(imagenes.length);
-    for (let index = 0; index < rutasImg.length; index++) {
-        rutasImg[index] = folderImagenPDI + nombre + index + '.' + getFileExtension3(imagenes[index]).toLocaleLowerCase();
-    }
-
-    const respuesta = pool.query('INSERT INTO puntodeinteres (nombre, descripcion, categoria, calle, numero, provincia, localidad, telefono, precio, email, aprobado, baja, imagenes, lat, long, idhorario) VALUES ( $1, $2,$3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16)', [nombre, descripcion, categoria, calle, numero, provincia, localidad, telefono, precio, email, aprobado, baja, rutasImg, lat, long, idhorario])
+    const respuesta = pool.query('INSERT INTO puntodeinteres (nombre, descripcion, categoria, calle, numero, provincia, localidad, telefono, precio, email, aprobado, baja, imagenes, lat, long, idhorario) VALUES ( $1, $2,$3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16)', [nombre, descripcion, categoria, calle, numero, provincia, localidad, telefono, precio, email, aprobado, baja, imagenes, lat, long, idhorario])
         .then(respuesta => console.log(respuesta))
         .then(res.json({ message: 'Evento agregado con exito' }));
 
+}
+
+const createImagenes = (req, res) => {
+    const nombre = req.header('nombre');
+    const elemento = req.header('elemento');
+    const imagenes = req.body;
+    console.log(imagenes);
+
+    rutasImg = new Array(imagenes.length);
+
+    if (elemento == 'pdi') {
+        for (let index = 0; index < rutasImg.length; index++) {
+            rutasImg[index] = folderImagenPDI + nombre + index + '.' + getFileExtension3(imagenes[index]).toLocaleLowerCase();
+        }
+    }
+    if (elemento == 'evento') {
+        for (let index = 0; index < rutasImg.length; index++) {
+            rutasImg[index] = folderImagenEvento + nombre + index + '.' + getFileExtension3(imagenes[index]).toLocaleLowerCase();
+        }
+    }
+
+    const respuesta = pool.query('INSERT INTO imagenes (imagenes) VALUES ($1)', [rutasImg])
+        .then(respuesta => console.log(respuesta))
+        .then(pool.query('SELECT * FROM imagenes ORDER BY id desc limit 1')
+            .then(resp => {
+                app.locals.idImagen = resp.rows[0].id;
+                console.log('app.locals.idImagen: ' + app.locals.idImagen);
+                res.json({
+                    id: app.locals.idImagen
+                });
+                app.locals.idImagen = '';
+            }
+            ))
 }
 
 const createHorarios = (req, res) => {
@@ -109,14 +137,14 @@ const deletePDI = (req, res) => {
     const id = req.params.id
     baja = true;
     const query = pool.query('SELECT imagenes FROM puntodeinteres WHERE id =$1', [id])
-    .then((query)=>{
-        console.log(query.rows[0]);
-        query.rows[0].imagenes.forEach(element => {
-            pathImagen = folderImagenPDIAbs + nameFromPath(element);
-            console.log('path de imagen a borrar'+ pathImagen);
-            fs.unlink(pathImagen);
-        });
-    })
+        .then((query) => {
+            console.log(query.rows[0]);
+            query.rows[0].imagenes.forEach(element => {
+                pathImagen = folderImagenPDIAbs + nameFromPath(element);
+                console.log('path de imagen a borrar' + pathImagen);
+                fs.unlink(pathImagen);
+            });
+        })
 
     const respuesta = pool.query('UPDATE puntodeinteres SET baja=$1 WHERE id=$2', [baja, id])
         .then(res.json(`Punto de interes ${id} eliminado con exito `));
@@ -130,8 +158,8 @@ const getPDIByID = (req, res) => {
 
 const updatePDI = (req, res) => {
     const id = req.params.id;
-    const { nombre, descripcion, categoria, calle, numero, provincia, localidad, telefono, precio, email, aprobado, lat, long } = req.body;
-    const respuesta = pool.query('UPDATE puntodeinteres SET nombre=$1, descripcion=$2, categoria=$3, calle=$4, numero=$5, provincia=$6, localidad=$7, telefono=$8, precio=$9, email=$10, aprobado=$11, lat=$12, long=$13 WHERE id =$14', [nombre, descripcion, categoria, calle, numero, provincia, localidad, telefono, precio, email, aprobado, lat, long, id])
+    const { nombre, descripcion, categoria, calle, numero, provincia, localidad, telefono, precio, email, aprobado, lat, long, imagenes } = req.body;
+    const respuesta = pool.query('UPDATE puntodeinteres SET nombre=$1, descripcion=$2, categoria=$3, calle=$4, numero=$5, provincia=$6, localidad=$7, telefono=$8, precio=$9, email=$10, aprobado=$11, lat=$12, long=$13, imagenes=$15 WHERE id =$14', [nombre, descripcion, categoria, calle, numero, provincia, localidad, telefono, precio, email, aprobado, lat, long, id, imagenes])
         .then(respuesta => console.log(respuesta))
         .then(res.json(`Punto de interes ${id} actualizado con exito `));
 };
@@ -186,14 +214,14 @@ const deleteEvento = (req, res) => {
     baja = true;
 
     const query = pool.query('SELECT imagenes FROM eventos WHERE id =$1', [id])
-    .then((query)=>{
-        console.log(query.rows[0]);
-        query.rows[0].imagenes.forEach(element => {
-            pathImagen = folderImagenEventoAbs + nameFromPath(element);
-            console.log('path de imagen a borrar'+ pathImagen);
-            fs.unlink(pathImagen);
-        });
-    })
+        .then((query) => {
+            console.log(query.rows[0]);
+            query.rows[0].imagenes.forEach(element => {
+                pathImagen = folderImagenEventoAbs + nameFromPath(element);
+                console.log('path de imagen a borrar' + pathImagen);
+                fs.unlink(pathImagen);
+            });
+        })
 
     const respuesta = pool.query('UPDATE eventos SET baja=$1 WHERE id=$2', [baja, id])
         .then(respuesta => console.log(respuesta))
@@ -202,8 +230,27 @@ const deleteEvento = (req, res) => {
 
 const updateEvento = (req, res) => {
     const id = req.params.id;
-    const { nombre, descripcion, categoria, calle, numero, provincia, localidad, fechainicio, fechafin, horaapertura, horacierre, email, precio, aprobado, lat, long } = req.body;
-    const respuesta = pool.query('UPDATE eventos SET nombre=$1, descripcion=$2, categoria=$3, calle=$4, numero=$5 , provincia= $6, localidad=$7, fechainicio=$8, fechafin=$9, horaapertura=$10, horacierre=$11, email=$12, precio=$13, aprobado=$15, lat=$16, long=$17  WHERE id=$14', [nombre, descripcion, categoria, calle, numero, provincia, localidad, fechainicio, fechafin, horaapertura, horacierre, email, precio, id, aprobado, lat, long])
+    const query = pool.query('SELECT imagenes FROM eventos WHERE id =$1', [id])
+        .then((query) => {
+            console.log(query.rows[0]);
+            query.rows[0].imagenes.forEach(element => {
+                pathImagen = folderImagenEventoAbs + nameFromPath(element);
+                console.log('path de imagen a borrar' + pathImagen);
+                fs.unlink(pathImagen);
+            });
+        })
+
+
+    const { nombre, descripcion, categoria, calle, numero, provincia, localidad, fechainicio, fechafin, horaapertura, horacierre, email, precio, aprobado, lat, long, imagenes } = req.body;
+
+    rutasImg = new Array(imagenes.length);
+    console.log(imagenes.length);
+    for (let index = 0; index < imagenes.length; index++) {
+        ext = getFileExtension3(imagenes[index]).toLocaleLowerCase();
+        rutasImg[index] = folderImagenEvento + nombre + index + '.' + ext;
+    }
+
+    const respuesta = pool.query('UPDATE eventos SET nombre=$1, descripcion=$2, categoria=$3, calle=$4, numero=$5 , provincia= $6, localidad=$7, fechainicio=$8, fechafin=$9, horaapertura=$10, horacierre=$11, email=$12, precio=$13, aprobado=$15, lat=$16, long=$17, imagenes=$18  WHERE id=$14', [nombre, descripcion, categoria, calle, numero, provincia, localidad, fechainicio, fechafin, horaapertura, horacierre, email, precio, id, aprobado, lat, long, rutasImg])
         .then(respuesta => console.log(respuesta))
         .then(res.json(`Evento ${id} actualizado con exito `));
 };
@@ -347,9 +394,29 @@ const getImagenEvento = (req, res) => {
 }
 
 const postImagenes = (req, res) => {
-    return res.send(req.file);
+    //return res.send(req.file);
+    const nombre = req.file.filename;
+    console.log(req.file);
+    console.log(req.file.filename);
+    rutaImg = folderImagenPDI + req.file.filename;
+    const query = pool.query('INSERT INTO imagenes (ruta) VALUES ($1)', [rutaImg], (err, result) => {
+        pool.query('SELECT * FROM imagenes ORDER BY id desc limit 1')
+            .then(resp => {
+                app.locals.idImagen = resp.rows[0].id;
+                console.log('app.locals.idImagen: ' + app.locals.idImagen);
+                res.json({
+                    id: app.locals.idImagen
+                });
+                app.locals.idImagen = '';
+            }
+            )
+    })
+
 }
 
+function insertarImagenes(params) {
+
+}
 const storagePDI = multer.diskStorage({
     destination: (req, file, cb) => { cb(null, folderImagenPDI) },
     filename: (req, file, cb) => {
@@ -423,5 +490,6 @@ module.exports = {
     getImagenEvento,
     createHorarios,
     getHorarioByID,
-    updateHorario
+    updateHorario,
+    createImagenes
 }

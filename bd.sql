@@ -16,7 +16,7 @@ create table puntoDeInteres(
     aprobado boolean,
     lat text, 
     long text, 
-    imagenes text[],
+    imagenes numeric,
     idhorario numeric
  );
 
@@ -75,4 +75,9 @@ create table horarios(
     sabadoCie text,
     domingoAp text,
     domingoCie text
+);
+
+create table imagenes(
+    id serial not null PRIMARY KEY,
+    imagenes text[]
 );
