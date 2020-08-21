@@ -14,16 +14,16 @@ var fs = require('fs');
 //ésta es la ruta de la carpeta en donde se guardan las imágenes (ruta relativa desde ésta carpeta).
 const folderImagen = './src/imagenes/'
 const folderImagenPDI = './src/imagenes/PDI/'
-const folderImagenPDIAbs = 'C:/Users/nadia/Documents/APIProyecto/src/imagenes/PDI/' //REEMPLAZAR CON RUTA DEL SERVIDOR
+const folderImagenPDIAbs = 'C:/Users/nacho/Documents/GitHub/APIProyecto/src/imagenes/PDI/' //REEMPLAZAR CON RUTA DEL SERVIDOR
 const folderImagenEvento = './src/imagenes/evento/'
-const folderImagenEventoAbs = 'C:/Users/nadia/Documents/APIProyecto/src/imagenes/evento/' //REEMPLAZAR CON RUTA DEL SERVIDOR
+const folderImagenEventoAbs = 'C:/Users/nacho/Documents/GitHub/APIProyecto/src/imagenes/evento/' //REEMPLAZAR CON RUTA DEL SERVIDOR
 
 
 
 const pool = new Pool({
     host: 'localhost',
     user: 'postgres',
-    password: 'nadia1998',
+    password: 'postgre',
     database: 'viviconcepcion',
     port: '5432'
 });
@@ -194,14 +194,7 @@ const createEvento = (req, res) => {
     baja = false;
     const { nombre, descripcion, categoria, calle, numero, fechainicio, fechafin, horaapertura, horacierre, provincia, localidad, email, precio, aprobado, lat, long, imagenes } = req.body;
 
-    rutasImg = new Array(imagenes.length);
-    console.log(imagenes.length);
-    for (let index = 0; index < imagenes.length; index++) {
-        ext = getFileExtension3(imagenes[index]).toLocaleLowerCase();
-        rutasImg[index] = folderImagenEvento + nombre + index + '.' + ext;
-    }
-
-    const respuesta = pool.query('INSERT INTO eventos (nombre, descripcion, categoria, calle, numero, fechainicio, fechafin, horaapertura, horacierre, provincia, localidad, email, precio, aprobado, lat, long, baja, imagenes) VALUES ( $1, $2,$3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18)', [nombre, descripcion, categoria, calle, numero, fechainicio, fechafin, horaapertura, horacierre, provincia, localidad, email, precio, aprobado, lat, long, baja, rutasImg])
+    const respuesta = pool.query('INSERT INTO eventos (nombre, descripcion, categoria, calle, numero, fechainicio, fechafin, horaapertura, horacierre, provincia, localidad, email, precio, aprobado, lat, long, baja, imagenes) VALUES ( $1, $2,$3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18)', [nombre, descripcion, categoria, calle, numero, fechainicio, fechafin, horaapertura, horacierre, provincia, localidad, email, precio, aprobado, lat, long, baja, imagenes])
         .then(respuesta => console.log(respuesta))
         .then(res.json({
             message: 'Evento agregado con exito',
@@ -397,30 +390,28 @@ const getImagenEvento = (req, res) => {
 }
 
 const postImagenes = (req, res, next) => {
-    //return res.send(req.file);
     const nombre = req.file.filename;
     console.log(req.file);
     console.log(req.file.filename);
     rutaImg = req.file.destination + req.file.filename;
     const query = pool.query('INSERT INTO imagenes (ruta) VALUES ($1)', [rutaImg])
-        .then(respuesta => console.log(respuesta));
-    next();
+        .then(respuesta => console.log(respuesta))
+        .then(res.json('Exito al insertar imágen.'));
+   // next();
 }
 
 const devolverid = (req, res) => {
     console.log('pasa al devolver id')
     pool.query('SELECT * FROM imagenes ORDER BY id desc limit 1')
         .then(respu => {console.log(respu);
-            app.locals.idImagen = respu.rows[0].id;
-            console.log('app.locals.idImagen: ' + app.locals.idImagen);
+            //app.locals.idImagen = respu.rows[0].id;
+            //console.log('app.locals.idImagen: ' + app.locals.idImagen);
             res.json({
-                id: app.locals.idImagen
+                id: respu.rows[0].id
             });
-            app.locals.idImagen = '';
+            //app.locals.idImagen = '';
         });
 }
-
-
 
 const storagePDI = multer.diskStorage({
     destination: (req, file, cb) => { cb(null, folderImagenPDI) },

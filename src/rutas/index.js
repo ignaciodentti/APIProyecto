@@ -72,8 +72,9 @@ router.get('/pdi/imagenes/get/:nombre', getImagenesPDI);   //devuelve arreglo co
 router.get('/evento/imagenes/get/:nombre', getImagenesEvento) // ditto, pero para eventos.
 router.get('/pdi/imagen/:nombre', getImagenPDI) // devuelve una imagen en particular de un PDI.
 router.get('/evento/imagen/:nombre', getImagenEvento) // ditto, para un evento.
-router.post('/pdi/imagenes/post', uploadIMGPDI.single('file') ,postImagenes, devolverid);
+router.post('/pdi/imagenes/post', uploadIMGPDI.single('file') ,postImagenes);
 router.post('/evento/imagenes/post', uploadIMGEvento.single('file'), postImagenes);
+router.get('/imagenes/getUltimoID', devolverid);
 //router.post('/imagenes/crear', createImagenes);
 
 //horarios 
