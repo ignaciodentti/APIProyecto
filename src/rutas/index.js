@@ -32,7 +32,8 @@ const {
     getImagenEvento,
     createHorarios, 
     updateHorario, 
-    getHorarioByID
+    getHorarioByID,
+    devolverid
 } =require('../controladores/index.controlers');
 
 const {tokenValidation} = require('../libs/verificarToken')
@@ -73,6 +74,7 @@ router.get('/pdi/imagen/:nombre', getImagenPDI) // devuelve una imagen en partic
 router.get('/evento/imagen/:nombre', getImagenEvento) // ditto, para un evento.
 router.post('/pdi/imagenes/post', uploadIMGPDI.single('file') ,postImagenes);
 router.post('/evento/imagenes/post', uploadIMGEvento.single('file'), postImagenes);
+router.get('/imagenes/getUltimoID', devolverid);
 //router.post('/imagenes/crear', createImagenes);
 
 //horarios 
