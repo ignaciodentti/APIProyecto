@@ -156,11 +156,12 @@ const deletePDI = (req, res) => {
     .then(res.json(`Punto de interes ${id} eliminado con exito `));
     const respuesta = pool.query('SELECT * FROM puntodeinteres WHERE id =$1', [id])
         .then((respuesta)=> {
+            console.log('idhorario: '+ respuesta.rows[0].idhorario);
+            pool.query('UPDATE horarios SET baja=$1 WHERE id=$2', [baja, respuesta.rows[0].idhorario]) 
             for (let index = 0; index < respuesta.rows[0].imagenes.length; index++) {
                 pool.query('UPDATE imagenes SET baja=$1 WHERE id=$2', [baja, respuesta.rows[0].imagenes[index]]);
             };
-            console.log('idhorario: '+ respuesta.rows[0].idhorario);
-            pool.query('UPDATE horarios SET baja=$1 WHERE id=$2', [baja, respuesta.rows[0].idhorario]) 
+            
         })
         
 };
@@ -426,7 +427,7 @@ const postImagenes = (req, res, next) => {
     console.log(req.file.filename);
     rutaImg = req.file.destination + req.file.filename;
     const baja= false;
-    const query = pool.query('INSERT INTO imagenes (ruta,baja) VALUES ($1)', [rutaImg,baja])
+    const query = pool.query('INSERT INTO imagenes (ruta,baja) VALUES ($1,$2)', [rutaImg, baja])
         .then(respuesta => console.log(respuesta))
         .then(res.json('Exito al insertar imágen.'));
     // next();
