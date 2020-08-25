@@ -140,12 +140,15 @@ const deletePDI = (req, res) => {
     baja = true;
     const query = pool.query('SELECT imagenes FROM puntodeinteres WHERE id =$1', [id])
         .then((query) => {
-            console.log(query.rows[0]);
-            query.rows[0].imagenes.forEach(element => {
-                pathImagen = folderImagenPDIAbs + nameFromPath(element);
-                console.log('path de imagen a borrar' + pathImagen);
-                fs.unlink(pathImagen);
-            });
+            for (let index = 0; index < query.rows[0].imagenes.length; index++) {
+                const queryPath = pool.query('SELECT * FROM imagenes WHERE id = $1', [query.rows[0].imagenes[index]])
+                .then((queryPath) =>
+                {
+                    pathImagen = folderImagenPDIAbs + nameFromPath(queryPath.rows[0].ruta);
+                    console.log('path de imagen a borrar' + pathImagen);
+                    fs.unlink(pathImagen);
+                })
+            }
         })
 
     const respuesta = pool.query('UPDATE puntodeinteres SET baja=$1 WHERE id=$2', [baja, id])
