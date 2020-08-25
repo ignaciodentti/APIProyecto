@@ -425,7 +425,8 @@ const postImagenes = (req, res, next) => {
     console.log(req.file);
     console.log(req.file.filename);
     rutaImg = req.file.destination + req.file.filename;
-    const query = pool.query('INSERT INTO imagenes (ruta) VALUES ($1)', [rutaImg])
+    const baja= false;
+    const query = pool.query('INSERT INTO imagenes (ruta,baja) VALUES ($1)', [rutaImg,baja])
         .then(respuesta => console.log(respuesta))
         .then(res.json('Exito al insertar imágen.'));
     // next();
