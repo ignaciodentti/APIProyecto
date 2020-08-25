@@ -153,6 +153,7 @@ const deletePDI = (req, res) => {
         })
     
     pool.query('UPDATE puntodeinteres SET baja=$1 WHERE id=$2', [baja, id])
+    .then(respuesta => console.log(respuesta))
     .then(res.json(`Punto de interes ${id} eliminado con exito `));
     const respuesta = pool.query('SELECT * FROM puntodeinteres WHERE id =$1', [id])
         .then((respuesta)=> {
@@ -235,6 +236,15 @@ const deleteEvento = (req, res) => {
     const respuesta = pool.query('UPDATE eventos SET baja=$1 WHERE id=$2', [baja, id])
         .then(respuesta => console.log(respuesta))
         .then(res.json(`Evento ${id} eliminado con exito `));
+    const respuesta = pool.query('SELECT * FROM eventos WHERE id =$1', [id])
+        .then((respuesta)=> {
+            console.log('idhorario: '+ respuesta.rows[0].idhorario);
+            pool.query('UPDATE horarios SET baja=$1 WHERE id=$2', [baja, respuesta.rows[0].idhorario]) 
+            for (let index = 0; index < respuesta.rows[0].imagenes.length; index++) {
+                pool.query('UPDATE imagenes SET baja=$1 WHERE id=$2', [baja, respuesta.rows[0].imagenes[index]]);
+            };
+            
+        })
 };
 
 const updateEvento = (req, res) => {
