@@ -74,10 +74,12 @@ create table horarios(
     sabadoAp text,
     sabadoCie text,
     domingoAp text,
-    domingoCie text
+    domingoCie text,
+    baja boolean
 );
 
 create table imagenes(
     id serial not null PRIMARY KEY,
-    ruta text
+    ruta text,
+    baja boolean
 );

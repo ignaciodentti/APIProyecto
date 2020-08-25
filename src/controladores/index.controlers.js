@@ -15,16 +15,16 @@ const { json } = require('express');
 //ésta es la ruta de la carpeta en donde se guardan las imágenes (ruta relativa desde ésta carpeta).
 const folderImagen = './src/imagenes/'
 const folderImagenPDI = './src/imagenes/PDI/'
-const folderImagenPDIAbs = 'C:/Users/nacho/Documents/GitHub/APIProyecto/src/imagenes/PDI/' //REEMPLAZAR CON RUTA DEL SERVIDOR
+const folderImagenPDIAbs = 'C:/Users/nadia/Documents/APIProyecto/src/imagenes/PDI/' //REEMPLAZAR CON RUTA DEL SERVIDOR
 const folderImagenEvento = './src/imagenes/evento/'
-const folderImagenEventoAbs = 'C:/Users/nacho/Documents/GitHub/APIProyecto/src/imagenes/evento/' //REEMPLAZAR CON RUTA DEL SERVIDOR
+const folderImagenEventoAbs = 'C:/Users/nadia/Documents/APIProyecto/src/imagenes/evento/' //REEMPLAZAR CON RUTA DEL SERVIDOR
 
 
 
 const pool = new Pool({
     host: 'localhost',
     user: 'postgres',
-    password: 'postgre',
+    password: 'nadia1998',
     database: 'viviconcepcion',
     port: '5432'
 });
@@ -97,8 +97,9 @@ const createPDI = (req, res) => {
 }*/
 
 const createHorarios = (req, res) => {
+    baja= false;
     const { lunesAp, lunesCie, martesAp, martesCie, miercolesAp, miercolesCie, juevesAp, juevesCie, viernesAp, viernesCie, sabadoAp, sabadoCie, domingoAp, domingoCie } = req.body
-    const respuesta = pool.query('INSERT INTO horarios (lunesAp , lunesCie , martesAp ,martesCie ,miercolesAp ,miercolesCie ,juevesAp ,juevesCie ,viernesAp ,viernesCie ,sabadoAp ,sabadoCie ,domingoAp ,domingoCie) VALUES ( $1, $2,$3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)', [lunesAp, lunesCie, martesAp, martesCie, miercolesAp, miercolesCie, juevesAp, juevesCie, viernesAp, viernesCie, sabadoAp, sabadoCie, domingoAp, domingoCie])
+    const respuesta = pool.query('INSERT INTO horarios (lunesAp , lunesCie , martesAp ,martesCie ,miercolesAp ,miercolesCie ,juevesAp ,juevesCie ,viernesAp ,viernesCie ,sabadoAp ,sabadoCie ,domingoAp ,domingoCie, baja) VALUES ( $1, $2,$3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)', [lunesAp, lunesCie, martesAp, martesCie, miercolesAp, miercolesCie, juevesAp, juevesCie, viernesAp, viernesCie, sabadoAp, sabadoCie, domingoAp, domingoCie, baja])
         .then(respuesta => console.log(respuesta))
         .then(pool.query('SELECT * FROM horarios ORDER BY id desc limit 1')
             .then(resp => {
@@ -114,7 +115,7 @@ const createHorarios = (req, res) => {
 
 const getHorarioByID = (req, res) => {
     const id = req.params.id;
-    const respuesta = pool.query('SELECT * FROM horarios WHERE id = $1', [id])
+    const respuesta = pool.query('SELECT * FROM horarios WHERE id = $1 and baja= false', [id])
         .then(respuesta => res.status(200).json(respuesta.rows));
 };
 
@@ -150,14 +151,23 @@ const deletePDI = (req, res) => {
                 })
             }
         })
-
-    const respuesta = pool.query('UPDATE puntodeinteres SET baja=$1 WHERE id=$2', [baja, id])
-        .then(res.json(`Punto de interes ${id} eliminado con exito `));
+    
+    pool.query('UPDATE puntodeinteres SET baja=$1 WHERE id=$2', [baja, id])
+    .then(res.json(`Punto de interes ${id} eliminado con exito `));
+    const respuesta = pool.query('SELECT * FROM puntodeinteres WHERE id =$1', [id])
+        .then((respuesta)=> {
+            for (let index = 0; index < respuesta.rows[0].imagenes.length; index++) {
+                pool.query('UPDATE imagenes SET baja=$1 WHERE id=$2', [baja, respuesta.rows[0].imagenes[index]]);
+            };
+            console.log('idhorario: '+ respuesta.rows[0].idhorario);
+            pool.query('UPDATE horarios SET baja=$1 WHERE id=$2', [baja, respuesta.rows[0].idhorario]) 
+        })
+        
 };
 
 const getPDIByID = (req, res) => {
     const id = req.params.id;
-    const respuesta = pool.query('SELECT * FROM puntodeinteres WHERE id = $1 AND aprobado=true', [id])
+    const respuesta = pool.query('SELECT * FROM puntodeinteres WHERE id = $1 AND aprobado=true and baja=false', [id])
         .then(respuesta => res.json(respuesta.rows));
 };
 
