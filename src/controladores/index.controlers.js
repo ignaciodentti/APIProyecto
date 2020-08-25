@@ -9,6 +9,7 @@ const { } = require('morgan');
 const express = require('express');
 const app = express();
 var fs = require('fs');
+const { json } = require('express');
 //const { size, result } = require('underscore');
 
 //ésta es la ruta de la carpeta en donde se guardan las imágenes (ruta relativa desde ésta carpeta).
@@ -29,9 +30,8 @@ const pool = new Pool({
 });
 
 const getPDI = (_req, res) => {
-    const respuesta = pool.query('SELECT * FROM puntodeinteres WHERE baja=false AND aprobado=true')
+    var respuesta = pool.query('SELECT * FROM puntodeinteres WHERE baja=false AND aprobado=true')
         .then(respuesta => {
-            console.log(respuesta.rows);
             for (let i = 0; i < respuesta.rows.length; i++) {
                 for (let j = 0; j < respuesta.rows[i].imagenes.length; j++) {
                     respuesta.rows[i].imagenes[j] = 'http://localhost:3000/api/pdi/imagen/' + nameFromPath(respuesta.rows[i].imagenes[j]);
@@ -344,23 +344,36 @@ const getImagenesPDI = (req, res) => {
         .then((respuesta) => {
             console.log('RESPUESTA: ')
             console.log(respuesta.rows);
-            let jsonRes = respuesta.rows[0];
+            let jsonID = respuesta.rows[0];
 
-            for (let index = 0; index < jsonRes.imagenes.length; index++) {
+            let jsonRespuesta = jsonID
+            for (let index = 0; index < jsonID.imagenes.length; index++) {
+                const queryImagenes = pool.query('SELECT ruta FROM imagenes WHERE imagenes.id = $1', [jsonID.imagenes[index]])
+                    .then((queryImagenes) => {
+                        console.log('RESPUESTA 2: ')
+                        console.log(queryImagenes.rows[0].ruta);
+                        let fileName = nameFromPath(queryImagenes.rows[0].ruta);               //obtengo el nombre de la imagen
+                        fileName = 'http://localhost:3000/api/pdi/imagen/' + fileName       //lo concateno al enlace para obtenerlo.
+                        console.log(fileName);
+                        jsonRespuesta.imagenes[index] = fileName;
+                        res.json(jsonRespuesta);
+                    }
+                    )
 
-                let fileName = nameFromPath(jsonRes.imagenes[index]);               //obtengo el nombre de la imagen
-                fileName = 'http://localhost:3000/api/pdi/imagen/' + fileName       //lo concateno al enlace para obtenerlo.
-
-                jsonRes.imagenes[index] = fileName;
             }
-            res.json(jsonRes);
+
         })
 }
 
 
 const getImagenPDI = (req, res) => {
-    const fileName = req.params.nombre;
-    res.sendFile(fileName, { root: './src/imagenes/PDI' });
+    const idImagen = req.params.idImagen;
+    const queryRuta = pool.query('SELECT * FROM imagenes WHERE id = $1', [idImagen])
+        .then((queryRuta) => {
+            let rutaImagen = queryRuta.rows[0].ruta;
+            let nombreImagen = nameFromPath(rutaImagen)
+            res.sendFile(nombreImagen, { root: './src/imagenes/PDI' });
+        })
 }
 
 const getImagenesEvento = (req, res) => {
@@ -385,8 +398,13 @@ const getImagenesEvento = (req, res) => {
 }
 
 const getImagenEvento = (req, res) => {
-    const fileName = req.params.nombre;
-    res.sendFile(fileName, { root: './src/imagenes/evento' });
+    const idImagen = req.params.idImagen;
+    const queryRuta = pool.query('SELECT * FROM imagenes WHERE id = $1', [idImagen])
+        .then((queryRuta) => {
+            let rutaImagen = queryRuta.rows[0].ruta;
+            let nombreImagen = nameFromPath(rutaImagen)
+            res.sendFile(nombreImagen, { root: './src/imagenes/evento' });
+        })
 }
 
 const postImagenes = (req, res, next) => {
@@ -397,13 +415,14 @@ const postImagenes = (req, res, next) => {
     const query = pool.query('INSERT INTO imagenes (ruta) VALUES ($1)', [rutaImg])
         .then(respuesta => console.log(respuesta))
         .then(res.json('Exito al insertar imágen.'));
-   // next();
+    // next();
 }
 
 const devolverid = (req, res) => {
     console.log('pasa al devolver id')
     pool.query('SELECT * FROM imagenes ORDER BY id desc limit 1')
-        .then(respu => {console.log(respu);
+        .then(respu => {
+            console.log(respu);
             //app.locals.idImagen = respu.rows[0].id;
             //console.log('app.locals.idImagen: ' + app.locals.idImagen);
             res.json({
