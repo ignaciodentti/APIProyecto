@@ -225,16 +225,19 @@ const deleteEvento = (req, res) => {
 
     const query = pool.query('SELECT imagenes FROM eventos WHERE id =$1', [id])
         .then((query) => {
-            console.log(query.rows[0]);
-            query.rows[0].imagenes.forEach(element => {
-                pathImagen = folderImagenEventoAbs + nameFromPath(element);
-                console.log('path de imagen a borrar' + pathImagen);
-                fs.unlink(pathImagen);
-            });
+            for (let index = 0; index < query.rows[0].imagenes.length; index++) {
+                const queryPath = pool.query('SELECT * FROM imagenes WHERE id = $1', [query.rows[0].imagenes[index]])
+                .then((queryPath) =>
+                {
+                    pathImagen = folderImagenEventoAbs + nameFromPath(queryPath.rows[0].ruta);
+                    console.log('path de imagen a borrar' + pathImagen);
+                    fs.unlink(pathImagen);
+                })
+            }
         })
 
-    const respuesta = pool.query('UPDATE eventos SET baja=$1 WHERE id=$2', [baja, id])
-        .then(respuesta => console.log(respuesta))
+    const respu = pool.query('UPDATE eventos SET baja=$1 WHERE id=$2', [baja, id])
+        .then(respu => console.log(respu))
         .then(res.json(`Evento ${id} eliminado con exito `));
     const respuesta = pool.query('SELECT * FROM eventos WHERE id =$1', [id])
         .then((respuesta)=> {
