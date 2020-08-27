@@ -33,7 +33,9 @@ const {
     createHorarios, 
     updateHorario, 
     getHorarioByID,
-    devolverid
+    devolverid,
+    deleteImagenesPDI,
+    deleteImagenesEvento
 } =require('../controladores/index.controlers');
 
 const {tokenValidation} = require('../libs/verificarToken')
@@ -75,6 +77,8 @@ router.get('/evento/imagen/:idImagen', getImagenEvento) // ditto, para un evento
 router.post('/pdi/imagenes/post', uploadIMGPDI.single('file') ,postImagenes);
 router.post('/evento/imagenes/post', uploadIMGEvento.single('file'), postImagenes);
 router.get('/imagenes/getUltimoID', devolverid);
+router.put('/pdi/imagenes/delete', deleteImagenesPDI);
+router.put('/evento/imagenes/delete', deleteImagenesEvento);
 //router.post('/imagenes/crear', createImagenes);
 
 //horarios 

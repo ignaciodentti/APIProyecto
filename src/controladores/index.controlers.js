@@ -15,16 +15,16 @@ const { json } = require('express');
 //ésta es la ruta de la carpeta en donde se guardan las imágenes (ruta relativa desde ésta carpeta).
 const folderImagen = './src/imagenes/'
 const folderImagenPDI = './src/imagenes/PDI/'
-const folderImagenPDIAbs = 'C:/Users/nadia/Documents/APIProyecto/src/imagenes/PDI/' //REEMPLAZAR CON RUTA DEL SERVIDOR
+const folderImagenPDIAbs = 'C:/Users/nacho/Documents/GitHub/APIProyecto/src/imagenes/PDI/' //REEMPLAZAR CON RUTA DEL SERVIDOR
 const folderImagenEvento = './src/imagenes/evento/'
-const folderImagenEventoAbs = 'C:/Users/nadia/Documents/APIProyecto/src/imagenes/evento/' //REEMPLAZAR CON RUTA DEL SERVIDOR
+const folderImagenEventoAbs = 'C:/Users/nacho/Documents/GitHub/APIProyecto/src/imagenes/evento/' //REEMPLAZAR CON RUTA DEL SERVIDOR
 
 
 
 const pool = new Pool({
     host: 'localhost',
     user: 'postgres',
-    password: 'nadia1998',
+    password: 'postgre',
     database: 'viviconcepcion',
     port: '5432'
 });
@@ -97,7 +97,7 @@ const createPDI = (req, res) => {
 }*/
 
 const createHorarios = (req, res) => {
-    baja= false;
+    baja = false;
     const { lunesAp, lunesCie, martesAp, martesCie, miercolesAp, miercolesCie, juevesAp, juevesCie, viernesAp, viernesCie, sabadoAp, sabadoCie, domingoAp, domingoCie } = req.body
     const respuesta = pool.query('INSERT INTO horarios (lunesAp , lunesCie , martesAp ,martesCie ,miercolesAp ,miercolesCie ,juevesAp ,juevesCie ,viernesAp ,viernesCie ,sabadoAp ,sabadoCie ,domingoAp ,domingoCie, baja) VALUES ( $1, $2,$3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)', [lunesAp, lunesCie, martesAp, martesCie, miercolesAp, miercolesCie, juevesAp, juevesCie, viernesAp, viernesCie, sabadoAp, sabadoCie, domingoAp, domingoCie, baja])
         .then(respuesta => console.log(respuesta))
@@ -137,34 +137,32 @@ function nameFromPath(str) {
 }
 
 const deletePDI = (req, res) => {
-    const id = req.params.id
-    baja = true;
+    const id = req.params.id;
     const query = pool.query('SELECT imagenes FROM puntodeinteres WHERE id =$1', [id])
         .then((query) => {
             for (let index = 0; index < query.rows[0].imagenes.length; index++) {
                 const queryPath = pool.query('SELECT * FROM imagenes WHERE id = $1', [query.rows[0].imagenes[index]])
-                .then((queryPath) =>
-                {
-                    pathImagen = folderImagenPDIAbs + nameFromPath(queryPath.rows[0].ruta);
-                    console.log('path de imagen a borrar' + pathImagen);
-                    fs.unlink(pathImagen);
-                })
+                    .then((queryPath) => {
+                        pathImagen = folderImagenPDIAbs + nameFromPath(queryPath.rows[0].ruta);
+                        console.log('path de imagen a borrar' + pathImagen);
+                        fs.unlink(pathImagen);
+                    })
             }
         })
-    
-    pool.query('UPDATE puntodeinteres SET baja=$1 WHERE id=$2', [baja, id])
-    .then(respuesta => console.log(respuesta))
-    .then(res.json(`Punto de interes ${id} eliminado con exito `));
+
+    pool.query('UPDATE puntodeinteres SET baja=true WHERE id=$1', [id])
+        .then(respuesta => console.log(respuesta))
+        .then(res.json(`Punto de interes ${id} eliminado con exito `));
     const respuesta = pool.query('SELECT * FROM puntodeinteres WHERE id =$1', [id])
-        .then((respuesta)=> {
-            console.log('idhorario: '+ respuesta.rows[0].idhorario);
-            pool.query('UPDATE horarios SET baja=$1 WHERE id=$2', [baja, respuesta.rows[0].idhorario]) 
+        .then((respuesta) => {
+            console.log('idhorario: ' + respuesta.rows[0].idhorario);
+            pool.query('UPDATE horarios SET baja=true WHERE id=$1', [respuesta.rows[0].idhorario])
             for (let index = 0; index < respuesta.rows[0].imagenes.length; index++) {
-                pool.query('UPDATE imagenes SET baja=$1 WHERE id=$2', [baja, respuesta.rows[0].imagenes[index]]);
+                pool.query('DELETE FROM imagenes WHERE id=$1', [respuesta.rows[0].imagenes[index]]);
             };
-            
+
         })
-        
+
 };
 
 const getPDIByID = (req, res) => {
@@ -221,32 +219,29 @@ const createEvento = (req, res) => {
 
 const deleteEvento = (req, res) => {
     const id = req.params.id
-    baja = true;
-
     const query = pool.query('SELECT imagenes FROM eventos WHERE id =$1', [id])
         .then((query) => {
             for (let index = 0; index < query.rows[0].imagenes.length; index++) {
                 const queryPath = pool.query('SELECT * FROM imagenes WHERE id = $1', [query.rows[0].imagenes[index]])
-                .then((queryPath) =>
-                {
-                    pathImagen = folderImagenEventoAbs + nameFromPath(queryPath.rows[0].ruta);
-                    console.log('path de imagen a borrar' + pathImagen);
-                    fs.unlink(pathImagen);
-                })
+                    .then((queryPath) => {
+                        pathImagen = folderImagenEventoAbs + nameFromPath(queryPath.rows[0].ruta);
+                        console.log('path de imagen a borrar' + pathImagen);
+                        fs.unlink(pathImagen);
+                    })
             }
         })
 
-    const respu = pool.query('UPDATE eventos SET baja=$1 WHERE id=$2', [baja, id])
+    const respu = pool.query('UPDATE eventos SET baja=true WHERE id=$1', [id])
         .then(respu => console.log(respu))
         .then(res.json(`Evento ${id} eliminado con exito `));
     const respuesta = pool.query('SELECT * FROM eventos WHERE id =$1', [id])
-        .then((respuesta)=> {
-            console.log('idhorario: '+ respuesta.rows[0].idhorario);
-            pool.query('UPDATE horarios SET baja=$1 WHERE id=$2', [baja, respuesta.rows[0].idhorario]) 
+        .then((respuesta) => {
+            console.log('idhorario: ' + respuesta.rows[0].idhorario);
+            pool.query('UPDATE horarios SET baja=true WHERE id=$1', [respuesta.rows[0].idhorario])
             for (let index = 0; index < respuesta.rows[0].imagenes.length; index++) {
-                pool.query('UPDATE imagenes SET baja=$1 WHERE id=$2', [baja, respuesta.rows[0].imagenes[index]]);
+                pool.query('UPDATE imagenes SET baja=true WHERE id=$1', [respuesta.rows[0].imagenes[index]]);
             };
-            
+
         })
 };
 
@@ -439,7 +434,7 @@ const postImagenes = (req, res, next) => {
     console.log(req.file);
     console.log(req.file.filename);
     rutaImg = req.file.destination + req.file.filename;
-    const baja= false;
+    const baja = false;
     const query = pool.query('INSERT INTO imagenes (ruta,baja) VALUES ($1,$2)', [rutaImg, baja])
         .then(respuesta => console.log(respuesta))
         .then(res.json('Exito al insertar imágen.'));
@@ -504,6 +499,37 @@ const uploadIMGEvento = multer({
     }
 })
 
+const deleteImagenesPDI = (req, res) => {
+    console.log('DELETE IMAGENES PDI');
+    let arregloID = req.body;
+    console.log(arregloID);
+    for (let index = 0; index < arregloID.length; index++) {
+        const queryPath = pool.query('SELECT * FROM imagenes WHERE id = $1', [arregloID[index]])
+            .then((queryPath) => {
+                pathImagen = folderImagenPDIAbs + nameFromPath(queryPath.rows[0].ruta);
+                console.log('path de imagen a borrar: ' + pathImagen);
+                fs.unlink(pathImagen);
+                pool.query('DELETE FROM imagenes WHERE id=$1', [arregloID[index]]);
+            })
+    }
+
+}
+
+const deleteImagenesEvento = (req, res) => {
+    let arregloID = req.body.arregloID;
+
+    for (let index = 0; index < arregloID.length; index++) {
+        const queryPath = pool.query('SELECT * FROM imagenes WHERE id = $1', [arregloID[index]])
+            .then((queryPath) => {
+                pathImagen = folderImagenEventoAbs + nameFromPath(queryPath.rows[0].ruta);
+                console.log('path de imagen a borrar: ' + pathImagen);
+                fs.unlink(pathImagen);
+                pool.query('DELETE FROM imagenes WHERE id=$1', [arregloID[index]]);
+            })
+    }
+
+}
+
 module.exports = {
     getPDI,
     obtenerPDIPorCategoria,
@@ -534,5 +560,7 @@ module.exports = {
     createHorarios,
     getHorarioByID,
     updateHorario,
-    devolverid
+    devolverid,
+    deleteImagenesPDI,
+    deleteImagenesEvento
 }
