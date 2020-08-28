@@ -2,7 +2,7 @@ const { Pool } = require('pg');
 const jwt = require('jsonwebtoken');
 //const { } = require('express');
 const bcrypt = require('bcryptjs');
-const crypto = require("crypto");
+//const crypto = require("crypto");
 const multer = require("multer");
 const path = require('path');
 const { } = require('morgan');
@@ -276,7 +276,7 @@ const signup = (req, res) => {
                         passwordEncriptada = data;
                         const respuesta = pool.query('INSERT INTO usuarios (username, email ,password , baja, privilegios) VALUES ($1, $2, $3, $4, $5)', [username, email, passwordEncriptada, baja, privilegios])
                             .then(respuesta => console.log(respuesta))
-                            .then(token3 = jwt.sign(crypto.randomBytes(8).toString("hex"), process.env.SECRET_KEY || 'tokentest'/*, {expiresIn: 60*60}*/))
+                            .then(token3 = jwt.sign(Date.now(), process.env.SECRET_KEY || 'tokentest'/*, {expiresIn: 60*60}*/))
                             .then(res.header('auth-token', token3).json({
                                 message: 'Usuario agregado con exito',
                                 body: {
@@ -305,7 +305,7 @@ const signin = (req, res) => {
                 if (data) {
 
                     const payload = { check: true }
-                    token2 = jwt.sign(crypto.randomBytes(8).toString("hex"), process.env.SECRET_KEY || 'tokentest');
+                    token2 = jwt.sign(Date.now(), process.env.SECRET_KEY || 'tokentest');
                     console.log('Usuario logueado: ' + req.body.username + ' con el token: ' + token2);
                     res.header('auth-token', token2);
                     res.status(200).header('Access-Control-Expose-Headers', 'auth-token').json(result.rows[0].privilegios);
@@ -503,8 +503,7 @@ const deleteImagenesPDI = (req, res) => {
 
 }
 
-const deleteImagenesEvento = (req, res) => {
-    let arregloID = req.body;
+const deleteImagenesEvento = (req, res) => {    let arregloID = req.body;
     for (let index = 0; index < arregloID.length; index++) {
         const queryPath = pool.query('SELECT * FROM imagenes WHERE id = $1', [arregloID[index]])
             .then((queryPath) => {
