@@ -15,16 +15,16 @@ const { json } = require('express');
 //ésta es la ruta de la carpeta en donde se guardan las imágenes (ruta relativa desde ésta carpeta).
 const folderImagen = './src/imagenes/'
 const folderImagenPDI = './src/imagenes/PDI/'
-const folderImagenPDIAbs = 'C:/Users/nacho/Documents/GitHub/APIProyecto/src/imagenes/PDI/' //REEMPLAZAR CON RUTA DEL SERVIDOR
+const folderImagenPDIAbs = 'C:/Users/nadia/Documents/APIProyecto/src/imagenes/PDI/' //REEMPLAZAR CON RUTA DEL SERVIDOR
 const folderImagenEvento = './src/imagenes/evento/'
-const folderImagenEventoAbs = 'C:/Users/nacho/Documents/GitHub/APIProyecto/src/imagenes/evento/' //REEMPLAZAR CON RUTA DEL SERVIDOR
+const folderImagenEventoAbs = 'C:/Users/nadia/Documents/APIProyecto/src/imagenes/evento/' //REEMPLAZAR CON RUTA DEL SERVIDOR
 
 
 
 const pool = new Pool({
     host: 'localhost',
     user: 'postgres',
-    password: 'postgre',
+    password: 'nadia1998',
     database: 'viviconcepcion',
     port: '5432'
 });
@@ -458,9 +458,8 @@ const storagePDI = multer.diskStorage({
 const storageEvento = multer.diskStorage({
     destination: (req, file, cb) => { cb(null, folderImagenEvento) },
     filename: (req, file, cb) => {
-        const nombre = req.header('nombre');
-        img = nombre + path.extname(file.originalname).toLocaleLowerCase();
-        console.log('EL NOMBRE DE IMAGEN ES: ' + nombre);
+        img = Date.now() + path.extname(file.originalname).toLocaleLowerCase();
+        console.log('EL NOMBRE DE IMAGEN ES: ' + img);
         cb(null, img);
     }
 });
@@ -490,7 +489,6 @@ const uploadIMGEvento = multer({
 })
 
 const deleteImagenesPDI = (req, res) => {
-    console.log('DELETE IMAGENES PDI');
     let arregloID = req.body;
     console.log(arregloID);
     for (let index = 0; index < arregloID.length; index++) {
@@ -506,11 +504,7 @@ const deleteImagenesPDI = (req, res) => {
 }
 
 const deleteImagenesEvento = (req, res) => {
-
     let arregloID = req.body;
-
-    console.log('El arregloID en delete imagenes evento es');
-    console.log(arregloID);
     for (let index = 0; index < arregloID.length; index++) {
         const queryPath = pool.query('SELECT * FROM imagenes WHERE id = $1', [arregloID[index]])
             .then((queryPath) => {
