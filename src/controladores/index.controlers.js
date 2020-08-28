@@ -247,27 +247,17 @@ const deleteEvento = (req, res) => {
 
 const updateEvento = (req, res) => {
     const id = req.params.id;
-    const query = pool.query('SELECT imagenes FROM eventos WHERE id =$1', [id])
-        .then((query) => {
-            console.log(query.rows[0]);
-            query.rows[0].imagenes.forEach(element => {
-                pathImagen = folderImagenEventoAbs + nameFromPath(element);
-                console.log('path de imagen a borrar' + pathImagen);
-                fs.unlink(pathImagen);
-            });
-        })
-
 
     const { nombre, descripcion, categoria, calle, numero, provincia, localidad, fechainicio, fechafin, horaapertura, horacierre, email, precio, aprobado, lat, long, imagenes } = req.body;
 
-    rutasImg = new Array(imagenes.length);
+    /*rutasImg = new Array(imagenes.length);
     console.log(imagenes.length);
     for (let index = 0; index < imagenes.length; index++) {
         ext = getFileExtension3(imagenes[index]).toLocaleLowerCase();
         rutasImg[index] = folderImagenEvento + nombre + index + '.' + ext;
-    }
+    }*/
 
-    const respuesta = pool.query('UPDATE eventos SET nombre=$1, descripcion=$2, categoria=$3, calle=$4, numero=$5 , provincia= $6, localidad=$7, fechainicio=$8, fechafin=$9, horaapertura=$10, horacierre=$11, email=$12, precio=$13, aprobado=$15, lat=$16, long=$17, imagenes=$18  WHERE id=$14', [nombre, descripcion, categoria, calle, numero, provincia, localidad, fechainicio, fechafin, horaapertura, horacierre, email, precio, id, aprobado, lat, long, rutasImg])
+    const respuesta = pool.query('UPDATE eventos SET nombre=$1, descripcion=$2, categoria=$3, calle=$4, numero=$5 , provincia= $6, localidad=$7, fechainicio=$8, fechafin=$9, horaapertura=$10, horacierre=$11, email=$12, precio=$13, aprobado=$15, lat=$16, long=$17, imagenes=$18  WHERE id=$14', [nombre, descripcion, categoria, calle, numero, provincia, localidad, fechainicio, fechafin, horaapertura, horacierre, email, precio, id, aprobado, lat, long, imagenes])
         .then(respuesta => console.log(respuesta))
         .then(res.json(`Evento ${id} actualizado con exito `));
 };
@@ -458,8 +448,8 @@ const devolverid = (req, res) => {
 const storagePDI = multer.diskStorage({
     destination: (req, file, cb) => { cb(null, folderImagenPDI) },
     filename: (req, file, cb) => {
-        const nombre = req.header('nombre');
-        img = nombre + path.extname(file.originalname).toLocaleLowerCase();
+        //const nombre = req.header('nombre');
+        img =  Date.now() + path.extname(file.originalname).toLocaleLowerCase();//nombre + path.extname(file.originalname).toLocaleLowerCase();
         console.log('EL NOMBRE DE IMAGEN ES: ' + img);
         cb(null, img);
     }
@@ -516,8 +506,11 @@ const deleteImagenesPDI = (req, res) => {
 }
 
 const deleteImagenesEvento = (req, res) => {
-    let arregloID = req.body.arregloID;
 
+    let arregloID = req.body;
+
+    console.log('El arregloID en delete imagenes evento es');
+    console.log(arregloID);
     for (let index = 0; index < arregloID.length; index++) {
         const queryPath = pool.query('SELECT * FROM imagenes WHERE id = $1', [arregloID[index]])
             .then((queryPath) => {
