@@ -7,7 +7,6 @@ const {
     getPDI, 
     obtenerPDIPorCategoria,
     createPDI, 
-    getPDIByID, 
     deletePDI, 
     updatePDI, 
     getEvento, 
@@ -45,11 +44,10 @@ const {tokenValidation} = require('../libs/verificarToken')
 // puntos de interés
 router.get('/pdi/get/', tokenValidation, getPDI);
 router.get('/pdi/categoria/:category', tokenValidation, obtenerPDIPorCategoria);
-router.get('/pdi/getid/:id', getPDIByID);
 router.post('/pdi/post/', tokenValidation,createPDI);
 router.delete('/pdi/delete/:id',tokenValidation, deletePDI);
 router.put('/pdi/put/:id',tokenValidation, updatePDI);
-router.get('/pdi/getPendientes',tokenValidation, obtenerPDIPendientes);
+router.get('/pdi/getPendientes/',tokenValidation, obtenerPDIPendientes);
 
 // eventos
 router.get('/evento/get/',tokenValidation ,getEvento);
@@ -57,7 +55,7 @@ router.get('/evento/categoria/:category',tokenValidation, obtenerEventosPorCateg
 router.post('/evento/post/', tokenValidation, createEvento);
 router.delete('/evento/delete/:id',tokenValidation, deleteEvento);
 router.put('/evento/update/:id',tokenValidation, updateEvento);
-router.get('/evento/getPendientes',tokenValidation, obtenerEventosPendientes);
+router.get('/evento/getPendientes/',tokenValidation, obtenerEventosPendientes);
 
 // categorias
 router.get('/categoria/get/', getCategoria);
@@ -74,16 +72,16 @@ router.get('/pdi/imagenes/get/:nombre', getImagenesPDI);   //devuelve arreglo co
 router.get('/evento/imagenes/get/:nombre', getImagenesEvento) // ditto, pero para eventos.
 router.get('/pdi/imagen/:idImagen', getImagenPDI) // devuelve una imagen en particular de un PDI.
 router.get('/evento/imagen/:idImagen', getImagenEvento) // ditto, para un evento.
-router.post('/pdi/imagenes/post', uploadIMGPDI.single('file') ,postImagenes);
-router.post('/evento/imagenes/post', uploadIMGEvento.single('file'), postImagenes);
-router.get('/imagenes/getUltimoID', devolverid);
-router.put('/pdi/imagenes/delete', deleteImagenesPDI);
-router.put('/evento/imagenes/delete', deleteImagenesEvento);
+router.post('/pdi/imagenes/post/', uploadIMGPDI.single('file') ,postImagenes);
+router.post('/evento/imagenes/post/', uploadIMGEvento.single('file'), postImagenes);
+router.get('/imagenes/getUltimoID/', devolverid);
+router.put('/pdi/imagenes/delete/', deleteImagenesPDI);
+router.put('/evento/imagenes/delete/', deleteImagenesEvento);
 //router.post('/imagenes/crear', createImagenes);
 
 //horarios 
 router.get('/horarios/get/:id',getHorarioByID);
-router.post('/horarios/post', createHorarios);
+router.post('/horarios/post/', createHorarios);
 router.put('/horarios/put/:id',updateHorario);
 
 module.exports= router;
