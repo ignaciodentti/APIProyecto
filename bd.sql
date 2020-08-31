@@ -16,7 +16,7 @@ create table puntoDeInteres(
     aprobado boolean,
     lat text, 
     long text, 
-    imagenes numeric,
+    imagenes text[],
     idhorario numeric
  );
 
@@ -80,6 +80,5 @@ create table horarios(
 
 create table imagenes(
     id serial not null PRIMARY KEY,
-    ruta text,
-    baja boolean
+    ruta text
 );
