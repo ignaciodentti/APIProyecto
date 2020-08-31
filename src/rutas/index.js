@@ -34,7 +34,8 @@ const {
     getHorarioByID,
     devolverid,
     deleteImagenesPDI,
-    deleteImagenesEvento
+    deleteImagenesEvento,
+    getPDIByID
 } =require('../controladores/index.controlers');
 
 const {tokenValidation} = require('../libs/verificarToken')
@@ -43,6 +44,7 @@ const {tokenValidation} = require('../libs/verificarToken')
 
 // puntos de interés
 router.get('/pdi/get/', tokenValidation, getPDI);
+router.get('/pdi/getid/:id', getPDIByID);
 router.get('/pdi/categoria/:category', tokenValidation, obtenerPDIPorCategoria);
 router.post('/pdi/post/', tokenValidation,createPDI);
 router.delete('/pdi/delete/:id',tokenValidation, deletePDI);
