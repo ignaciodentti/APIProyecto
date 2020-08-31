@@ -55,7 +55,7 @@ const obtenerPDIPendientes = (req, res) => {
 const createPDI = (req, res) => {
     baja = false;
     const { nombre, descripcion, categoria, calle, numero, provincia, localidad, telefono, precio, email, aprobado, lat, long, imagenes, idhorario } = req.body;
-    const respuesta = pool.query('INSERT INTO puntodeinteres (nombre, descripcion, categoria, calle, numero, provincia, localidad, telefono, precio, email, aprobado, baja, imagenes, lat, long, idhorario) VALUES ( $1, $2,$3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16)', [nombre, descripcion, categoria, calle, numero, provincia, localidad, telefono, precio, email, aprobado, baja, imagenes, lat, long, idhorario])
+    pool.query('INSERT INTO puntodeinteres (nombre, descripcion, categoria, calle, numero, provincia, localidad, telefono, precio, email, aprobado, baja, imagenes, lat, long, idhorario) VALUES ( $1, $2,$3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16)', [nombre, descripcion, categoria, calle, numero, provincia, localidad, telefono, precio, email, aprobado, baja, imagenes, lat, long, idhorario])
         .then(respuesta => console.log(respuesta))
         .then(res.status(201).json({ message: 'PDI agregado con exito' }));
 
@@ -64,12 +64,11 @@ const createPDI = (req, res) => {
 const createHorarios = (req, res) => {
     baja = false;
     const { lunesAp, lunesCie, martesAp, martesCie, miercolesAp, miercolesCie, juevesAp, juevesCie, viernesAp, viernesCie, sabadoAp, sabadoCie, domingoAp, domingoCie } = req.body
-    const respuesta = pool.query('INSERT INTO horarios (lunesAp , lunesCie , martesAp ,martesCie ,miercolesAp ,miercolesCie ,juevesAp ,juevesCie ,viernesAp ,viernesCie ,sabadoAp ,sabadoCie ,domingoAp ,domingoCie, baja) VALUES ( $1, $2,$3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)', [lunesAp, lunesCie, martesAp, martesCie, miercolesAp, miercolesCie, juevesAp, juevesCie, viernesAp, viernesCie, sabadoAp, sabadoCie, domingoAp, domingoCie, baja])
+    pool.query('INSERT INTO horarios (lunesAp , lunesCie , martesAp ,martesCie ,miercolesAp ,miercolesCie ,juevesAp ,juevesCie ,viernesAp ,viernesCie ,sabadoAp ,sabadoCie ,domingoAp ,domingoCie, baja) VALUES ( $1, $2,$3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)', [lunesAp, lunesCie, martesAp, martesCie, miercolesAp, miercolesCie, juevesAp, juevesCie, viernesAp, viernesCie, sabadoAp, sabadoCie, domingoAp, domingoCie, baja])
         .then(respuesta => console.log(respuesta))
         .then(pool.query('SELECT * FROM horarios ORDER BY id desc limit 1')
             .then(resp => {
                 app.locals.idhorario = resp.rows[0].id;
-                console.log('app.locals.idhorario: ' + app.locals.idhorario);
                 res.status(201).json({
                     id: app.locals.idhorario
                 });
@@ -80,14 +79,14 @@ const createHorarios = (req, res) => {
 
 const getHorarioByID = (req, res) => {
     const id = req.params.id;
-    const respuesta = pool.query('SELECT * FROM horarios WHERE id = $1 and baja= false', [id])
+    pool.query('SELECT * FROM horarios WHERE id = $1 and baja= false', [id])
         .then(respuesta => res.status(200).json(respuesta.rows));
 };
 
 const updateHorario = (req, res) => {
     const id = req.params.id;
     const { lunesAp, lunesCie, martesAp, martesCie, miercolesAp, miercolesCie, juevesAp, juevesCie, viernesAp, viernesCie, sabadoAp, sabadoCie, domingoAp, domingoCie } = req.body;
-    const respuesta = pool.query('UPDATE horarios SET lunesap=$1, lunescie=$2, martesap=$3, martescie=$4, miercolesap=$5 , miercolescie= $6, juevesap=$7, juevescie=$8, viernesap=$9, viernescie=$10, sabadoap=$11, sabadocie=$12, domingoap=$13, domingocie=$14  WHERE id=$15', [lunesAp, lunesCie, martesAp, martesCie, miercolesAp, miercolesCie, juevesAp, juevesCie, viernesAp, viernesCie, sabadoAp, sabadoCie, domingoAp, domingoCie, id])
+    pool.query('UPDATE horarios SET lunesap=$1, lunescie=$2, martesap=$3, martescie=$4, miercolesap=$5 , miercolescie= $6, juevesap=$7, juevescie=$8, viernesap=$9, viernescie=$10, sabadoap=$11, sabadocie=$12, domingoap=$13, domingocie=$14  WHERE id=$15', [lunesAp, lunesCie, martesAp, martesCie, miercolesAp, miercolesCie, juevesAp, juevesCie, viernesAp, viernesCie, sabadoAp, sabadoCie, domingoAp, domingoCie, id])
         .then(respuesta => console.log(respuesta))
         .then(res.status(200).json(`Horario del ${id} actualizado con exito `));
 };
@@ -109,7 +108,6 @@ const deletePDI = (req, res) => {
                 const queryPath = pool.query('SELECT * FROM imagenes WHERE id = $1', [query.rows[0].imagenes[index]])
                     .then((queryPath) => {
                         pathImagen = folderImagenPDIAbs + nameFromPath(queryPath.rows[0].ruta);
-                        console.log('path de imagen a borrar' + pathImagen);
                         fs.unlink(pathImagen);
                     })
             }
@@ -117,7 +115,6 @@ const deletePDI = (req, res) => {
 
     pool.query('SELECT * FROM puntodeinteres WHERE id =$1', [id])
         .then((respuesta) => {
-            console.log('idhorario: ' + respuesta.rows[0].idhorario);
             pool.query('UPDATE horarios SET baja=true WHERE id=$1', [respuesta.rows[0].idhorario])
             for (let index = 0; index < respuesta.rows[0].imagenes.length; index++) {
                 pool.query('DELETE FROM imagenes WHERE id=$1', [respuesta.rows[0].imagenes[index]]);
@@ -138,7 +135,7 @@ const updatePDI = (req, res) => {
 };
 
 const getEvento = (_req, res) => {
-    const respuesta = pool.query('SELECT * FROM eventos WHERE baja=false AND aprobado=true')
+    pool.query('SELECT * FROM eventos WHERE baja=false AND aprobado=true')
         .then(respuesta => {
             for (let i = 0; i < respuesta.rows.length; i++) {
                 for (let j = 0; j < respuesta.rows[i].imagenes.length; j++) {
@@ -151,13 +148,13 @@ const getEvento = (_req, res) => {
 
 const obtenerEventosPorCategoria = (req, res) => {
     const categoriabuscar = req.params.category;
-    const respuesta = pool.query('SELECT  eventos.nombre, eventos.descripcion, eventos.categoria, eventos.calle, eventos.numero, eventos.fechaInicio, eventos.fechaFin, eventos.horaApertura, eventos.horaCierre, eventos.provincia, eventos.localidad, eventos.email, eventos.precio, eventos.baja FROM categorias INNER JOIN eventos ON eventos.categoria = categorias.nombre WHERE eventos.baja = false AND eventos.aprobado=true AND categorias.padre LIKE $1 UNION SELECT eventos.nombre, eventos.descripcion, eventos.categoria, eventos.calle, eventos.numero, eventos.fechaInicio, eventos.fechaFin, eventos.horaApertura, eventos.horaCierre, eventos.provincia, eventos.localidad, eventos.email, eventos.precio, eventos.baja FROM categorias INNER JOIN eventos ON eventos.categoria = categorias.nombre WHERE eventos.baja = false AND eventos.aprobado=true AND eventos.categoria LIKE $1 AND categorias.nombre LIKE $1', [categoriabuscar])
+    pool.query('SELECT  eventos.nombre, eventos.descripcion, eventos.categoria, eventos.calle, eventos.numero, eventos.fechaInicio, eventos.fechaFin, eventos.horaApertura, eventos.horaCierre, eventos.provincia, eventos.localidad, eventos.email, eventos.precio, eventos.baja FROM categorias INNER JOIN eventos ON eventos.categoria = categorias.nombre WHERE eventos.baja = false AND eventos.aprobado=true AND categorias.padre LIKE $1 UNION SELECT eventos.nombre, eventos.descripcion, eventos.categoria, eventos.calle, eventos.numero, eventos.fechaInicio, eventos.fechaFin, eventos.horaApertura, eventos.horaCierre, eventos.provincia, eventos.localidad, eventos.email, eventos.precio, eventos.baja FROM categorias INNER JOIN eventos ON eventos.categoria = categorias.nombre WHERE eventos.baja = false AND eventos.aprobado=true AND eventos.categoria LIKE $1 AND categorias.nombre LIKE $1', [categoriabuscar])
         .then(respuesta => res.status(200).json(respuesta.rows));
 }
 
 
 const obtenerEventosPendientes = (req, res) => {
-    const respuesta = pool.query('SELECT * FROM eventos WHERE baja=false AND aprobado=false')
+    pool.query('SELECT * FROM eventos WHERE baja=false AND aprobado=false')
         .then(respuesta => res.status(200).json(respuesta.rows));
 }
 
@@ -165,7 +162,7 @@ const createEvento = (req, res) => {
     baja = false;
     const { nombre, descripcion, categoria, calle, numero, fechainicio, fechafin, horaapertura, horacierre, provincia, localidad, email, precio, aprobado, lat, long, imagenes } = req.body;
 
-    const respuesta = pool.query('INSERT INTO eventos (nombre, descripcion, categoria, calle, numero, fechainicio, fechafin, horaapertura, horacierre, provincia, localidad, email, precio, aprobado, lat, long, baja, imagenes) VALUES ( $1, $2,$3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18)', [nombre, descripcion, categoria, calle, numero, fechainicio, fechafin, horaapertura, horacierre, provincia, localidad, email, precio, aprobado, lat, long, baja, imagenes])
+    pool.query('INSERT INTO eventos (nombre, descripcion, categoria, calle, numero, fechainicio, fechafin, horaapertura, horacierre, provincia, localidad, email, precio, aprobado, lat, long, baja, imagenes) VALUES ( $1, $2,$3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18)', [nombre, descripcion, categoria, calle, numero, fechainicio, fechafin, horaapertura, horacierre, provincia, localidad, email, precio, aprobado, lat, long, baja, imagenes])
         .then(respuesta => console.log(respuesta))
         .then(res.status(201).json({
             message: 'Evento agregado con exito',
@@ -420,10 +417,9 @@ const deleteImagenesPDI = (req, res) => {
 
 const deleteImagenesEvento = (req, res) => {    let arregloID = req.body;
     for (let index = 0; index < arregloID.length; index++) {
-        const queryPath = pool.query('SELECT * FROM imagenes WHERE id = $1', [arregloID[index]])
+        pool.query('SELECT * FROM imagenes WHERE id = $1', [arregloID[index]])
             .then((queryPath) => {
                 pathImagen = folderImagenEventoAbs + nameFromPath(queryPath.rows[0].ruta);
-                console.log('path de imagen a borrar: ' + pathImagen);
                 fs.unlink(pathImagen);
                 pool.query('DELETE FROM imagenes WHERE id=$1', [arregloID[index]]);
             })
