@@ -15,16 +15,15 @@ const { json } = require('express');
 //ésta es la ruta de la carpeta en donde se guardan las imágenes (ruta relativa desde ésta carpeta).
 const folderImagen = './src/imagenes/'
 const folderImagenPDI = './src/imagenes/PDI/'
-const folderImagenPDIAbs = 'C:/Users/nacho/Documents/GitHub/APIProyecto/src/imagenes/PDI/' //REEMPLAZAR CON RUTA DEL SERVIDOR
+const folderImagenPDIAbs = 'C:/Users/nadia/Documents/APIProyecto/src/imagenes/PDI/' //REEMPLAZAR CON RUTA DEL SERVIDOR
 const folderImagenEvento = './src/imagenes/evento/'
-const folderImagenEventoAbs = 'C:/Users/nacho/Documents/GitHub/APIProyecto/src/imagenes/evento/' //REEMPLAZAR CON RUTA DEL SERVIDOR
-
+const folderImagenEventoAbs = 'C:/Users/nadia/Documents/APIProyecto/src/imagenes/evento/' //REEMPLAZAR CON RUTA DEL SERVIDOR
 
 
 const pool = new Pool({
     host: 'localhost',
     user: 'postgres',
-    password: 'postgre',
+    password: 'nadia1998',
     database: 'viviconcepcion',
     port: '5432'
 });
@@ -40,12 +39,6 @@ const getPDI = (_req, res) => {
             res.status(200).json(respuesta.rows);
         });
 };
-
-const obtenerPDIPorCategoria = (req, res) => {
-    const categoriabuscar = req.params.category;
-    pool.query('SELECT puntodeinteres.nombre, puntodeinteres.descripcion, puntodeinteres.categoria, puntodeinteres.calle, puntodeinteres.numero, puntodeinteres.provincia, puntodeinteres.localidad, puntodeinteres.telefono, puntodeinteres.precio, puntodeinteres.email, puntodeinteres.baja FROM categorias INNER JOIN puntodeinteres ON puntodeinteres.categoria = categorias.nombre WHERE puntodeinteres.baja = false AND puntodeinteres.aprobado=true AND categorias.padre LIKE $1 UNION SELECT puntodeinteres.nombre, puntodeinteres.descripcion, puntodeinteres.categoria, puntodeinteres.calle, puntodeinteres.numero, puntodeinteres.provincia, puntodeinteres.localidad, puntodeinteres.telefono, puntodeinteres.precio, puntodeinteres.email, puntodeinteres.baja FROM categorias INNER JOIN puntodeinteres ON puntodeinteres.categoria = categorias.nombre WHERE puntodeinteres.baja = false AND puntodeinteres.aprobado=true AND puntodeinteres.categoria LIKE $1 AND categorias.nombre LIKE $1', [categoriabuscar])
-        .then(respuesta => res.status(200).json(respuesta.rows));
-}
 
 const obtenerPDIPendientes = (req, res) => {
     pool.query('SELECT * FROM puntodeinteres WHERE baja=false AND aprobado=false')
@@ -69,7 +62,7 @@ const createHorarios = (req, res) => {
         .then(pool.query('SELECT * FROM horarios ORDER BY id desc limit 1')
             .then(resp => {
                 app.locals.idhorario = resp.rows[0].id;
-                res.status(201).json({
+                res.status(200).json({
                     id: app.locals.idhorario
                 });
                 app.locals.idhorario = '';
@@ -88,7 +81,7 @@ const updateHorario = (req, res) => {
     const { lunesAp, lunesCie, martesAp, martesCie, miercolesAp, miercolesCie, juevesAp, juevesCie, viernesAp, viernesCie, sabadoAp, sabadoCie, domingoAp, domingoCie } = req.body;
     pool.query('UPDATE horarios SET lunesap=$1, lunescie=$2, martesap=$3, martescie=$4, miercolesap=$5 , miercolescie= $6, juevesap=$7, juevescie=$8, viernesap=$9, viernescie=$10, sabadoap=$11, sabadocie=$12, domingoap=$13, domingocie=$14  WHERE id=$15', [lunesAp, lunesCie, martesAp, martesCie, miercolesAp, miercolesCie, juevesAp, juevesCie, viernesAp, viernesCie, sabadoAp, sabadoCie, domingoAp, domingoCie, id])
         .then(respuesta => console.log(respuesta))
-        .then(res.status(200).json(`Horario del ${id} actualizado con exito `));
+        .then(res.status(204).json(`Horario del ${id} actualizado con exito `));
 };
 
 const getPDIByID = (req, res) => {
@@ -96,11 +89,6 @@ const getPDIByID = (req, res) => {
     const respuesta = pool.query('SELECT * FROM puntodeinteres WHERE id = $1 AND aprobado=true and baja=false', [id])
         .then(respuesta => res.json(respuesta.rows));
 };
-
-
-function getFileExtension3(filename) {
-    return filename.slice((filename.lastIndexOf(".") - 1 >>> 0) + 2);
-}
 
 function nameFromPath(str) {
     return str.split('\\').pop().split('/').pop();
@@ -128,7 +116,7 @@ const deletePDI = (req, res) => {
         });
     pool.query('UPDATE puntodeinteres SET baja=true WHERE id=$1', [id])
         .then(respuesta => console.log(respuesta))
-        .then(res.status(200).json(`Punto de interes ${id} eliminado con exito `));
+        .then(res.status(204).json(`Punto de interes ${id} eliminado con exito `));
 
 };
 
@@ -137,7 +125,7 @@ const updatePDI = (req, res) => {
     const { nombre, descripcion, categoria, calle, numero, provincia, localidad, telefono, precio, email, aprobado, lat, long, imagenes } = req.body;
     pool.query('UPDATE puntodeinteres SET nombre=$1, descripcion=$2, categoria=$3, calle=$4, numero=$5, provincia=$6, localidad=$7, telefono=$8, precio=$9, email=$10, aprobado=$11, lat=$12, long=$13, imagenes=$15 WHERE id =$14', [nombre, descripcion, categoria, calle, numero, provincia, localidad, telefono, precio, email, aprobado, lat, long, id, imagenes])
         .then(respuesta => console.log(respuesta))
-        .then(res.status(200).json(`Punto de interes ${id} actualizado con exito `));
+        .then(res.status(204).json(`Punto de interes ${id} actualizado con exito `));
 };
 
 const getEvento = (_req, res) => {
@@ -152,13 +140,6 @@ const getEvento = (_req, res) => {
         })
 };
 
-const obtenerEventosPorCategoria = (req, res) => {
-    const categoriabuscar = req.params.category;
-    pool.query('SELECT  eventos.nombre, eventos.descripcion, eventos.categoria, eventos.calle, eventos.numero, eventos.fechaInicio, eventos.fechaFin, eventos.horaApertura, eventos.horaCierre, eventos.provincia, eventos.localidad, eventos.email, eventos.precio, eventos.baja FROM categorias INNER JOIN eventos ON eventos.categoria = categorias.nombre WHERE eventos.baja = false AND eventos.aprobado=true AND categorias.padre LIKE $1 UNION SELECT eventos.nombre, eventos.descripcion, eventos.categoria, eventos.calle, eventos.numero, eventos.fechaInicio, eventos.fechaFin, eventos.horaApertura, eventos.horaCierre, eventos.provincia, eventos.localidad, eventos.email, eventos.precio, eventos.baja FROM categorias INNER JOIN eventos ON eventos.categoria = categorias.nombre WHERE eventos.baja = false AND eventos.aprobado=true AND eventos.categoria LIKE $1 AND categorias.nombre LIKE $1', [categoriabuscar])
-        .then(respuesta => res.status(200).json(respuesta.rows));
-}
-
-
 const obtenerEventosPendientes = (req, res) => {
     pool.query('SELECT * FROM eventos WHERE baja=false AND aprobado=false')
         .then(respuesta => res.status(200).json(respuesta.rows));
@@ -170,12 +151,7 @@ const createEvento = (req, res) => {
 
     pool.query('INSERT INTO eventos (nombre, descripcion, categoria, calle, numero, fechainicio, fechafin, horaapertura, horacierre, provincia, localidad, email, precio, aprobado, lat, long, baja, imagenes) VALUES ( $1, $2,$3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18)', [nombre, descripcion, categoria, calle, numero, fechainicio, fechafin, horaapertura, horacierre, provincia, localidad, email, precio, aprobado, lat, long, baja, imagenes])
         .then(respuesta => console.log(respuesta))
-        .then(res.status(201).json({
-            message: 'Evento agregado con exito',
-            body: {
-                evento: { nombre,calle, provincia, localidad, categoria, fechainicio, fechafin }
-            }
-        }))
+        .then(res.status(201).json({message: 'Evento agregado con exito'}))
 };
 
 const deleteEvento = (req, res) => {
@@ -201,7 +177,7 @@ const deleteEvento = (req, res) => {
         })
     pool.query('UPDATE eventos SET baja=true WHERE id=$1', [id])
         .then(respu => console.log(respu))
-        .then(res.json(`Evento ${id} eliminado con exito `));
+        .then(res.status(204).json(`Evento ${id} eliminado con exito `));
 };
 
 const updateEvento = (req, res) => {
@@ -209,7 +185,7 @@ const updateEvento = (req, res) => {
     const { nombre, descripcion, categoria, calle, numero, provincia, localidad, fechainicio, fechafin, horaapertura, horacierre, email, precio, aprobado, lat, long, imagenes } = req.body;
     pool.query('UPDATE eventos SET nombre=$1, descripcion=$2, categoria=$3, calle=$4, numero=$5 , provincia= $6, localidad=$7, fechainicio=$8, fechafin=$9, horaapertura=$10, horacierre=$11, email=$12, precio=$13, aprobado=$15, lat=$16, long=$17, imagenes=$18  WHERE id=$14', [nombre, descripcion, categoria, calle, numero, provincia, localidad, fechainicio, fechafin, horaapertura, horacierre, email, precio, id, aprobado, lat, long, imagenes])
         .then(respuesta => console.log(respuesta))
-        .then(res.status(200).json(`Evento ${id} actualizado con exito `));
+        .then(res.status(204).json(`Evento ${id} actualizado con exito `));
 };
 
 const signup = (req, res) => {
@@ -228,10 +204,7 @@ const signup = (req, res) => {
                             .then(respuesta => console.log(respuesta))
                             .then(token3 = jwt.sign(Date.now(), process.env.SECRET_KEY || 'tokentest'/*, {expiresIn: 60*60}*/))
                             .then(res.header('auth-token', token3).status(201).json({
-                                message: 'Usuario agregado con exito',
-                                body: {
-                                    usuario: { username, email, passwordEncriptada }
-                                }
+                                message: 'Usuario agregado con exito'
                             })
                             )
                     }
@@ -242,7 +215,6 @@ const signup = (req, res) => {
     })
 
 };
-
 
 const signin = (req, res) => {
     username = req.body.username;
@@ -265,7 +237,6 @@ const signin = (req, res) => {
 
 };
 
-
 const getCategoria = (req, res) => {
     pool.query('SELECT * FROM categorias WHERE baja = false AND padre IS NULL')
         .then(respuesta => res.status(200).json(respuesta.rows));
@@ -277,10 +248,7 @@ const createCategoria = (req, res) => {
     pool.query('INSERT INTO categorias (nombre, padre, baja) VALUES ($1, $2, $3)', [nombre, padre, baja])
         .then(respuesta => console.log(respuesta))
         .then(res.status(201).json({
-            message: 'categoria agregada con exito',
-            body: {
-                categoria: { nombre, padre }
-            }
+            message: 'Categoria agregada con exito'
         }))
 };
 
@@ -289,30 +257,12 @@ const deleteCategoria = (req, res) => {
     baja = true;
     pool.query('UPDATE categorias SET baja=$1 WHERE id=$2', [baja, id])
         .then(respuesta => console.log(respuesta))
-        .then(res.status(200).json(`Categoria ${id} eliminada con exito `));
+        .then(res.status(204).json(`Categoria ${id} eliminada con exito `));
 }
 
 const getSubcategoria = (req, res) => {
     pool.query('SELECT * FROM categorias WHERE baja = false AND NOT padre IS NULL')
         .then(respuesta => res.status(200).json(respuesta.rows));
-}
-
-const getImagenesPDI = (req, res) => {
-    const nombrePDI = req.params.nombre;
-    pool.query('SELECT imagenes FROM puntodeinteres WHERE puntodeinteres.nombre = $1 AND baja = false', [nombrePDI])
-        .then((respuesta) => {
-            let jsonID = respuesta.rows[0];
-            let jsonRespuesta = jsonID;
-            for (let index = 0; index < jsonID.imagenes.length; index++) {
-                pool.query('SELECT ruta FROM imagenes WHERE imagenes.id = $1', [jsonID.imagenes[index]])
-                    .then((queryImagenes) => {
-                        let fileName = nameFromPath(queryImagenes.rows[0].ruta);               //obtengo el nombre de la imagen
-                        fileName = 'http://localhost:3000/api/pdi/imagen/' + fileName       //lo concateno al enlace para obtenerlo.
-                        jsonRespuesta.imagenes[index] = fileName;
-                        res.status(200).json(jsonRespuesta);
-                    })
-            }
-        })
 }
 
 
@@ -326,21 +276,6 @@ const getImagenPDI = (req, res) => {
         })
 }
 
-const getImagenesEvento = (req, res) => {
-    const nombreEvento = req.params.nombre;
-    pool.query('SELECT imagenes FROM eventos WHERE eventos.nombre = $1 AND baja = false', [nombreEvento])
-        .then((respuesta) => {
-            let jsonRes = respuesta.rows[0];
-            for (let index = 0; index < jsonRes.imagenes.length; index++) {
-                let fileName = nameFromPath(jsonRes.imagenes[index]);                   //obtengo el nombre de la imagen
-                fileName = 'http://localhost:3000/api/evento/imagen/' + fileName        //lo concateno al enlace para obtenerlo.
-                jsonRes.imagenes[index] = fileName;
-
-            }
-            res.status(200).json(jsonRes);
-        })
-}
-
 const getImagenEvento = (req, res) => {
     const idImagen = req.params.idImagen;
     pool.query('SELECT * FROM imagenes WHERE id = $1', [idImagen])
@@ -351,12 +286,12 @@ const getImagenEvento = (req, res) => {
         })
 }
 
-const postImagenes = (req, res) => {
+const createImagenes = (req, res) => {
     const nombre = req.file.filename;
     rutaImg = req.file.destination + req.file.filename;
     pool.query('INSERT INTO imagenes (ruta) VALUES ($1)', [rutaImg])
         .then(respuesta => console.log(respuesta))
-        .then(res.status(201).json('Exito al insertar imágen.'));
+        .then(res.status(201).json('Imagen agregada con exito.'));
 }
 
 const devolverid = (req, res) => {
@@ -418,7 +353,7 @@ const deleteImagenesPDI = (req, res) => {
                 pool.query('DELETE FROM imagenes WHERE id=$1', [arregloID[index]]);
             })
     }
-    res.status(200).json('Imagenes eliminadas con exito');
+    res.status(204).json('Imagenes eliminadas con exito');
 }
 
 const deleteImagenesEvento = (req, res) => {    let arregloID = req.body;
@@ -430,17 +365,15 @@ const deleteImagenesEvento = (req, res) => {    let arregloID = req.body;
                 pool.query('DELETE FROM imagenes WHERE id=$1', [arregloID[index]]);
             })
     }
-    res.status(200).json('Imagenes eliminadas con exito');
+    res.status(204).json('Imagenes eliminadas con exito');
 }
 
 module.exports = {
     getPDI,
-    obtenerPDIPorCategoria,
     createPDI,
     deletePDI,
     updatePDI,
     getEvento,
-    obtenerEventosPorCategoria,
     createEvento,
     deleteEvento,
     updateEvento,
@@ -452,9 +385,7 @@ module.exports = {
     getSubcategoria,
     obtenerEventosPendientes,
     obtenerPDIPendientes,
-    getImagenesPDI,
-    getImagenesEvento,
-    postImagenes,
+    createImagenes,
     uploadIMGEvento,
     uploadIMGPDI,
     getImagenPDI,
