@@ -82,3 +82,5 @@ create table imagenes(
     id serial not null PRIMARY KEY,
     ruta text
 );
+
+INSERT INTO usuarios(username, password, baja)	VALUES ('administrador', 'administrador', false);
