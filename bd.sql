@@ -83,4 +83,4 @@ create table imagenes(
     ruta text
 );
 
-INSERT INTO usuarios(username, password, baja)	VALUES ('administrador', 'administrador', false);
+INSERT INTO usuarios(username, password, baja)	VALUES ('administrador', '$2a$04$uM4ZutIhMG434GSVJPRPUO57VtCSXYs.vjYLXhFjEDL9UFPufyDp.', false);
