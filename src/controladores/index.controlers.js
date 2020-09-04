@@ -15,9 +15,8 @@ const { json } = require('express');
 //ésta es la ruta de la carpeta en donde se guardan las imágenes (ruta relativa desde ésta carpeta).
 const folderImagen = './src/imagenes/'
 const folderImagenPDI = './src/imagenes/PDI/'
-const folderImagenPDIAbs = 'C:/Users/nadia/Documents/APIProyecto/src/imagenes/PDI/' //REEMPLAZAR CON RUTA DEL SERVIDOR
+const folderImagenPDIAbs = 'C:/Users/nacho/GitHub/Documents/APIProyecto/src/imagenes/PDI/' //REEMPLAZAR CON RUTA DEL SERVIDOR
 const folderImagenEvento = './src/imagenes/evento/'
-const folderImagenEventoAbs = 'C:/Users/nadia/Documents/APIProyecto/src/imagenes/evento/' //REEMPLAZAR CON RUTA DEL SERVIDOR
 
 
 const pool = new Pool({
@@ -151,7 +150,7 @@ const createEvento = (req, res) => {
 
     pool.query('INSERT INTO eventos (nombre, descripcion, categoria, calle, numero, fechainicio, fechafin, horaapertura, horacierre, provincia, localidad, email, precio, aprobado, lat, long, baja, imagenes) VALUES ( $1, $2,$3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18)', [nombre, descripcion, categoria, calle, numero, fechainicio, fechafin, horaapertura, horacierre, provincia, localidad, email, precio, aprobado, lat, long, baja, imagenes])
         .then(respuesta => console.log(respuesta))
-        .then(res.status(201).json({message: 'Evento agregado con exito'}))
+        .then(res.status(201).json({ message: 'Evento agregado con exito' }))
 };
 
 const deleteEvento = (req, res) => {
@@ -167,7 +166,7 @@ const deleteEvento = (req, res) => {
             }
         })
 
-    
+
     pool.query('SELECT * FROM eventos WHERE id =$1', [id])
         .then((respuesta) => {
             pool.query('UPDATE horarios SET baja=true WHERE id=$1', [respuesta.rows[0].idhorario])
@@ -306,7 +305,7 @@ const devolverid = (req, res) => {
 const storagePDI = multer.diskStorage({
     destination: (req, file, cb) => { cb(null, folderImagenPDI) },
     filename: (req, file, cb) => {
-        img =  Date.now() + path.extname(file.originalname).toLocaleLowerCase();
+        img = Date.now() + path.extname(file.originalname).toLocaleLowerCase();
         cb(null, img);
     }
 })
@@ -356,7 +355,8 @@ const deleteImagenesPDI = (req, res) => {
     res.status(204).json('Imagenes eliminadas con exito');
 }
 
-const deleteImagenesEvento = (req, res) => {    let arregloID = req.body;
+const deleteImagenesEvento = (req, res) => {
+    let arregloID = req.body;
     for (let index = 0; index < arregloID.length; index++) {
         pool.query('SELECT * FROM imagenes WHERE id = $1', [arregloID[index]])
             .then((queryPath) => {
@@ -366,6 +366,13 @@ const deleteImagenesEvento = (req, res) => {    let arregloID = req.body;
             })
     }
     res.status(204).json('Imagenes eliminadas con exito');
+}
+
+const getUsuarios = (req, res) => {
+    pool.query('SELECT id, username, email, privilegios FROM usuarios WHERE baja=false')
+        .then(respuesta => {
+            res.status(200).json(respuesta.rows);
+        });
 }
 
 module.exports = {
@@ -396,5 +403,6 @@ module.exports = {
     devolverid,
     deleteImagenesPDI,
     deleteImagenesEvento,
-    getPDIByID
+    getPDIByID,
+    getUsuarios
 }

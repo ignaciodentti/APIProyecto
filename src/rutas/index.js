@@ -31,7 +31,8 @@ const {
     devolverid,
     deleteImagenesPDI,
     deleteImagenesEvento,
-    getPDIByID
+    getPDIByID,
+    getUsuarios
 } =require('../controladores/index.controlers');
 
 const {tokenValidation} = require('../libs/verificarToken')
@@ -64,8 +65,8 @@ router.post('/auth/signin/', signin);
 router.post('/auth/signup/', signup);
 
 //imagenes
-router.get('/pdi/imagen/:idImagen', getImagenPDI) // devuelve una imagen en particular de un PDI.
-router.get('/evento/imagen/:idImagen', getImagenEvento) // ditto, para un evento.
+router.get('/pdi/imagen/:idImagen', getImagenPDI); // devuelve una imagen en particular de un PDI.
+router.get('/evento/imagen/:idImagen', getImagenEvento); // ditto, para un evento.
 router.post('/pdi/imagenes/post/', uploadIMGPDI.single('file') , createImagenes);
 router.post('/evento/imagenes/post/', uploadIMGEvento.single('file'), createImagenes);
 router.get('/imagenes/getUltimoID/', devolverid);
@@ -76,5 +77,8 @@ router.put('/evento/imagenes/delete/', deleteImagenesEvento);
 router.get('/horarios/get/:id',getHorarioByID);
 router.post('/horarios/post/', createHorarios);
 router.put('/horarios/put/:id',updateHorario);
+
+//usuarios
+router.get('/usuarios/get', getUsuarios);
 
 module.exports= router;
