@@ -33,7 +33,8 @@ const {
     deleteImagenesEvento,
     getPDIByID,
     getUsuarios,
-    deleteUsuario
+    deleteUsuario,
+    updateUsuario
 } =require('../controladores/index.controlers');
 
 const {tokenValidation} = require('../libs/verificarToken');
@@ -82,7 +83,7 @@ router.put('/horarios/put/:id',updateHorario);
 
 //usuarios
 router.get('/usuarios/get', getUsuarios);
-router.delete('/ususarios/delete/:idUsuario', tokenValidation, deleteUsuario);
-router.put('/usuarios/update/:idUsuario', tokenValidation, U)
+router.delete('/usuarios/delete/:id', tokenValidation, deleteUsuario);
+router.put('/usuarios/update/:id', tokenValidation, updateUsuario)
 
 module.exports= router;

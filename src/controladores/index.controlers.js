@@ -15,15 +15,15 @@ const { json } = require('express');
 //ésta es la ruta de la carpeta en donde se guardan las imágenes (ruta relativa desde ésta carpeta).
 const folderImagen = './src/imagenes/'
 const folderImagenPDI = './src/imagenes/PDI/'
-const folderImagenPDIAbs = 'C:/Users/nacho/GitHub/Documents/APIProyecto/src/imagenes/PDI/' //REEMPLAZAR CON RUTA DEL SERVIDOR
+const folderImagenPDIAbs = 'C:/Users/Ignacio Perez/GitHub/Documents/APIProyecto/src/imagenes/PDI/' //REEMPLAZAR CON RUTA DEL SERVIDOR
 const folderImagenEvento = './src/imagenes/evento/'
-const folderImagenEventoAbs = 'C:/Users/nacho/GitHub/Documents/APIProyecto/src/imagenes/evento/' //REEMPLAZAR CON RUTA DEL SERVIDOR
+const folderImagenEventoAbs = 'C:/Users/Ignacio Perez/GitHub/Documents/APIProyecto/src/imagenes/evento/' //REEMPLAZAR CON RUTA DEL SERVIDOR
 
 
 const pool = new Pool({
     host: 'localhost',
     user: 'postgres',
-    password: 'postgre',
+    password: 'nadia1998',
     database: 'viviconcepcion',
     port: '5432'
 });
@@ -197,7 +197,7 @@ const signup = (req, res) => {
             const { username, password, email, privilegios } = req.body;
             salt = bcrypt.genSalt(3, function (err, data) {
                 salt = data;
-                bcrypt.hash(password, salt, function (err, data) {
+                bcrypt.hash(password, salt, function (err) {
                     if (data) {
                         passwordEncriptada = data;
                         const respuesta = pool.query('INSERT INTO usuarios (username, email ,password , baja, privilegios) VALUES ($1, $2, $3, $4, $5)', [username, email, passwordEncriptada, baja, privilegios])
@@ -370,13 +370,14 @@ const deleteImagenesEvento = (req, res) => {
 }
 
 const getUsuarios = (req, res) => {
-    pool.query('SELECT id, username, email, privilegios FROM usuarios WHERE baja=false')
+    pool.query('SELECT * FROM usuarios WHERE baja=false')
         .then(respuesta => {
             res.status(200).json(respuesta.rows);
         });
 }
 
 const deleteUsuario = (req, res) => {
+    const id = req.params.id;
     pool.query('UPDATE usuarios SET baja=true WHERE id=$1', [id])
         .then(respu => console.log(respu))
         .then(res.status(204).json(`Usuario ${id} eliminado con exito `));
