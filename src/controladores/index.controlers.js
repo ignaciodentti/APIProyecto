@@ -17,12 +17,13 @@ const folderImagen = './src/imagenes/'
 const folderImagenPDI = './src/imagenes/PDI/'
 const folderImagenPDIAbs = 'C:/Users/nacho/GitHub/Documents/APIProyecto/src/imagenes/PDI/' //REEMPLAZAR CON RUTA DEL SERVIDOR
 const folderImagenEvento = './src/imagenes/evento/'
+const folderImagenEventoAbs = 'C:/Users/nacho/GitHub/Documents/APIProyecto/src/imagenes/evento/' //REEMPLAZAR CON RUTA DEL SERVIDOR
 
 
 const pool = new Pool({
     host: 'localhost',
     user: 'postgres',
-    password: 'nadia1998',
+    password: 'postgre',
     database: 'viviconcepcion',
     port: '5432'
 });
@@ -375,6 +376,22 @@ const getUsuarios = (req, res) => {
         });
 }
 
+const deleteUsuario = (req, res) => {
+    pool.query('UPDATE usuarios SET baja=true WHERE id=$1', [id])
+        .then(respu => console.log(respu))
+        .then(res.status(204).json(`Usuario ${id} eliminado con exito `));
+}
+
+const updateUsuario = (req, res) => {
+    const id = req.params.id;
+    const { username, email, password, privilegios } = req.body;
+    pool.query('UPDATE usuarios SET username=$1, email=$2, password=$3, privilegios=$4 WHERE id=$5', [username, email, password, privilegios, id])
+        .then(respuesta => console.log(respuesta))
+        .then(res.status(204).json(`Usuario ${id} actualizado con exito `));
+}
+
+
+
 module.exports = {
     getPDI,
     createPDI,
@@ -404,5 +421,7 @@ module.exports = {
     deleteImagenesPDI,
     deleteImagenesEvento,
     getPDIByID,
-    getUsuarios
+    getUsuarios,
+    deleteUsuario,
+    updateUsuario
 }
