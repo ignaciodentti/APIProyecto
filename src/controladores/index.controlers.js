@@ -12,18 +12,18 @@ var fs = require('fs');
 const { json } = require('express');
 //const { size, result } = require('underscore');
 
-//ésta es la ruta de la carpeta en donde se guardan las imágenes (ruta relativa desde ésta carpeta).
+//esta es la ruta de la carpeta en donde se guardan las imágenes (ruta relativa desde ésta carpeta).
 const folderImagen = './src/imagenes/'
 const folderImagenPDI = './src/imagenes/PDI/'
-const folderImagenPDIAbs = 'C:/Users/nadia/Documents/APIProyecto/src/imagenes/PDI/' //REEMPLAZAR CON RUTA DEL SERVIDOR
+const folderImagenPDIAbs = 'C:/Users/nacho/GitHub/Documents/APIProyecto/src/imagenes/PDI/' //REEMPLAZAR CON RUTA DEL SERVIDOR
 const folderImagenEvento = './src/imagenes/evento/'
-const folderImagenEventoAbs = 'C:/Users/nadia/Documents/APIProyecto/src/imagenes/evento/' //REEMPLAZAR CON RUTA DEL SERVIDOR
+const folderImagenEventoAbs = 'C:/Users/nacho/GitHub/Documents/APIProyecto/src/imagenes/evento/' //REEMPLAZAR CON RUTA DEL SERVIDOR
 
 
 const pool = new Pool({
     host: 'localhost',
     user: 'postgres',
-    password: 'nadia1998',
+    password: 'postgre',
     database: 'viviconcepcion',
     port: '5432'
 });
@@ -197,9 +197,9 @@ const signup = (req, res) => {
             const { username, password, email, privilegios } = req.body;
             salt = bcrypt.genSalt(3, function (err, data) {
                 salt = data;
-                bcrypt.hash(password, salt, function (err) {
-                    if (data) {
-                        passwordEncriptada = data;
+                bcrypt.hash(password, salt, function (err, passHash) {
+                    if (passHash) {
+                        passwordEncriptada = passHash;
                         const respuesta = pool.query('INSERT INTO usuarios (username, email ,password , baja, privilegios) VALUES ($1, $2, $3, $4, $5)', [username, email, passwordEncriptada, baja, privilegios])
                             .then(respuesta => console.log(respuesta))
                             .then(token3 = jwt.sign(Date.now(), process.env.SECRET_KEY || 'tokentest'/*, {expiresIn: 60*60}*/))
