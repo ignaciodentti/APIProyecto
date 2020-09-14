@@ -54,7 +54,7 @@ create table usuarios(
 create table categorias(
     id serial PRIMARY KEY,
     nombre text not null,
-    padre text null,
+    padre smallint null,
     baja boolean
 );
 

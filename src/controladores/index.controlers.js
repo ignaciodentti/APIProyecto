@@ -243,13 +243,29 @@ const getCategoria = (req, res) => {
 }
 
 const createCategoria = (req, res) => {
-    baja = false;
     const { nombre, padre } = req.body;
-    pool.query('INSERT INTO categorias (nombre, padre, baja) VALUES ($1, $2, $3)', [nombre, padre, baja])
-        .then(respuesta => console.log(respuesta))
-        .then(res.status(201).json({
-            message: 'Categoria agregada con exito'
-        }))
+    if (padre != null) {
+        pool.query('SELECT id FROM categorias WHERE nombre = $1', [padre], (err, resultSelect) => {
+            let idPadre = resultSelect.rows[0].id;
+            console.log('ID del padre: ', idPadre);
+            pool.query('INSERT INTO categorias (nombre, padre, baja) VALUES ($1, $2, $3)', [nombre, idPadre, false])
+                .then(respuesta => console.log(respuesta))
+                .then(res.status(201).json({
+                    message: 'Categoria agregada con exito'
+                }))
+        })
+
+    }
+    else {
+        console.log('PADRE ES NULL');
+        pool.query('INSERT INTO categorias (nombre, padre, baja) VALUES ($1, $2, $3)', [nombre, padre, false])
+            .then(respuesta => console.log(respuesta))
+            .then(res.status(201).json({
+                message: 'Categoria agregada con exito'
+            }))
+    }
+
+
 };
 
 const deleteCategoria = (req, res) => {
