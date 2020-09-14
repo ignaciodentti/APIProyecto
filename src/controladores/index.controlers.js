@@ -194,13 +194,13 @@ const signup = (req, res) => {
     username = req.body.username;
     pool.query('SELECT * from usuarios WHERE username= $1', [username], (err, result) => {
         if (result.rows[0] == null) {
-            const { username, password, email, privilegios } = req.body;
+            const { username, password, email, privilegios, nombre, apellido } = req.body;
             salt = bcrypt.genSalt(3, function (err, data) {
                 salt = data;
                 bcrypt.hash(password, salt, function (err, passHash) {
                     if (passHash) {
                         passwordEncriptada = passHash;
-                        const respuesta = pool.query('INSERT INTO usuarios (username, email ,password , baja, privilegios) VALUES ($1, $2, $3, $4, $5)', [username, email, passwordEncriptada, baja, privilegios])
+                        const respuesta = pool.query('INSERT INTO usuarios (username, email ,password , baja, privilegios, nombre, apellido) VALUES ($1, $2, $3, $4, $5, $6,$7)', [username, email, passwordEncriptada, baja, privilegios, nombre,apellido])
                             .then(respuesta => console.log(respuesta))
                             .then(token3 = jwt.sign(Date.now(), process.env.SECRET_KEY || 'tokentest'/*, {expiresIn: 60*60}*/))
                             .then(res.header('auth-token', token3).status(201).json({
@@ -228,7 +228,7 @@ const signin = (req, res) => {
                     const payload = { check: true }
                     token2 = jwt.sign(Date.now(), process.env.SECRET_KEY || 'tokentest');
                     res.header('auth-token', token2);
-                    res.status(200).header('Access-Control-Expose-Headers', 'auth-token').json(result.rows[0].privilegios);
+                    res.status(200).header('Access-Control-Expose-Headers', 'auth-token').json(result.rows[0]);
                 }
                 else { res.status(401).json('Contraseña incorrecta') };
             })
@@ -243,29 +243,21 @@ const getCategoria = (req, res) => {
 }
 
 const createCategoria = (req, res) => {
+    baja = false;
     const { nombre, padre } = req.body;
-    pool.query('INSERT INTO categorias (nombre, padre, baja) VALUES ($1, $2, $3)', [nombre, padre, false])
+    pool.query('INSERT INTO categorias (nombre, padre, baja) VALUES ($1, $2, $3)', [nombre, padre, baja])
         .then(respuesta => console.log(respuesta))
         .then(res.status(201).json({
             message: 'Categoria agregada con exito'
         }))
-
 };
 
 const deleteCategoria = (req, res) => {
-    const nombre = req.params.nombre
-    console.log(nombre);
-    pool.query('SELECT * FROM categorias WHERE padre = $1 AND baja = false', [nombre], (err, resultadoQuery) => {
-        if (resultadoQuery.rows.length == 0) {
-            pool.query('UPDATE categorias SET baja=true WHERE nombre=$1', [nombre])
-                .then(respuesta => console.log(respuesta))
-                .then(res.status(204).json(`Categoria ${nombre} eliminada con exito `))
-        }
-        else{
-            res.status(400).json('Error - La categoría no se puede eliminar ya que tiene subcategorías activas.');
-        }
-    })
-        
+    const id = req.params.id
+    baja = true;
+    pool.query('UPDATE categorias SET baja=$1 WHERE id=$2', [baja, id])
+        .then(respuesta => console.log(respuesta))
+        .then(res.status(204).json(`Categoria ${id} eliminada con exito `));
 }
 
 const getSubcategoria = (req, res) => {
@@ -394,7 +386,7 @@ const deleteUsuario = (req, res) => {
 const updateUsuario = (req, res) => {
     const id = req.params.id;
     const hashear = req.header('hashear');
-    const { username, email, password, privilegios } = req.body;
+    const { username, email, password, privilegios, nombre,apellido } = req.body;
     if (hashear == 'true') {
         salt = bcrypt.genSalt(3, function (err, data) {
             salt = data;
@@ -403,7 +395,7 @@ const updateUsuario = (req, res) => {
                 if (data) {
                     passwordEncriptada = data;
                     console.log(passwordEncriptada);
-                    pool.query('UPDATE usuarios SET username=$1, email=$2, password=$3, privilegios=$4 WHERE id=$5', [username, email, passwordEncriptada, privilegios, id])
+                    pool.query('UPDATE usuarios SET username=$1, email=$2, password=$3, privilegios=$4, nombre=$6, apellido=$7 WHERE id=$5', [username, email, passwordEncriptada, privilegios, id, nombre, apellido])
                         .then(respuesta => console.log(respuesta))
                         .then(res.status(204).json(`Usuario ${id} actualizado con exito `));
 
@@ -412,15 +404,11 @@ const updateUsuario = (req, res) => {
         })
     }
     else {
-        pool.query('UPDATE usuarios SET username=$1, email=$2, password=$3, privilegios=$4 WHERE id=$5', [username, email, password, privilegios, id])
+        pool.query('UPDATE usuarios SET username=$1, email=$2, password=$3, privilegios=$4, nombre=$6, apellido=$7 WHERE id=$5', [username, email, password, privilegios, id, snombre, apellido])
             .then(respuesta => console.log(respuesta))
             .then(res.status(204).json(`Usuario ${id} actualizado con exito `));
     }
-
-
 }
-
-
 
 module.exports = {
     getPDI,

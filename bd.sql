@@ -48,7 +48,9 @@ create table usuarios(
     email text, 
     password text not null,
     privilegios text[],
-    baja boolean
+    baja boolean, 
+    nombre text, 
+    apellido text
 );
 
 create table categorias(
