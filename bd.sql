@@ -52,9 +52,8 @@ create table usuarios(
 );
 
 create table categorias(
-    id serial PRIMARY KEY,
-    nombre text not null,
-    padre smallint null,
+    nombre character varying not null PRIMARY KEY,
+    padre character varying null,
     baja boolean
 );
 

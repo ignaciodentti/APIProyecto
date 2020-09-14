@@ -244,36 +244,28 @@ const getCategoria = (req, res) => {
 
 const createCategoria = (req, res) => {
     const { nombre, padre } = req.body;
-    if (padre != null) {
-        pool.query('SELECT id FROM categorias WHERE nombre = $1', [padre], (err, resultSelect) => {
-            let idPadre = resultSelect.rows[0].id;
-            console.log('ID del padre: ', idPadre);
-            pool.query('INSERT INTO categorias (nombre, padre, baja) VALUES ($1, $2, $3)', [nombre, idPadre, false])
-                .then(respuesta => console.log(respuesta))
-                .then(res.status(201).json({
-                    message: 'Categoria agregada con exito'
-                }))
-        })
-
-    }
-    else {
-        console.log('PADRE ES NULL');
-        pool.query('INSERT INTO categorias (nombre, padre, baja) VALUES ($1, $2, $3)', [nombre, padre, false])
-            .then(respuesta => console.log(respuesta))
-            .then(res.status(201).json({
-                message: 'Categoria agregada con exito'
-            }))
-    }
-
+    pool.query('INSERT INTO categorias (nombre, padre, baja) VALUES ($1, $2, $3)', [nombre, padre, false])
+        .then(respuesta => console.log(respuesta))
+        .then(res.status(201).json({
+            message: 'Categoria agregada con exito'
+        }))
 
 };
 
 const deleteCategoria = (req, res) => {
-    const id = req.params.id
-    baja = true;
-    pool.query('UPDATE categorias SET baja=$1 WHERE id=$2', [baja, id])
-        .then(respuesta => console.log(respuesta))
-        .then(res.status(204).json(`Categoria ${id} eliminada con exito `));
+    const nombre = req.params.nombre
+    console.log(nombre);
+    pool.query('SELECT * FROM categorias WHERE padre = $1 AND baja = false', [nombre], (err, resultadoQuery) => {
+        if (resultadoQuery.rows.length == 0) {
+            pool.query('UPDATE categorias SET baja=true WHERE nombre=$1', [nombre])
+                .then(respuesta => console.log(respuesta))
+                .then(res.status(204).json(`Categoria ${nombre} eliminada con exito `))
+        }
+        else{
+            res.status(400).json('Error - La categoría no se puede eliminar ya que tiene subcategorías activas.');
+        }
+    })
+        
 }
 
 const getSubcategoria = (req, res) => {
