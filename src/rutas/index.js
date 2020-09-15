@@ -34,7 +34,8 @@ const {
     getPDIByID,
     getUsuarios,
     deleteUsuario,
-    updateUsuario
+    updateUsuario, 
+    updateCategoria
 } =require('../controladores/index.controlers');
 
 const {tokenValidation} = require('../libs/verificarToken');
@@ -62,6 +63,7 @@ router.get('/categoria/get/', getCategoria);
 router.post('/categoria/post/', createCategoria);
 router.delete('/categoria/delete/:nombre', deleteCategoria);
 router.get('/subcategoria/get/', getSubcategoria);
+router.put('/categoria/put/:id', updateCategoria);
 
 // autorización
 router.post('/auth/signin/', signin);

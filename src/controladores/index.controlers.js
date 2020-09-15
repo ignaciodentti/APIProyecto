@@ -15,15 +15,15 @@ const { json } = require('express');
 //esta es la ruta de la carpeta en donde se guardan las imágenes (ruta relativa desde ésta carpeta).
 const folderImagen = './src/imagenes/'
 const folderImagenPDI = './src/imagenes/PDI/'
-const folderImagenPDIAbs = 'C:/Users/nacho/GitHub/Documents/APIProyecto/src/imagenes/PDI/' //REEMPLAZAR CON RUTA DEL SERVIDOR
+const folderImagenPDIAbs = 'C:/Users/Ignacio Perez/GitHub/Documents/APIProyecto/src/imagenes/PDI/' //REEMPLAZAR CON RUTA DEL SERVIDOR
 const folderImagenEvento = './src/imagenes/evento/'
-const folderImagenEventoAbs = 'C:/Users/nacho/GitHub/Documents/APIProyecto/src/imagenes/evento/' //REEMPLAZAR CON RUTA DEL SERVIDOR
+const folderImagenEventoAbs = 'C:/Users/Ignacio Perez/GitHub/Documents/APIProyecto/src/imagenes/evento/' //REEMPLAZAR CON RUTA DEL SERVIDOR
 
 
 const pool = new Pool({
     host: 'localhost',
     user: 'postgres',
-    password: 'postgre',
+    password: 'nadia1998',
     database: 'viviconcepcion',
     port: '5432'
 });
@@ -260,11 +260,18 @@ const deleteCategoria = (req, res) => {
         .then(res.status(204).json(`Categoria ${id} eliminada con exito `));
 }
 
+const updateCategoria = (req, res) => {
+    const id = req.params.id;
+    const { nombre, padre } = req.body;
+    pool.query('UPDATE categoria SET nombre=$1, padre=$2 WHERE id=$3', [nombre, padre, id])
+        .then(respuesta => console.log(respuesta))
+        .then(res.status(204).json(`Evento ${id} actualizado con exito `));
+};
+
 const getSubcategoria = (req, res) => {
     pool.query('SELECT * FROM categorias WHERE baja = false AND NOT padre IS NULL')
         .then(respuesta => res.status(200).json(respuesta.rows));
 }
-
 
 const getImagenPDI = (req, res) => {
     const idImagen = req.params.idImagen;
@@ -441,5 +448,7 @@ module.exports = {
     getPDIByID,
     getUsuarios,
     deleteUsuario,
-    updateUsuario
+    updateUsuario, 
+    updateCategoria,
+
 }
