@@ -411,7 +411,7 @@ const updateUsuario = (req, res) => {
         })
     }
     else {
-        pool.query('UPDATE usuarios SET username=$1, email=$2, password=$3, privilegios=$4, nombre=$6, apellido=$7 WHERE id=$5', [username, email, password, privilegios, id, snombre, apellido])
+        pool.query('UPDATE usuarios SET username=$1, email=$2, password=$3, privilegios=$4, nombre=$6, apellido=$7 WHERE id=$5', [username, email, password, privilegios, id, nombre, apellido])
             .then(respuesta => console.log(respuesta))
             .then(res.status(204).json(`Usuario ${id} actualizado con exito `));
     }
