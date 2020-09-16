@@ -61,7 +61,7 @@ router.get('/evento/getPendientes/',tokenValidation, obtenerEventosPendientes);
 // categorias
 router.get('/categoria/get/', getCategoria);
 router.post('/categoria/post/', createCategoria);
-router.delete('/categoria/delete/:nombre', deleteCategoria);
+router.delete('/categoria/delete/:id', deleteCategoria);
 router.get('/subcategoria/get/', getSubcategoria);
 router.put('/categoria/put/:id', updateCategoria);
 
