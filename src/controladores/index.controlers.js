@@ -23,7 +23,7 @@ const folderImagenEventoAbs = 'C:/Users/nadia/Documents/APIProyecto/src/imagenes
 const pool = new Pool({
     host: 'localhost',
     user: 'postgres',
-    password: 'nadia1998',
+    password: 'pass',
     database: 'viviconcepcion',
     port: '5432'
 });
@@ -248,9 +248,8 @@ const createCategoria = (req, res) => {
 };
 
 const deleteCategoria = (req, res) => {
-    const id = req.params.id
-    baja = true;
-    pool.query('UPDATE categorias SET baja=$1 WHERE id=$2', [baja, id])
+    const id = req.params.id;
+    pool.query('UPDATE categorias SET baja=true WHERE id=$1', [id])
         .then(respuesta => console.log(respuesta))
         .then(res.status(204).json(`Categoria ${id} eliminada con exito `));
 }
@@ -258,7 +257,7 @@ const deleteCategoria = (req, res) => {
 const updateCategoria = (req, res) => {
     const id = req.params.id;
     const { nombre, padre } = req.body;
-    pool.query('UPDATE categoria SET nombre=$1, padre=$2 WHERE id=$3', [nombre, padre, id])
+    pool.query('UPDATE categorias SET nombre=$1, padre=$2 WHERE id=$3', [nombre, padre, id])
         .then(respuesta => console.log(respuesta))
         .then(res.status(204).json(`Evento ${id} actualizado con exito `));
 };
