@@ -240,45 +240,58 @@ const getCategoria = (req, res) => {
 const createCategoria = (req, res) => {
     baja = false;
     const { nombre, padre } = req.body;
-    pool.query('INSERT INTO categorias (nombre, padre, baja) VALUES ($1, $2, $3)', [nombre, padre, baja])
-        .then(respuesta => console.log(respuesta))
-        .then(res.status(201).json({
-            message: 'Categoria agregada con exito'
-        }))
+
+    if (padre != null) {
+        pool.query('SELECT id FROM categorias WHERE nombre = $1', [padre], (err, respIDPadre) => {
+            let IDPadre = respIDPadre.rows[0].id;
+            console.log(IDPadre);
+            pool.query('INSERT INTO categorias (nombre, padre, baja) VALUES ($1, $2, $3)', [nombre, IDPadre, false])
+                .then(respuesta => console.log(respuesta))
+                .then(res.status(201).json({
+                    message: 'Categoria agregada con exito'
+                }))
+        })
+
+    }
+
+    else {
+        pool.query('INSERT INTO categorias (nombre, padre, baja) VALUES ($1, $2, $3)', [nombre, padre, false])
+            .then(respuesta => console.log(respuesta))
+            .then(res.status(201).json({
+                message: 'Categoria agregada con exito'
+            }))
+
+    }
 };
 
 const deleteCategoria = (req, res) => {
-    const id = req.params.id;
-    pool.query('UPDATE categorias SET baja=true WHERE id=$1', [id])
-        .then(respuesta => console.log(respuesta))
-        .then(res.status(204).json(`Categoria ${id} eliminada con exito `));
+    const id = req.params.id
+    console.log(nombre);
+    pool.query('SELECT * FROM categorias WHERE padre = $1 AND baja = false', [id], (err, resultadoQuery) => {
+        if (resultadoQuery.rows.length == 0) {
+            pool.query('UPDATE categorias SET baja=true WHERE id=$1', [id])
+                .then(respuesta => console.log(respuesta))
+                .then(res.status(204).json(`Categoria ${id} eliminada con exito `))
+        }
+        else {
+            res.status(400).json('Error - La categoría no se puede eliminar ya que tiene subcategorías activas.');
+        }
+    })
+
 }
 
-const updateCategoria = (req, res) => {
-    const id = req.params.id;
-    const { nombre, padre } = req.body;
-    pool.query('UPDATE categorias SET nombre=$1, padre=$2 WHERE id=$3', [nombre, padre, id])
-        .then(respuesta => console.log(respuesta))
-        .then(res.status(204).json(`Evento ${id} actualizado con exito `));
-};
+const getSubcategoria = (req, res) => {
+    pool.query('SELECT * FROM categorias WHERE baja = false AND NOT padre IS NULL', (err,resCategorias) => {
+        for (let index = 0; index < resCategorias.rows.length; index++) {
+            pool.query('SELECT nombre FROM categorias WHERE id = $1',[resCategorias.rows[index].padre], (err, cb) => {
+                resCategorias.rows[index].padre = cb.rows[0].nombre;
+            })
+        }
+        res.status(200).json(resCategorias.rows);
+    })
+        
+}
 
-/*const getSubcategoria = (req, res) => {
-    pool.query('SELECT * FROM categorias WHERE baja = false AND NOT padre IS NULL')
-        .then(respuesta => {
-            for (let index = 0; index < respuesta.length; index++) {
-                const element = respuesta[index];
-                pool.query('SELECT nombre where baja= false AND padre IS NULL and id=$1', [element.padre])
-                    .then(resp => {
-                        element.padre = resp;
-                    })
-            }
-            res.status(200).json(respuesta.rows);
-        });
-};*/
- const getSubcategoria = (req, res) => {
-    pool.query('SELECT * FROM categorias WHERE baja = false AND NOT padre IS NULL')
-        .then(respuesta => res.status(200).json(respuesta.rows));
-} 
 
 const getImagenPDI = (req, res) => {
     const idImagen = req.params.idImagen;
