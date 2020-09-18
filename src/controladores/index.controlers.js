@@ -23,7 +23,7 @@ const folderImagenEventoAbs = 'C:/Users/nadia/Documents/APIProyecto/src/imagenes
 const pool = new Pool({
     host: 'localhost',
     user: 'postgres',
-    password: 'pass',
+    password: 'nadia1998',
     database: 'viviconcepcion',
     port: '5432'
 });
@@ -195,7 +195,7 @@ const signup = (req, res) => {
                 bcrypt.hash(password, salt, function (err, passHash) {
                     if (passHash) {
                         passwordEncriptada = passHash;
-                        const respuesta = pool.query('INSERT INTO usuarios (username, email ,password , baja, privilegios, nombre, apellido) VALUES ($1, $2, $3, $4, $5, $6,$7)', [username, email, passwordEncriptada, baja, privilegios, nombre,apellido])
+                        const respuesta = pool.query('INSERT INTO usuarios (username, email ,password , baja, privilegios, nombre, apellido) VALUES ($1, $2, $3, $4, $5, $6,$7)', [username, email, passwordEncriptada, baja, privilegios, nombre, apellido])
                             .then(respuesta => console.log(respuesta))
                             .then(token3 = jwt.sign(Date.now(), process.env.SECRET_KEY || 'tokentest'/*, {expiresIn: 60*60}*/))
                             .then(res.header('auth-token', token3).status(201).json({
@@ -280,17 +280,44 @@ const deleteCategoria = (req, res) => {
 
 }
 
-const getSubcategoria = (req, res) => {
+/* const getSubcategoria = (req, res) => {
     pool.query('SELECT * FROM categorias WHERE baja = false AND NOT padre IS NULL', (err,resCategorias) => {
         for (let index = 0; index < resCategorias.rows.length; index++) {
             pool.query('SELECT nombre FROM categorias WHERE id = $1',[resCategorias.rows[index].padre], (err, cb) => {
+                console.log(cb);
                 resCategorias.rows[index].padre = cb.rows[0].nombre;
             })
         }
         res.status(200).json(resCategorias.rows);
     })
         
+} */
+
+const getSubcategoria = (req, res) => {
+    pool.query('SELECT * FROM categorias WHERE baja = false AND NOT padre IS NULL')
+        .then(respuesta => {
+            res.status(200).json(respuesta.rows);
+        });
 }
+
+const padreSubCategoria = (req,res) => {
+    const id = req.params.id;
+    pool.query('SELECT nombre FROM categorias WHERE id= $1', [id])
+        .then(respuesta => {
+            res.status(200).json(respuesta.rows[0].nombre);
+        });
+}
+
+
+const updateCategoria = (req, res) => {
+    const id = req.params.id;
+    const { nombre, padre } = req.body;
+    pool.query('UPDATE categoria SET nombre=$1, padre=$2 WHERE id=$3', [nombre, padre, id])
+        .then(respuesta => console.log(respuesta))
+        .then(res.status(204).json(`Evento ${id} actualizado con exito `));
+};
+
+
 
 
 const getImagenPDI = (req, res) => {
@@ -413,7 +440,7 @@ const deleteUsuario = (req, res) => {
 const updateUsuario = (req, res) => {
     const id = req.params.id;
     const hashear = req.header('hashear');
-    const { username, email, password, privilegios, nombre,apellido } = req.body;
+    const { username, email, password, privilegios, nombre, apellido } = req.body;
     if (hashear == 'true') {
         salt = bcrypt.genSalt(3, function (err, data) {
             salt = data;
@@ -468,7 +495,7 @@ module.exports = {
     getPDIByID,
     getUsuarios,
     deleteUsuario,
-    updateUsuario, 
+    updateUsuario,
     updateCategoria,
-
+    padreSubCategoria
 }

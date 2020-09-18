@@ -35,7 +35,8 @@ const {
     getUsuarios,
     deleteUsuario,
     updateUsuario, 
-    updateCategoria
+    updateCategoria,
+    padreSubCategoria
 } =require('../controladores/index.controlers');
 
 const {tokenValidation} = require('../libs/verificarToken');
@@ -63,7 +64,8 @@ router.get('/categoria/get/', getCategoria);
 router.post('/categoria/post/', createCategoria);
 router.delete('/categoria/delete/:id', deleteCategoria);
 router.get('/subcategoria/get/', getSubcategoria);
-router.put('/categoria/put/:id', updateCategoria);
+router.get('/subcategoria/get/:id', padreSubCategoria);
+router.put('/categoria/update/:id', updateCategoria);
 
 // autorización
 router.post('/auth/signin/', signin);
