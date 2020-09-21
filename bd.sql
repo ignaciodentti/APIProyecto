@@ -1,10 +1,10 @@
-create database ViviConcepcion;
+create database viviconcepcion;
 
 create table puntoDeInteres(
     id serial NOT NULL PRIMARY KEY,
     nombre varchar,
     descripcion text null,
-    categoria text,
+    categoria numeric,
     calle text,
     numero text null,
     provincia text, 
@@ -24,7 +24,7 @@ create table eventos(
     id serial NOT NULL PRIMARY KEY,
     nombre text, 
     descripcion text null,
-    categoria text,
+    categoria numeric,
     calle text,
     numero text null,
     provincia text, 

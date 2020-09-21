@@ -28,6 +28,7 @@ const pool = new Pool({
     port: '5432'
 });
 
+
 const getPDI = (_req, res) => {
     pool.query('SELECT * FROM puntodeinteres WHERE baja=false AND aprobado=true')
         .then(respuesta => {
