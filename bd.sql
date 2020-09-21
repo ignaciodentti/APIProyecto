@@ -5,52 +5,52 @@ create table puntoDeInteres(
     nombre varchar,
     descripcion text null,
     categoria numeric,
-    calle text,
-    numero text null,
-    provincia text, 
-    localidad text, 
-    telefono text NULL,
+    calle varchar,
+    numero varchar null,
+    provincia varchar, 
+    localidad varchar, 
+    telefono varchar NULL,
     precio numeric null,
-    email text null,
+    email varchar null,
     baja boolean, 
     aprobado boolean,
-    lat text, 
-    long text, 
-    imagenes text[],
+    lat varchar, 
+    long varchar, 
+    imagenes varchar[],
     idhorario numeric
  );
 
 create table eventos(
     id serial NOT NULL PRIMARY KEY,
-    nombre text, 
+    nombre varchar, 
     descripcion text null,
     categoria numeric,
-    calle text,
-    numero text null,
-    provincia text, 
-    localidad text,   
-    fechainicio text null,
-    fechafin text null,  
-    horaapertura text null,
-    horacierre text NULL,
+    calle varchar,
+    numero varchar null,
+    provincia varchar, 
+    localidad varchar,   
+    fechainicio varchar null,
+    fechafin varchar null,  
+    horaapertura varchar null,
+    horacierre varchar NULL,
     precio numeric null,
-    email text null,
+    email varchar null,
     baja boolean, 
     aprobado boolean,
-    lat text, 
-    long text,
-    imagenes text[]
+    lat varchar, 
+    long varchar,
+    imagenes varchar[]
 );
 
 create table usuarios(
     id serial not null PRIMARY KEY,
-    username text not null UNIQUE,
-    email text, 
-    password text not null,
-    privilegios text[],
+    username varchar not null UNIQUE,
+    email varchar, 
+    password varchar not null,
+    privilegios varchar[],
     baja boolean, 
-    nombre text, 
-    apellido text
+    nombre varchar, 
+    apellido varchar
 );
 
 create table categorias(
@@ -63,26 +63,26 @@ create table categorias(
 create table horarios(
 
     id serial not null PRIMARY KEY,
-    lunesAp text,
-    lunesCie text, 
-    martesAp text,
-    martesCie text,
-    miercolesAp text,
-    miercolesCie text,
-    juevesAp text,
-    juevesCie text,
-    viernesAp text,
-    viernesCie text,
-    sabadoAp text,
-    sabadoCie text,
-    domingoAp text,
-    domingoCie text,
+    lunesAp varchar,
+    lunesCie varchar, 
+    martesAp varchar,
+    martesCie varchar,
+    miercolesAp varchar,
+    miercolesCie varchar,
+    juevesAp varchar,
+    juevesCie varchar,
+    viernesAp varchar,
+    viernesCie varchar,
+    sabadoAp varchar,
+    sabadoCie varchar,
+    domingoAp varchar,
+    domingoCie varchar,
     baja boolean
 );
 
 create table imagenes(
     id serial not null PRIMARY KEY,
-    ruta text
+    ruta varchar
 );
 
 INSERT INTO usuarios(username, password, baja, nombre,apellido)	VALUES ('administrador', '$2a$04$uM4ZutIhMG434GSVJPRPUO57VtCSXYs.vjYLXhFjEDL9UFPufyDp.', false, 'administrador', 'administrador');
