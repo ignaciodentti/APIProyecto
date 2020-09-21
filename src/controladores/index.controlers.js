@@ -465,6 +465,17 @@ const updateUsuario = (req, res) => {
     }
 }
 
+const getCategoriaByNombre = (req, res) => {
+    const nombre = req.params.nombre;
+    const respuesta = pool.query('SELECT id FROM categorias WHERE nombre = $1 and baja=false', [nombre])
+        .then(respuesta => res.json(respuesta.rows[0]));
+};
+
+const getCategoriaById = (req, res) => {
+    const id = req.params.id;
+    const respuesta = pool.query('SELECT nombre FROM categorias WHERE id= $1 and baja=false', [id])
+        .then(respuesta => res.json(respuesta.rows[0]));
+};
 module.exports = {
     getPDI,
     createPDI,
@@ -498,5 +509,7 @@ module.exports = {
     deleteUsuario,
     updateUsuario,
     updateCategoria,
-    padreSubCategoria
+    padreSubCategoria,
+    getCategoriaByNombre,
+    getCategoriaById
 }
