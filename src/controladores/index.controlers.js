@@ -21,7 +21,7 @@ const folderImagenEventoAbs = 'C:/Users/nacho/Documents/repositorios/APIProyecto
 const pool = new Pool({
     host: 'localhost',
     user: 'postgres',
-    password: 'postgre',
+    password: 'gasti',
     database: 'viviconcepcion',
     port: '5432'
 });
