@@ -260,15 +260,15 @@ const createCategoria = (req, res) => {
 
 const deleteCategoria = (req, res) => {
     const id = req.params.id
-    console.log(nombre);
     pool.query('SELECT * FROM categorias WHERE padre = $1 AND baja = false', [id], (err, resultadoQuery) => {
         if (resultadoQuery.rows.length == 0) {
             pool.query('UPDATE categorias SET baja=true WHERE id=$1', [id])
-                .then(respuesta => console.log(respuesta))
-                .then(res.status(204).json(`Categoria ${id} eliminada con exito `))
+                //.then(respuesta => console.log(respuesta))
+                .then(res.status(200).json(`Categoria ${id} eliminada con exito `))
         }
         else {
-            res.status(400).json('Error - La categoría no se puede eliminar ya que tiene subcategorías activas.');
+            console.log('TIENE SUBCATEGORIAS ACTIVAS');
+            res.status(400).json('La categoría no se puede eliminar ya que tiene subcategorías activas.');
         }
     })
 
@@ -289,7 +289,6 @@ const padreSubCategoria = (req,res) => {
         });
 }
 
-
 const updateCategoria = (req, res) => {
     const id = req.params.id;
     const { nombre, padre } = req.body;
@@ -297,9 +296,6 @@ const updateCategoria = (req, res) => {
         .then(respuesta => console.log(respuesta))
         .then(res.status(204).json(`Evento ${id} actualizado con exito `));
 };
-
-
-
 
 const getImagenPDI = (req, res) => {
     const idImagen = req.params.idImagen;
