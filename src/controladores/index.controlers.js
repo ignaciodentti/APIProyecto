@@ -1,8 +1,6 @@
 const { Pool } = require('pg');
 const jwt = require('jsonwebtoken');
-//const { } = require('express');
 const bcrypt = require('bcryptjs');
-//const crypto = require("crypto");
 const multer = require("multer");
 const path = require('path');
 const { } = require('morgan');
@@ -10,20 +8,20 @@ const express = require('express');
 const app = express();
 var fs = require('fs');
 const { json } = require('express');
-//const { size, result } = require('underscore');
+
 
 //esta es la ruta de la carpeta en donde se guardan las imágenes (ruta relativa desde ésta carpeta).
 const folderImagen = './src/imagenes/'
 const folderImagenPDI = './src/imagenes/PDI/'
-const folderImagenPDIAbs = 'C:/Users/nadia/Documents/APIProyecto/src/imagenes/PDI/' //REEMPLAZAR CON RUTA DEL SERVIDOR
+const folderImagenPDIAbs = 'C:/Users/nacho/Documents/repositorios/APIProyecto/src/imagenes/PDI/' //REEMPLAZAR CON RUTA DEL SERVIDOR
 const folderImagenEvento = './src/imagenes/evento/'
-const folderImagenEventoAbs = 'C:/Users/nadia/Documents/APIProyecto/src/imagenes/evento/' //REEMPLAZAR CON RUTA DEL SERVIDOR
+const folderImagenEventoAbs = 'C:/Users/nacho/Documents/repositorios/APIProyecto/src/imagenes/evento/' //REEMPLAZAR CON RUTA DEL SERVIDOR
 
 
 const pool = new Pool({
     host: 'localhost',
     user: 'postgres',
-    password: 'nadia1998',
+    password: 'postgre',
     database: 'viviconcepcion',
     port: '5432'
 });
@@ -32,11 +30,6 @@ const pool = new Pool({
 const getPDI = (_req, res) => {
     pool.query('SELECT * FROM puntodeinteres WHERE baja=false AND aprobado=true')
         .then(respuesta => {
-            /*for (let i = 0; i < respuesta.rows.length; i++) {
-                for (let j = 0; j < respuesta.rows[i].imagenes.length; j++) {
-                    respuesta.rows[i].imagenes[j] = 'http://localhost:3000/api/pdi/imagen/' + nameFromPath(respuesta.rows[i].imagenes[j]);
-                }
-            }*/
             res.status(200).json(respuesta.rows);
         });
 };
@@ -281,19 +274,6 @@ const deleteCategoria = (req, res) => {
 
 }
 
-/* const getSubcategoria = (req, res) => {
-    pool.query('SELECT * FROM categorias WHERE baja = false AND NOT padre IS NULL', (err,resCategorias) => {
-        for (let index = 0; index < resCategorias.rows.length; index++) {
-            pool.query('SELECT nombre FROM categorias WHERE id = $1',[resCategorias.rows[index].padre], (err, cb) => {
-                console.log(cb);
-                resCategorias.rows[index].padre = cb.rows[0].nombre;
-            })
-        }
-        res.status(200).json(resCategorias.rows);
-    })
-        
-} */
-
 const getSubcategoria = (req, res) => {
     pool.query('SELECT * FROM categorias WHERE baja = false AND NOT padre IS NULL')
         .then(respuesta => {
@@ -476,6 +456,8 @@ const getCategoriaById = (req, res) => {
     const respuesta = pool.query('SELECT nombre FROM categorias WHERE id= $1 and baja=false', [id])
         .then(respuesta => res.json(respuesta.rows[0]));
 };
+
+
 module.exports = {
     getPDI,
     createPDI,
