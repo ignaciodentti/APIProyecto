@@ -254,20 +254,26 @@ const createCategoria = (req, res) => {
     const { nombre, padre } = req.body;
 
     if (padre != null) {
-        pool.query('SELECT id FROM categorias WHERE nombre = $1', [padre], (err, respIDPadre) => {
-            let IDPadre = respIDPadre.rows[0].id;
-            console.log(IDPadre);
-            pool.query('INSERT INTO categorias (nombre, padre, baja) VALUES ($1, $2, $3)', [nombre, IDPadre, false])
-                .then(respuesta => console.log(respuesta))
-                .then(res.status(201).json({
-                    message: 'Categoria agregada con exito'
-                }))
+        pool.query('SELECT * FROM categorias WHERE nombre = $1', [padre], (err, respPadre) => {
+            if (respPadre.rows[0].padre == null) {
+                let IDPadre = respPadre.rows[0].id;
+                console.log(IDPadre);
+                pool.query('INSERT INTO categorias (nombre, padre, baja) VALUES ($1, $2, $3)', [nombre, IDPadre, false])
+                    .then(respuesta => console.log(respuesta))
+                    .then(res.status(201).json({
+                        message: 'Categoria agregada con exito'
+                    }))
+            }
+            else {
+                res.status(400).json('No se pueden agregar subcategorías a una subcategoría.');
+            }
+
         })
 
     }
 
     else {
-        pool.query('INSERT INTO categorias (nombre, padre, baja) VALUES ($1, $2, $3)', [nombre, padre, false])
+        pool.query('INSERT INTO categorias (nombre, padre, baja) VALUES ($1, $2, $3)', [nombre, null, false])
             .then(respuesta => console.log(respuesta))
             .then(res.status(201).json({
                 message: 'Categoria agregada con exito'
