@@ -21,7 +21,7 @@ const folderImagenEventoAbs = 'C:/Users/nacho/Documents/repositorios/APIProyecto
 const pool = new Pool({
     host: 'localhost',
     user: 'postgres',
-    password: 'postgre',
+    password: 'gasti',
     database: 'viviconcepcion',
     port: '5432'
 });
@@ -265,7 +265,6 @@ const deleteCategoria = (req, res) => {
             pool.query('SELECT * FROM categorias WHERE padre = $1 AND baja = false', [id], (err, resultadoQuery) => {
                 if (resultadoQuery.rows.length == 0) {
                     pool.query('UPDATE categorias SET baja=true WHERE id=$1', [id])
-                        .then(respuesta => console.log(respuesta))
                         .then(res.status(204))
                 }
                 else {
@@ -297,7 +296,6 @@ const padreSubCategoria = (req, res) => {
         });
 }
 
-
 const updateCategoria = (req, res) => {
     const id = req.params.id;
     const { nombre, padre } = req.body;
@@ -305,9 +303,6 @@ const updateCategoria = (req, res) => {
         .then(respuesta => console.log(respuesta))
         .then(res.status(204));
 };
-
-
-
 
 const getImagenPDI = (req, res) => {
     const idImagen = req.params.idImagen;
