@@ -4,27 +4,27 @@ create table puntoDeInteres(
     id serial NOT NULL PRIMARY KEY,
     nombre varchar,
     descripcion text null,
-    categoria numeric,
+    categoria integer,
     calle varchar,
     numero varchar null,
     provincia varchar, 
     localidad varchar, 
     telefono varchar NULL,
-    precio numeric null,
+    precio integer null,
     email varchar null,
     baja boolean, 
     aprobado boolean,
     lat varchar, 
     long varchar, 
     imagenes integer[],
-    idhorario numeric
+    idhorario integer
  );
 
 create table eventos(
     id serial NOT NULL PRIMARY KEY,
     nombre varchar, 
     descripcion text null,
-    categoria numeric,
+    categoria integer,
     calle varchar,
     numero varchar null,
     provincia varchar, 
@@ -33,7 +33,7 @@ create table eventos(
     fechafin varchar null,  
     horaapertura varchar null,
     horacierre varchar NULL,
-    precio numeric null,
+    precio integer null,
     email varchar null,
     baja boolean, 
     aprobado boolean,
@@ -56,7 +56,7 @@ create table usuarios(
 create table categorias(
     id serial not null PRIMARY KEY,
     nombre character varying not null,
-    padre numeric null,
+    padre integer null,
     baja boolean
 );
 
