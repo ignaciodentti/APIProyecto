@@ -8,6 +8,7 @@ const express = require('express');
 const app = express();
 var fs = require('fs');
 const { json } = require('express');
+const readline = require('readline');
 
 
 //esta es la ruta de la carpeta en donde se guardan las imágenes (ruta relativa desde ésta carpeta).
@@ -18,14 +19,22 @@ const folderImagenEvento = './src/imagenes/evento/'
 const folderImagenEventoAbs = 'C:/Users/nadia/Documents/APIProyecto/src/imagenes/evento/' //REEMPLAZAR CON RUTA DEL SERVIDOR
 
 
-const pool = new Pool({
-    host: 'localhost',
-    user: 'postgres',
-    password: 'nadia1998',
-    database: 'viviconcepcion',
-    port: '5432'
-});
 
+var pool;
+fs.readFile('C:/API/.config', 'utf-8', (err, data) => {
+  if(err) {
+    console.log('error: ', err);
+  } else {
+    const config = JSON.parse(data);
+    pool=  new Pool({
+        host: config.host,
+        user: config.user,
+        password: config.password,
+        database: config.database,
+        port: config.port
+    }); 
+  }
+}); 
 
 const getPDI = (_req, res) => {
     console.log('getPDI');
