@@ -16,7 +16,7 @@ create table puntoDeInteres(
     aprobado boolean,
     lat varchar, 
     long varchar, 
-    imagenes varchar[],
+    imagenes integer[],
     idhorario numeric
  );
 
@@ -39,7 +39,7 @@ create table eventos(
     aprobado boolean,
     lat varchar, 
     long varchar,
-    imagenes varchar[]
+    imagenes integer[]
 );
 
 create table usuarios(

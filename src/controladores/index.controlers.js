@@ -13,21 +13,22 @@ const { json } = require('express');
 //esta es la ruta de la carpeta en donde se guardan las imágenes (ruta relativa desde ésta carpeta).
 const folderImagen = './src/imagenes/'
 const folderImagenPDI = './src/imagenes/PDI/'
-const folderImagenPDIAbs = 'C:/Users/nacho/Documents/repositorios/APIProyecto/src/imagenes/PDI/' //REEMPLAZAR CON RUTA DEL SERVIDOR
+const folderImagenPDIAbs = 'C:/Users/nadia/Documents/APIProyecto/src/imagenes/PDI/' //REEMPLAZAR CON RUTA DEL SERVIDOR
 const folderImagenEvento = './src/imagenes/evento/'
-const folderImagenEventoAbs = 'C:/Users/nacho/Documents/repositorios/APIProyecto/src/imagenes/evento/' //REEMPLAZAR CON RUTA DEL SERVIDOR
+const folderImagenEventoAbs = 'C:/Users/nadia/Documents/APIProyecto/src/imagenes/evento/' //REEMPLAZAR CON RUTA DEL SERVIDOR
 
 
 const pool = new Pool({
     host: 'localhost',
     user: 'postgres',
-    password: 'gasti',
+    password: 'nadia1998',
     database: 'viviconcepcion',
     port: '5432'
 });
 
 
 const getPDI = (_req, res) => {
+    console.log('getPDI');
     pool.query('SELECT * FROM puntodeinteres WHERE baja=false AND aprobado=true')
         .then(respuesta => {
             res.status(200).json(respuesta.rows);
@@ -35,11 +36,13 @@ const getPDI = (_req, res) => {
 };
 
 const obtenerPDIPendientes = (req, res) => {
+    console.log('obtenerPDIPendientes');
     pool.query('SELECT * FROM puntodeinteres WHERE baja=false AND aprobado=false')
         .then(respuesta => res.status(200).json(respuesta.rows));
 }
 
 const createPDI = (req, res) => {
+    console.log('createPDI');
     baja = false;
     const { nombre, descripcion, categoria, calle, numero, provincia, localidad, telefono, precio, email, aprobado, lat, long, imagenes, idhorario } = req.body;
     pool.query('INSERT INTO puntodeinteres (nombre, descripcion, categoria, calle, numero, provincia, localidad, telefono, precio, email, aprobado, baja, imagenes, lat, long, idhorario) VALUES ( $1, $2,$3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16)', [nombre, descripcion, categoria, calle, numero, provincia, localidad, telefono, precio, email, aprobado, baja, imagenes, lat, long, idhorario])
@@ -49,6 +52,7 @@ const createPDI = (req, res) => {
 }
 
 const createHorarios = (req, res) => {
+    console.log('createHorario');
     baja = false;
     const { lunesAp, lunesCie, martesAp, martesCie, miercolesAp, miercolesCie, juevesAp, juevesCie, viernesAp, viernesCie, sabadoAp, sabadoCie, domingoAp, domingoCie } = req.body
     pool.query('INSERT INTO horarios (lunesAp , lunesCie , martesAp ,martesCie ,miercolesAp ,miercolesCie ,juevesAp ,juevesCie ,viernesAp ,viernesCie ,sabadoAp ,sabadoCie ,domingoAp ,domingoCie, baja) VALUES ( $1, $2,$3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)', [lunesAp, lunesCie, martesAp, martesCie, miercolesAp, miercolesCie, juevesAp, juevesCie, viernesAp, viernesCie, sabadoAp, sabadoCie, domingoAp, domingoCie, baja])
@@ -65,12 +69,14 @@ const createHorarios = (req, res) => {
 }
 
 const getHorarioByID = (req, res) => {
+    console.log('getHorarioById');
     const id = req.params.id;
     pool.query('SELECT * FROM horarios WHERE id = $1 and baja= false', [id])
         .then(respuesta => res.status(200).json(respuesta.rows));
 };
 
 const updateHorario = (req, res) => {
+    console.log('updateHorario');
     const id = req.params.id;
     const { lunesAp, lunesCie, martesAp, martesCie, miercolesAp, miercolesCie, juevesAp, juevesCie, viernesAp, viernesCie, sabadoAp, sabadoCie, domingoAp, domingoCie } = req.body;
     pool.query('UPDATE horarios SET lunesap=$1, lunescie=$2, martesap=$3, martescie=$4, miercolesap=$5 , miercolescie= $6, juevesap=$7, juevescie=$8, viernesap=$9, viernescie=$10, sabadoap=$11, sabadocie=$12, domingoap=$13, domingocie=$14  WHERE id=$15', [lunesAp, lunesCie, martesAp, martesCie, miercolesAp, miercolesCie, juevesAp, juevesCie, viernesAp, viernesCie, sabadoAp, sabadoCie, domingoAp, domingoCie, id])
@@ -79,6 +85,7 @@ const updateHorario = (req, res) => {
 };
 
 const getPDIByID = (req, res) => {
+    console.log('getPDIbyID');
     const id = req.params.id;
     const respuesta = pool.query('SELECT * FROM puntodeinteres WHERE id = $1 AND aprobado=true and baja=false', [id])
         .then(respuesta => res.json(respuesta.rows));
@@ -89,6 +96,7 @@ function nameFromPath(str) {
 }
 
 const deletePDI = (req, res) => {
+    console.log('deletePDI');
     const id = req.params.id;
     pool.query('SELECT imagenes FROM puntodeinteres WHERE id =$1', [id])
         .then((query) => {
@@ -115,6 +123,7 @@ const deletePDI = (req, res) => {
 };
 
 const updatePDI = (req, res) => {
+    console.log('UpdatePDI');
     const id = req.params.id;
     const { nombre, descripcion, categoria, calle, numero, provincia, localidad, telefono, precio, email, aprobado, lat, long, imagenes } = req.body;
     pool.query('UPDATE puntodeinteres SET nombre=$1, descripcion=$2, categoria=$3, calle=$4, numero=$5, provincia=$6, localidad=$7, telefono=$8, precio=$9, email=$10, aprobado=$11, lat=$12, long=$13, imagenes=$15 WHERE id =$14', [nombre, descripcion, categoria, calle, numero, provincia, localidad, telefono, precio, email, aprobado, lat, long, id, imagenes])
@@ -123,6 +132,7 @@ const updatePDI = (req, res) => {
 };
 
 const getEvento = (_req, res) => {
+    console.log('getEvento');
     pool.query('SELECT * FROM eventos WHERE baja=false AND aprobado=true')
         .then(respuesta => {
             res.status(200).json(respuesta.rows);
@@ -130,11 +140,13 @@ const getEvento = (_req, res) => {
 };
 
 const obtenerEventosPendientes = (req, res) => {
+    console.log('ObtenerEventosPendientes');
     pool.query('SELECT * FROM eventos WHERE baja=false AND aprobado=false')
         .then(respuesta => res.status(200).json(respuesta.rows));
 }
 
 const createEvento = (req, res) => {
+    console.log('createEvento');
     baja = false;
     const { nombre, descripcion, categoria, calle, numero, fechainicio, fechafin, horaapertura, horacierre, provincia, localidad, email, precio, aprobado, lat, long, imagenes } = req.body;
 
@@ -144,6 +156,7 @@ const createEvento = (req, res) => {
 };
 
 const deleteEvento = (req, res) => {
+    console.log('deleteEvento');
     const id = req.params.id
     pool.query('SELECT imagenes FROM eventos WHERE id =$1', [id])
         .then((query) => {
@@ -170,6 +183,7 @@ const deleteEvento = (req, res) => {
 };
 
 const updateEvento = (req, res) => {
+    console.log('updateEvento');
     const id = req.params.id;
     const { nombre, descripcion, categoria, calle, numero, provincia, localidad, fechainicio, fechafin, horaapertura, horacierre, email, precio, aprobado, lat, long, imagenes } = req.body;
     pool.query('UPDATE eventos SET nombre=$1, descripcion=$2, categoria=$3, calle=$4, numero=$5 , provincia= $6, localidad=$7, fechainicio=$8, fechafin=$9, horaapertura=$10, horacierre=$11, email=$12, precio=$13, aprobado=$15, lat=$16, long=$17, imagenes=$18  WHERE id=$14', [nombre, descripcion, categoria, calle, numero, provincia, localidad, fechainicio, fechafin, horaapertura, horacierre, email, precio, id, aprobado, lat, long, imagenes])
@@ -178,6 +192,7 @@ const updateEvento = (req, res) => {
 };
 
 const signup = (req, res) => {
+    console.log('signUp');
     baja = false;
     let salt;
     username = req.body.username;
@@ -206,6 +221,7 @@ const signup = (req, res) => {
 };
 
 const signin = (req, res) => {
+    console.log('signIn');
     username = req.body.username;
     pool.query('SELECT * from usuarios WHERE username= $1', [username], (err, result) => {
         if (result.rows[0] == null) {
@@ -227,11 +243,13 @@ const signin = (req, res) => {
 };
 
 const getCategoria = (req, res) => {
+    console.log('getCategoria');
     pool.query('SELECT * FROM categorias WHERE baja = false AND padre IS NULL')
         .then(respuesta => res.status(200).json(respuesta.rows));
 }
 
 const createCategoria = (req, res) => {
+    console.log('createCategoria');
     baja = false;
     const { nombre, padre } = req.body;
 
@@ -259,6 +277,7 @@ const createCategoria = (req, res) => {
 };
 
 const deleteCategoria = (req, res) => {
+    console.log('deleteCategoria');
     const id = req.params.id
     pool.query('(SELECT e.id, e.nombre,e.categoria,e.baja FROM eventos e WHERE e.categoria=$1 AND e.baja=false) UNION ALL (SELECT p.id, p.nombre, p.categoria, p.baja FROM puntodeinteres p WHERE p.categoria= $1 AND p.baja=false);', [id], (err, result) => {
         if (result.rows.length == 0) { //no tiene pdi asociados dicha categoria
@@ -282,6 +301,7 @@ const deleteCategoria = (req, res) => {
 }
 
 const getSubcategoria = (req, res) => {
+    console.log('getSubCategoria');
     pool.query('SELECT * FROM categorias WHERE baja = false AND NOT padre IS NULL')
         .then(respuesta => {
             res.status(200).json(respuesta.rows);
@@ -289,6 +309,7 @@ const getSubcategoria = (req, res) => {
 }
 
 const padreSubCategoria = (req, res) => {
+    console.log('padreSubCategoria');
     const id = req.params.id;
     pool.query('SELECT nombre FROM categorias WHERE id= $1', [id])
         .then(respuesta => {
@@ -297,6 +318,7 @@ const padreSubCategoria = (req, res) => {
 }
 
 const updateCategoria = (req, res) => {
+    console.log('updateCategoria');
     const id = req.params.id;
     const { nombre, padre } = req.body;
     pool.query('UPDATE categoria SET nombre=$1, padre=$2 WHERE id=$3', [nombre, padre, id])
@@ -305,6 +327,7 @@ const updateCategoria = (req, res) => {
 };
 
 const getImagenPDI = (req, res) => {
+    console.log('getImagenesPDI');
     const idImagen = req.params.idImagen;
     pool.query('SELECT * FROM imagenes WHERE id = $1', [idImagen])
         .then((queryRuta) => {
@@ -315,6 +338,7 @@ const getImagenPDI = (req, res) => {
 }
 
 const getImagenEvento = (req, res) => {
+    console.log('getImagenesEvento');
     const idImagen = req.params.idImagen;
     pool.query('SELECT * FROM imagenes WHERE id = $1', [idImagen])
         .then((queryRuta) => {
@@ -325,6 +349,7 @@ const getImagenEvento = (req, res) => {
 }
 
 const createImagenes = (req, res) => {
+    console.log('CreateImagenes');
     const nombre = req.file.filename;
     rutaImg = req.file.destination + req.file.filename;
     pool.query('INSERT INTO imagenes (ruta) VALUES ($1)', [rutaImg])
@@ -333,6 +358,7 @@ const createImagenes = (req, res) => {
 }
 
 const devolverid = (req, res) => {
+    console.log('DevolverID');
     pool.query('SELECT * FROM imagenes ORDER BY id desc limit 1')
         .then(respu => {
             res.status(200).json({
@@ -382,6 +408,7 @@ const uploadIMGEvento = multer({
 })
 
 const deleteImagenesPDI = (req, res) => {
+    console.log('deleteImagenesPDI');
     let arregloID = req.body;
     for (let index = 0; index < arregloID.length; index++) {
         pool.query('SELECT * FROM imagenes WHERE id = $1', [arregloID[index]])
@@ -395,6 +422,7 @@ const deleteImagenesPDI = (req, res) => {
 }
 
 const deleteImagenesEvento = (req, res) => {
+    console.log('deleteImagenesEvento');
     let arregloID = req.body;
     for (let index = 0; index < arregloID.length; index++) {
         pool.query('SELECT * FROM imagenes WHERE id = $1', [arregloID[index]])
@@ -408,6 +436,7 @@ const deleteImagenesEvento = (req, res) => {
 }
 
 const getUsuarios = (req, res) => {
+    console.log('getUsuarios');
     pool.query('SELECT * FROM usuarios WHERE baja=false')
         .then(respuesta => {
             res.status(200).json(respuesta.rows);
@@ -415,6 +444,7 @@ const getUsuarios = (req, res) => {
 }
 
 const deleteUsuario = (req, res) => {
+    console.log('deleteUsuario');
     const id = req.params.id;
     pool.query('UPDATE usuarios SET baja=true WHERE id=$1', [id])
         .then(respu => console.log(respu))
@@ -422,6 +452,7 @@ const deleteUsuario = (req, res) => {
 }
 
 const updateUsuario = (req, res) => {
+    console.log('updateUsuario');
     const id = req.params.id;
     const hashear = req.header('hashear');
     const { username, email, password, privilegios, nombre, apellido } = req.body;
@@ -449,13 +480,17 @@ const updateUsuario = (req, res) => {
 }
 
 const getCategoriaByNombre = (req, res) => {
+    console.log('getCategoriaByNombre');
     const nombre = req.params.nombre;
     const respuesta = pool.query('SELECT id FROM categorias WHERE nombre = $1 and baja=false', [nombre])
         .then(respuesta => res.json(respuesta.rows[0]));
 };
 
 const getCategoriaById = (req, res) => {
+    console.log('getCategoriaById');
     const id = req.params.id;
+    console.log()
+    console.log(id);
     const respuesta = pool.query('SELECT nombre FROM categorias WHERE id= $1 and baja=false', [id])
         .then(respuesta => res.json(respuesta.rows[0]));
 };
