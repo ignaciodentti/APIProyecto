@@ -75,7 +75,7 @@ const updateHorario = (req, res) => {
     const { lunesAp, lunesCie, martesAp, martesCie, miercolesAp, miercolesCie, juevesAp, juevesCie, viernesAp, viernesCie, sabadoAp, sabadoCie, domingoAp, domingoCie } = req.body;
     pool.query('UPDATE horarios SET lunesap=$1, lunescie=$2, martesap=$3, martescie=$4, miercolesap=$5 , miercolescie= $6, juevesap=$7, juevescie=$8, viernesap=$9, viernescie=$10, sabadoap=$11, sabadocie=$12, domingoap=$13, domingocie=$14  WHERE id=$15', [lunesAp, lunesCie, martesAp, martesCie, miercolesAp, miercolesCie, juevesAp, juevesCie, viernesAp, viernesCie, sabadoAp, sabadoCie, domingoAp, domingoCie, id])
         .then(respuesta => console.log(respuesta))
-        .then(res.status(204).json(`Horario del ${id} actualizado con exito `));
+        .then(res.status(204));
 };
 
 const getPDIByID = (req, res) => {
@@ -110,7 +110,7 @@ const deletePDI = (req, res) => {
         });
     pool.query('UPDATE puntodeinteres SET baja=true WHERE id=$1', [id])
         .then(respuesta => console.log(respuesta))
-        .then(res.status(204).json(`Punto de interes ${id} eliminado con exito `));
+        .then(res.status(204));
 
 };
 
@@ -119,7 +119,7 @@ const updatePDI = (req, res) => {
     const { nombre, descripcion, categoria, calle, numero, provincia, localidad, telefono, precio, email, aprobado, lat, long, imagenes } = req.body;
     pool.query('UPDATE puntodeinteres SET nombre=$1, descripcion=$2, categoria=$3, calle=$4, numero=$5, provincia=$6, localidad=$7, telefono=$8, precio=$9, email=$10, aprobado=$11, lat=$12, long=$13, imagenes=$15 WHERE id =$14', [nombre, descripcion, categoria, calle, numero, provincia, localidad, telefono, precio, email, aprobado, lat, long, id, imagenes])
         .then(respuesta => console.log(respuesta))
-        .then(res.status(204).json(`Punto de interes ${id} actualizado con exito `));
+        .then(res.status(204));
 };
 
 const getEvento = (_req, res) => {
@@ -166,7 +166,7 @@ const deleteEvento = (req, res) => {
         })
     pool.query('UPDATE eventos SET baja=true WHERE id=$1', [id])
         .then(respu => console.log(respu))
-        .then(res.status(204).json(`Evento ${id} eliminado con exito `));
+        .then(res.status(204));
 };
 
 const updateEvento = (req, res) => {
@@ -174,7 +174,7 @@ const updateEvento = (req, res) => {
     const { nombre, descripcion, categoria, calle, numero, provincia, localidad, fechainicio, fechafin, horaapertura, horacierre, email, precio, aprobado, lat, long, imagenes } = req.body;
     pool.query('UPDATE eventos SET nombre=$1, descripcion=$2, categoria=$3, calle=$4, numero=$5 , provincia= $6, localidad=$7, fechainicio=$8, fechafin=$9, horaapertura=$10, horacierre=$11, email=$12, precio=$13, aprobado=$15, lat=$16, long=$17, imagenes=$18  WHERE id=$14', [nombre, descripcion, categoria, calle, numero, provincia, localidad, fechainicio, fechafin, horaapertura, horacierre, email, precio, id, aprobado, lat, long, imagenes])
         .then(respuesta => console.log(respuesta))
-        .then(res.status(204).json(`Evento ${id} actualizado con exito `));
+        .then(res.status(204));
 };
 
 const signup = (req, res) => {
@@ -260,17 +260,25 @@ const createCategoria = (req, res) => {
 
 const deleteCategoria = (req, res) => {
     const id = req.params.id
-    console.log(nombre);
-    pool.query('SELECT * FROM categorias WHERE padre = $1 AND baja = false', [id], (err, resultadoQuery) => {
-        if (resultadoQuery.rows.length == 0) {
-            pool.query('UPDATE categorias SET baja=true WHERE id=$1', [id])
-                .then(respuesta => console.log(respuesta))
-                .then(res.status(204).json(`Categoria ${id} eliminada con exito `))
+    pool.query('(SELECT e.id, e.nombre,e.categoria,e.baja FROM eventos e WHERE e.categoria=$1 AND e.baja=false) UNION ALL (SELECT p.id, p.nombre, p.categoria, p.baja FROM puntodeinteres p WHERE p.categoria= $1 AND p.baja=false);', [id], (err, result) => {
+        if (result.rows.length == 0) { //no tiene pdi asociados dicha categoria
+            pool.query('SELECT * FROM categorias WHERE padre = $1 AND baja = false', [id], (err, resultadoQuery) => {
+                if (resultadoQuery.rows.length == 0) {
+                    pool.query('UPDATE categorias SET baja=true WHERE id=$1', [id])
+                        .then(respuesta => console.log(respuesta))
+                        .then(res.status(204))
+                }
+                else {
+                    res.status(400).json('Error - La categoría no se puede eliminar ya que tiene subcategorías activas.');
+                }
+            })
         }
         else {
-            res.status(400).json('Error - La categoría no se puede eliminar ya que tiene subcategorías activas.');
+            res.status(400).json('Error - La categoría no se puede eliminar ya que tiene puntos de interes o eventos asociados.');
         }
     })
+        
+    
 
 }
 
@@ -281,7 +289,7 @@ const getSubcategoria = (req, res) => {
         });
 }
 
-const padreSubCategoria = (req,res) => {
+const padreSubCategoria = (req, res) => {
     const id = req.params.id;
     pool.query('SELECT nombre FROM categorias WHERE id= $1', [id])
         .then(respuesta => {
@@ -295,7 +303,7 @@ const updateCategoria = (req, res) => {
     const { nombre, padre } = req.body;
     pool.query('UPDATE categoria SET nombre=$1, padre=$2 WHERE id=$3', [nombre, padre, id])
         .then(respuesta => console.log(respuesta))
-        .then(res.status(204).json(`Evento ${id} actualizado con exito `));
+        .then(res.status(204));
 };
 
 
@@ -388,7 +396,7 @@ const deleteImagenesPDI = (req, res) => {
                 pool.query('DELETE FROM imagenes WHERE id=$1', [arregloID[index]]);
             })
     }
-    res.status(204).json('Imagenes eliminadas con exito');
+    res.status(204);
 }
 
 const deleteImagenesEvento = (req, res) => {
@@ -401,7 +409,7 @@ const deleteImagenesEvento = (req, res) => {
                 pool.query('DELETE FROM imagenes WHERE id=$1', [arregloID[index]]);
             })
     }
-    res.status(204).json('Imagenes eliminadas con exito');
+    res.status(204);
 }
 
 const getUsuarios = (req, res) => {
@@ -415,7 +423,7 @@ const deleteUsuario = (req, res) => {
     const id = req.params.id;
     pool.query('UPDATE usuarios SET baja=true WHERE id=$1', [id])
         .then(respu => console.log(respu))
-        .then(res.status(204).json(`Usuario ${id} eliminado con exito `));
+        .then(res.status(204));
 }
 
 const updateUsuario = (req, res) => {
@@ -432,7 +440,7 @@ const updateUsuario = (req, res) => {
                     console.log(passwordEncriptada);
                     pool.query('UPDATE usuarios SET username=$1, email=$2, password=$3, privilegios=$4, nombre=$6, apellido=$7 WHERE id=$5', [username, email, passwordEncriptada, privilegios, id, nombre, apellido])
                         .then(respuesta => console.log(respuesta))
-                        .then(res.status(204).json(`Usuario ${id} actualizado con exito `));
+                        .then(res.status(204));
 
                 }
             })
@@ -441,7 +449,7 @@ const updateUsuario = (req, res) => {
     else {
         pool.query('UPDATE usuarios SET username=$1, email=$2, password=$3, privilegios=$4, nombre=$6, apellido=$7 WHERE id=$5', [username, email, password, privilegios, id, nombre, apellido])
             .then(respuesta => console.log(respuesta))
-            .then(res.status(204).json(`Usuario ${id} actualizado con exito `));
+            .then(res.status(204));
     }
 }
 
