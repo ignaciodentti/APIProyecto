@@ -8,15 +8,7 @@ const {
     createPDI, 
     deletePDI, 
     updatePDI, 
-    getEvento, 
     obtenerPDIPendientes,
-    getImagenPDI,
-    getImagenEvento,
-    createHorarios, 
-    updateHorario, 
-    getHorarioByID,
-    deleteImagenesPDI,
-    deleteImagenesEvento,
     getPDIByID,
 } =require('../controladores/controlersPDI.js');
 
@@ -27,8 +19,6 @@ const {
     deleteEvento, 
     updateEvento, 
     obtenerEventosPendientes, 
-    getImagenEvento,
-    deleteImagenesEvento,
 } =require('../controladores/controlersEvento');
 
 // Controlador imágenes
@@ -38,7 +28,7 @@ const {
     uploadIMGPDI,
     getImagenPDI,
     getImagenEvento,
-    devolverid,
+    getIdUltimaImagen,
     deleteImagenesPDI,
     deleteImagenesEvento,
 } =require('../controladores/controlersImagen');
@@ -110,7 +100,7 @@ router.get('/pdi/imagen/:idImagen', getImagenPDI); // devuelve una imagen en par
 router.get('/evento/imagen/:idImagen', getImagenEvento); // ditto, para un evento.
 router.post('/pdi/imagenes/post/', uploadIMGPDI.single('file') , createImagenes);
 router.post('/evento/imagenes/post/', uploadIMGEvento.single('file'), createImagenes);
-router.get('/imagenes/getUltimoID/', devolverid);
+router.get('/imagenes/getUltimoID/', getIdUltimaImagen);
 router.put('/pdi/imagenes/delete/', deleteImagenesPDI);
 router.put('/evento/imagenes/delete/', deleteImagenesEvento);
 

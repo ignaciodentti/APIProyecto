@@ -8,14 +8,13 @@ const express = require('express');
 const app = express();
 var fs = require('fs');
 const { json } = require('express');
-const readline = require('readline');
+
 
 //esta es la ruta de la carpeta en donde se guardan las imágenes (ruta relativa desde ésta carpeta).
-const folderImagen = './src/imagenes/'
 const folderImagenPDI = './src/imagenes/PDI/'
-const folderImagenPDIAbs = 'C:/Users/nadia/Documents/APIProyecto/src/imagenes/PDI/' //REEMPLAZAR CON RUTA DEL SERVIDOR
+const folderImagenPDIAbs = 'C:/Users/Nacho/Documents/GitHub/APIProyecto/src/imagenes/PDI/' //REEMPLAZAR CON RUTA DEL SERVIDOR
 const folderImagenEvento = './src/imagenes/evento/'
-const folderImagenEventoAbs = 'C:/Users/nadia/Documents/APIProyecto/src/imagenes/evento/' //REEMPLAZAR CON RUTA DEL SERVIDOR
+const folderImagenEventoAbs = 'C:/Users/Nacho/Documents/GitHub/APIProyecto/src/imagenes/evento/' //REEMPLAZAR CON RUTA DEL SERVIDOR
 
 var pool;
 fs.readFile('C:/API/.config', 'utf-8', (err, data) => {
@@ -265,7 +264,6 @@ const createCategoria = (req, res) => {
         pool.query('SELECT * FROM categorias WHERE nombre = $1', [padre], (err, respPadre) => {
             if (respPadre.rows[0].padre == null) {
                 let IDPadre = respPadre.rows[0].id;
-                console.log(IDPadre);
                 pool.query('INSERT INTO categorias (nombre, padre, baja) VALUES ($1, $2, $3)', [nombre, IDPadre, false])
                     .then(respuesta => console.log(respuesta))
                     .then(res.status(201).json({
@@ -473,11 +471,9 @@ const updateUsuario = (req, res) => {
     if (hashear == 'true') {
         salt = bcrypt.genSalt(3, function (err, data) {
             salt = data;
-            console.log(salt)
             bcrypt.hash(password, salt, function (err) {
                 if (data) {
                     passwordEncriptada = data;
-                    console.log(passwordEncriptada);
                     pool.query('UPDATE usuarios SET username=$1, email=$2, password=$3, privilegios=$4, nombre=$6, apellido=$7 WHERE id=$5', [username, email, passwordEncriptada, privilegios, id, nombre, apellido])
                         .then(respuesta => console.log(respuesta))
                         .then(res.status(204));
@@ -503,8 +499,6 @@ const getCategoriaByNombre = (req, res) => {
 const getCategoriaById = (req, res) => {
     console.log('getCategoriaById');
     const id = req.params.id;
-    console.log()
-    console.log(id);
     const respuesta = pool.query('SELECT nombre FROM categorias WHERE id= $1 and baja=false', [id])
         .then(respuesta => res.json(respuesta.rows[0]));
 };
