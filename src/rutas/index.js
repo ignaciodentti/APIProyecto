@@ -2,48 +2,78 @@ const {Router} = require('express');
 const router = Router();
 
 
-
+//Controlador PDI
 const {
     getPDI, 
     createPDI, 
     deletePDI, 
     updatePDI, 
     getEvento, 
-    createEvento, 
-    deleteEvento, 
-    updateEvento, 
-    signin,
-    signup, 
-    getCategoria,
-    createCategoria,
-    deleteCategoria,
-    getSubcategoria,
     obtenerPDIPendientes,
-    obtenerEventosPendientes, 
-    createImagenes, 
-    uploadIMGEvento,
-    uploadIMGPDI,
     getImagenPDI,
     getImagenEvento,
     createHorarios, 
     updateHorario, 
     getHorarioByID,
-    devolverid,
     deleteImagenesPDI,
     deleteImagenesEvento,
     getPDIByID,
-    getUsuarios,
-    deleteUsuario,
-    updateUsuario, 
+} =require('../controladores/controlersPDI.js');
+
+// Controlador Eventos
+const {
+    getEvento, 
+    createEvento, 
+    deleteEvento, 
+    updateEvento, 
+    obtenerEventosPendientes, 
+    getImagenEvento,
+    deleteImagenesEvento,
+} =require('../controladores/controlersEvento');
+
+// Controlador imágenes
+const {
+    createImagenes, 
+    uploadIMGEvento,
+    uploadIMGPDI,
+    getImagenPDI,
+    getImagenEvento,
+    devolverid,
+    deleteImagenesPDI,
+    deleteImagenesEvento,
+} =require('../controladores/controlersImagen');
+
+// Controlador categorías
+const {
+    getCategoria,
+    createCategoria,
+    deleteCategoria,
+    getSubcategoria,
     updateCategoria,
     padreSubCategoria,
     getCategoriaByNombre,
     getCategoriaById
-} =require('../controladores/index.controlers');
+} =require('../controladores/controlersCategoria');
+
+// Controlador usuarios
+const {
+    signin,
+    signup, 
+    getUsuarios,
+    deleteUsuario,
+    updateUsuario, 
+} =require('../controladores/controlersUsuario');
+
+// Controlador horarios
+const {
+    createHorarios, 
+    updateHorario, 
+    getHorarioByID,
+} =require('../controladores/controlersHorario');
+
 
 const {tokenValidation} = require('../libs/verificarToken');
 const verificarToken = require('../libs/verificarToken');
-
 
 
 // puntos de interés
