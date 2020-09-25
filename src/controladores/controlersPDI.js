@@ -81,7 +81,7 @@ const deletePDI = (req, res) => {
         });
     pool.query('UPDATE puntodeinteres SET baja=true WHERE id=$1', [id])
         .then(respuesta => console.log(respuesta))
-        .then(res.status(204));
+        .then(res.status(204).send());
 
 };
 
@@ -91,7 +91,7 @@ const updatePDI = (req, res) => {
     const { nombre, descripcion, categoria, calle, numero, provincia, localidad, telefono, precio, email, aprobado, lat, long, imagenes } = req.body;
     pool.query('UPDATE puntodeinteres SET nombre=$1, descripcion=$2, categoria=$3, calle=$4, numero=$5, provincia=$6, localidad=$7, telefono=$8, precio=$9, email=$10, aprobado=$11, lat=$12, long=$13, imagenes=$15 WHERE id =$14', [nombre, descripcion, categoria, calle, numero, provincia, localidad, telefono, precio, email, aprobado, lat, long, id, imagenes])
         .then(respuesta => console.log(respuesta))
-        .then(res.status(204));
+        .then(res.status(204).send());
 };
 
 module.exports = {

@@ -124,10 +124,11 @@ const deleteImagenesPDI = (req, res) => {
           .then((queryPath) => {
               pathImagen = folderImagenPDIAbs + nameFromPath(queryPath.rows[0].ruta);
               fs.unlink(pathImagen);
-              pool.query('DELETE FROM imagenes WHERE id=$1', [arregloID[index]]);
+              pool.query('DELETE FROM imagenes WHERE id=$1', [arregloID[index]])
+              .then((resp)=> console.log(resp))
           })
   }
-  res.status(200);
+  res.status(204).send();
 }
 
 const deleteImagenesEvento = (req, res) => {
@@ -141,7 +142,7 @@ const deleteImagenesEvento = (req, res) => {
               pool.query('DELETE FROM imagenes WHERE id=$1', [arregloID[index]]);
           })
   }
-  res.status(204);
+  res.status(204).send();
 }
 
 

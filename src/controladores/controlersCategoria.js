@@ -66,7 +66,7 @@ const deleteCategoria = (req, res) => {
             pool.query('SELECT * FROM categorias WHERE padre = $1 AND baja = false', [id], (err, resultadoQuery) => {
                 if (resultadoQuery.rows.length == 0) {
                     pool.query('UPDATE categorias SET baja=true WHERE id=$1', [id])
-                        .then(res.status(204))
+                        .then(res.status(204).send())
                 }
                 else {
                     res.status(400).json('Error - La categoría no se puede eliminar ya que tiene subcategorías activas.');
@@ -102,7 +102,7 @@ const updateCategoria = (req, res) => {
     const { nombre, padre } = req.body;
     pool.query('UPDATE categorias SET nombre=$1, padre=$2 WHERE id=$3', [nombre, padre, id])
         .then(respuesta => console.log(respuesta))
-        .then(res.status(204));
+        .then(res.status(204).send());
 };
 
 const getCategoriaByNombre = (req, res) => {
