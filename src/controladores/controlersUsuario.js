@@ -87,7 +87,7 @@ const deleteUsuario = (req, res) => {
     const id = req.params.id;
     pool.query('UPDATE usuarios SET baja=true WHERE id=$1', [id])
         .then(respu => console.log(respu))
-        .then(res.status(204).send());
+        .then(res.status(200).send());
 }
 
 const updateUsuario = (req, res) => {
@@ -103,7 +103,7 @@ const updateUsuario = (req, res) => {
                     passwordEncriptada = data;
                     pool.query('UPDATE usuarios SET username=$1, email=$2, password=$3, privilegios=$4, nombre=$6, apellido=$7 WHERE id=$5', [username, email, passwordEncriptada, privilegios, id, nombre, apellido])
                         .then(respuesta => console.log(respuesta))
-                        .then(res.status(204).send());
+                        .then(res.status(200).send());
 
                 }
             })
@@ -112,7 +112,7 @@ const updateUsuario = (req, res) => {
     else {
         pool.query('UPDATE usuarios SET username=$1, email=$2, password=$3, privilegios=$4, nombre=$6, apellido=$7 WHERE id=$5', [username, email, password, privilegios, id, nombre, apellido])
             .then(respuesta => console.log(respuesta))
-            .then(res.status(204).send());
+            .then(res.status(200).send());
     }
 }
 

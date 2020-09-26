@@ -72,7 +72,7 @@ const deleteEvento = (req, res) => {
         })
     pool.query('UPDATE eventos SET baja=true WHERE id=$1', [id])
         .then(respu => console.log(respu))
-        .then(res.status(204));
+        .then(res.status(200));
 };
 
 const updateEvento = (req, res) => {

@@ -81,7 +81,7 @@ const deletePDI = (req, res) => {
         });
     pool.query('UPDATE puntodeinteres SET baja=true WHERE id=$1', [id])
         .then(respuesta => console.log(respuesta))
-        .then(res.status(204).send());
+        .then(res.status(200).send());
 
 };
 

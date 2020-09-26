@@ -20,7 +20,7 @@ fs.readFile('C:/API/.config', 'utf-8', (err, data) => {
 }); 
 
 const getCategoria = (req, res) => {
-    console.log('getCategoria');
+    //console.log('getCategoria');
     pool.query('SELECT * FROM categorias WHERE baja = false AND padre IS NULL')
         .then(respuesta => res.status(200).json(respuesta.rows));
 }
@@ -80,7 +80,7 @@ const deleteCategoria = (req, res) => {
 }
 
 const getSubcategoria = (req, res) => {
-    console.log('getSubCategoria');
+    //console.log('getSubCategoria');
     pool.query('SELECT * FROM categorias WHERE baja = false AND NOT padre IS NULL')
         .then(respuesta => {
             res.status(200).json(respuesta.rows);
@@ -88,7 +88,7 @@ const getSubcategoria = (req, res) => {
 }
 
 const padreSubCategoria = (req, res) => {
-    console.log('padreSubCategoria');
+    //console.log('padreSubCategoria');
     const id = req.params.id;
     pool.query('SELECT nombre FROM categorias WHERE id= $1', [id])
         .then(respuesta => {
@@ -102,7 +102,7 @@ const updateCategoria = (req, res) => {
     const { nombre, padre } = req.body;
     pool.query('UPDATE categorias SET nombre=$1, padre=$2 WHERE id=$3', [nombre, padre, id])
         .then(respuesta => console.log(respuesta))
-        .then(res.status(204).send());
+        .then(res.status(200).send());
 };
 
 const getCategoriaByNombre = (req, res) => {

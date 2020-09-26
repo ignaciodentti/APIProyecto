@@ -72,8 +72,8 @@ const createImagenes = (req, res) => {
 }
 
 const getIdUltimaImagen = (req, res) => {
-  console.log('GetIdImagen');
-  pool.query('SELECT * FROM imagenes ORDER BY id desc limit 1')
+  console.log('GetIdUltimaImagen');
+  pool.query('SELECT id FROM imagenes ORDER BY id desc limit 1')
       .then(respu => {
           res.status(200).json({
               id: respu.rows[0].id
@@ -148,7 +148,7 @@ const deleteImagenesEvento = (req, res) => {
               pool.query('DELETE FROM imagenes WHERE id=$1', [arregloID[index]]);
           })
   }
-  res.status(204).send();
+  res.status(200).send();
 }
 
 
