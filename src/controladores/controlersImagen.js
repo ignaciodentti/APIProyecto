@@ -128,7 +128,7 @@ const deleteImagenesPDI = (req, res) => {
               .then((resp)=> console.log(resp))
           })
   }
-  res.status(204).send();
+  res.status(200).send();
 }
 
 const deleteImagenesEvento = (req, res) => {
