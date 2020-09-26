@@ -7,13 +7,14 @@ const express = require('express');
 const app = express();
 const { json } = require('express');
 
-//esta es la ruta de la carpeta en donde se guardan las imágenes (ruta relativa desde ésta carpeta).
-const folderImagenPDI = './src/imagenes/PDI/'
-const folderImagenPDIAbs = 'C:/Users/Nacho/Documents/GitHub/APIProyecto/src/imagenes/PDI/' //REEMPLAZAR CON RUTA DEL SERVIDOR
-const folderImagenEvento = './src/imagenes/evento/'
-const folderImagenEventoAbs = 'C:/Users/Nacho/Documents/GitHub/APIProyecto/src/imagenes/evento/' //REEMPLAZAR CON RUTA DEL SERVIDOR
+//VARIABLES DE REFERIFAS A LAS RUTAS DONDE SE ALMACENAN LAS IMÁGENES.
+var folderImagenPDI;
+var folderImagenPDIAbs; //REEMPLAZAR CON RUTA DEL SERVIDOR
+var folderImagenEvento;
+var folderImagenEventoAbs; //REEMPLAZAR CON RUTA DEL SERVIDOR
 
 var pool;
+
 fs.readFile('C:/API/.config', 'utf-8', (err, data) => {
   if(err) {
     console.log('error: ', err);
@@ -26,6 +27,11 @@ fs.readFile('C:/API/.config', 'utf-8', (err, data) => {
         database: config.database,
         port: config.port
     }); 
+
+    folderImagenPDI = config.folderImagenPDI;
+    folderImagenPDIAbs = config.folderImagenPDIAbs;
+    folderImagenEvento = config.folderImagenEvento;
+    folderImagenEventoAbs = config.folderImagenEventoAbs;    
   }
 }); 
 

@@ -3,9 +3,8 @@ const { } = require('morgan');
 var fs = require('fs');
 const { json } = require('express');
 
-//esta es la ruta de la carpeta en donde se guardan las imágenes (ruta relativa desde ésta carpeta).
-
-const folderImagenEventoAbs = 'C:/Users/Nacho/Documents/GitHub/APIProyecto/src/imagenes/evento/' //REEMPLAZAR CON RUTA DEL SERVIDOR
+//VARIABLE CON REFERENCIA A LA RUTA DONDE SE ALMACENAN LAS IMAGENES(ruta relativa desde ésta carpeta).
+var folderImagenEventoAbs; //REEMPLAZAR CON RUTA DEL SERVIDOR
 
 var pool;
 fs.readFile('C:/API/.config', 'utf-8', (err, data) => {
@@ -20,6 +19,8 @@ fs.readFile('C:/API/.config', 'utf-8', (err, data) => {
         database: config.database,
         port: config.port
     }); 
+
+    folderImagenEventoAbs = config.folderImagenEventoAbs;
   }
 }); 
 

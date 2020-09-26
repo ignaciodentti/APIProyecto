@@ -3,25 +3,25 @@ const { } = require('morgan');
 var fs = require('fs');
 
 
-//esta es la ruta de la carpeta en donde se guardan las imágenes (ruta relativa desde ésta carpeta).
-const folderImagenPDIAbs = 'C:/Users/Nacho/Documents/GitHub/APIProyecto/src/imagenes/PDI/' //REEMPLAZAR CON RUTA DEL SERVIDOR
+//VARIABLE CON REFERENCIA A LA RUTA DONDE SE ALMACENAN LAS IMAGENES (ruta relativa desde ésta carpeta).
+var folderImagenPDIAbs; //REEMPLAZAR CON RUTA DEL SERVIDOR
 
 var pool;
 fs.readFile('C:/API/.config', 'utf-8', (err, data) => {
-  if(err) {
-    console.log('error: ', err);
-  } else {
-    const config = JSON.parse(data);
-    pool=  new Pool({
-        host: config.host,
-        user: config.user,
-        password: config.password,
-        database: config.database,
-        port: config.port
-    }); 
-  }
-}); 
-
+    if(err) {
+      console.log('error: ', err);
+    } else {
+      const config = JSON.parse(data);
+      pool=  new Pool({
+          host: config.host,
+          user: config.user,
+          password: config.password,
+          database: config.database,
+          port: config.port
+      }); 
+      folderImagenPDIAbs = config.folderImagenPDIAbs;   
+    }
+  }); 
 //PROCEDIMIENTOS - FUNCIONES
 
 const getPDI = (_req, res) => {
