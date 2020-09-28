@@ -54,7 +54,7 @@ const getPDIByID = (req, res) => {
     console.log('getPDIbyID');
     const id = req.params.id;
     const respuesta = pool.query('SELECT * FROM puntodeinteres WHERE id = $1 AND aprobado=true and baja=false', [id])
-        .then(respuesta => res.json(respuesta.rows));
+        .then(respuesta => res.satus(200).json(respuesta.rows));
 };
 
 

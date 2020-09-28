@@ -107,15 +107,19 @@ const updateCategoria = (req, res) => {
 
 const getCategoriaByNombre = (req, res) => {
     console.log('getCategoriaByNombre');
-    const nombre = req.params.nombre;
-    const respuesta = pool.query('SELECT id FROM categorias WHERE nombre = $1 and baja=false', [nombre])
+    let nombre = req.params.nombre;
+    if (nombre.indexOf('-')) {
+        let nombreaux = nombre.split(' ');
+        nombre = nombreaux[0];
+    }
+    pool.query('SELECT id FROM categorias WHERE nombre = $1 and baja=false', [nombre])
         .then(respuesta => res.json(respuesta.rows[0]));
 };
 
 const getCategoriaById = (req, res) => {
     console.log('getCategoriaById');
     const id = req.params.id;
-    const respuesta = pool.query('SELECT nombre FROM categorias WHERE id= $1 and baja=false', [id])
+    pool.query('SELECT nombre FROM categorias WHERE id= $1 and baja=false', [id])
         .then(respuesta => res.json(respuesta.rows[0]));
 };
 
