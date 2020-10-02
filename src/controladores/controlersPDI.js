@@ -4,7 +4,7 @@ var fs = require('fs');
 
 
 //VARIABLE CON REFERENCIA A LA RUTA DONDE SE ALMACENAN LAS IMAGENES (ruta relativa desde ésta carpeta).
-var folderImagenPDIAbs; //REEMPLAZAR CON RUTA DEL SERVIDOR
+var folderImagenPDIAbs; //REEMPLAZAR CON RUTA DEL SERVIDOR EN ARCHIVO C:/API/.config
 
 var pool;
 fs.readFile('C:/API/.config', 'utf-8', (err, data) => {

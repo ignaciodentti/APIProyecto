@@ -9,9 +9,9 @@ const { json } = require('express');
 
 //VARIABLES DE REFERIFAS A LAS RUTAS DONDE SE ALMACENAN LAS IMÁGENES.
 var folderImagenPDI;
-var folderImagenPDIAbs; //REEMPLAZAR CON RUTA DEL SERVIDOR
+var folderImagenPDIAbs; //REEMPLAZAR CON RUTA DEL SERVIDOR EN ARCHIVO C:/API/.config
 var folderImagenEvento;
-var folderImagenEventoAbs; //REEMPLAZAR CON RUTA DEL SERVIDOR
+var folderImagenEventoAbs; //REEMPLAZAR CON RUTA DEL SERVIDOR EN ARCHIVO C:/API/.config
 
 var pool;
 
