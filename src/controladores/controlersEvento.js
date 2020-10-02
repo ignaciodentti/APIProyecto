@@ -40,10 +40,8 @@ const obtenerEventosPendientes = (req, res) => {
 
 const createEvento = (req, res) => {
     console.log('createEvento');
-    baja = false;
-    const { nombre, descripcion, categoria, calle, numero, fechainicio, fechafin, horaapertura, horacierre, provincia, localidad, email, precio, aprobado, lat, long, imagenes } = req.body;
-
-    pool.query('INSERT INTO eventos (nombre, descripcion, categoria, calle, numero, fechainicio, fechafin, horaapertura, horacierre, provincia, localidad, email, precio, aprobado, lat, long, baja, imagenes) VALUES ( $1, $2,$3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18)', [nombre, descripcion, categoria, calle, numero, fechainicio, fechafin, horaapertura, horacierre, provincia, localidad, email, precio, aprobado, lat, long, baja, imagenes])
+    const { nombre, descripcion, categoria, calle, numero, fechainicio, fechafin, horario, provincia, localidad, email, precio, aprobado, lat, long, imagenes } = req.body;
+    pool.query('INSERT INTO eventos (nombre, descripcion, categoria, calle, numero, fechainicio, fechafin, horario, provincia, localidad, email, precio, aprobado, lat, long, baja, imagenes) VALUES ( $1, $2,$3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17 )', [nombre, descripcion, categoria, calle, numero, fechainicio, fechafin, horario, provincia, localidad, email, precio, aprobado, lat, long, false, imagenes])
         .then(respuesta => console.log(respuesta))
         .then(res.status(201).json({ message: 'Evento agregado con exito' }))
 };
@@ -78,8 +76,8 @@ const deleteEvento = (req, res) => {
 const updateEvento = (req, res) => {
     console.log('updateEvento');
     const id = req.params.id;
-    const { nombre, descripcion, categoria, calle, numero, provincia, localidad, fechainicio, fechafin, horaapertura, horacierre, email, precio, aprobado, lat, long, imagenes } = req.body;
-    pool.query('UPDATE eventos SET nombre=$1, descripcion=$2, categoria=$3, calle=$4, numero=$5 , provincia= $6, localidad=$7, fechainicio=$8, fechafin=$9, horaapertura=$10, horacierre=$11, email=$12, precio=$13, aprobado=$15, lat=$16, long=$17, imagenes=$18  WHERE id=$14', [nombre, descripcion, categoria, calle, numero, provincia, localidad, fechainicio, fechafin, horaapertura, horacierre, email, precio, id, aprobado, lat, long, imagenes])
+    const { nombre, descripcion, categoria, calle, numero, provincia, localidad, fechainicio, fechafin, horario, email, precio, aprobado, lat, long, imagenes } = req.body;
+    pool.query('UPDATE eventos SET nombre=$1, descripcion=$2, categoria=$3, calle=$4, numero=$5 , provincia= $6, localidad=$7, fechainicio=$8, fechafin=$9, horario=$10, email=$11, precio=$12, aprobado=$13, lat=$14, long=$15, imagenes=$16 WHERE id=$17', [nombre, descripcion, categoria, calle, numero, provincia, localidad, fechainicio, fechafin, horario, email, precio, aprobado, lat, long, imagenes, id])
         .then(respuesta => console.log(respuesta))
         .then(res.status(200).send());
 };

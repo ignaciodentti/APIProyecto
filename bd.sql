@@ -31,8 +31,7 @@ create table eventos(
     localidad varchar,   
     fechainicio varchar null,
     fechafin varchar null,  
-    horaapertura varchar null,
-    horacierre varchar NULL,
+    horario varchar,
     precio integer null,
     email varchar null,
     baja boolean, 
@@ -61,22 +60,14 @@ create table categorias(
 );
 
 create table horarios(
-
     id serial not null PRIMARY KEY,
-    lunesAp varchar,
-    lunesCie varchar, 
-    martesAp varchar,
-    martesCie varchar,
-    miercolesAp varchar,
-    miercolesCie varchar,
-    juevesAp varchar,
-    juevesCie varchar,
-    viernesAp varchar,
-    viernesCie varchar,
-    sabadoAp varchar,
-    sabadoCie varchar,
-    domingoAp varchar,
-    domingoCie varchar,
+    lunes varchar,
+    martes varchar,,
+    miercoles varchar,
+    jueves varchar,
+    viernes varchar,
+    sabado varchar,
+    domingo varchar,
     baja boolean
 );
 

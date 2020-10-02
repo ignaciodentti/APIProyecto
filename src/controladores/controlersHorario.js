@@ -23,9 +23,8 @@ fs.readFile('C:/API/.config', 'utf-8', (err, data) => {
 
 const createHorarios = (req, res) => {
     console.log('createHorario');
-    baja = false;
-    const { lunesAp, lunesCie, martesAp, martesCie, miercolesAp, miercolesCie, juevesAp, juevesCie, viernesAp, viernesCie, sabadoAp, sabadoCie, domingoAp, domingoCie } = req.body;
-    pool.query('INSERT INTO horarios (lunesAp , lunesCie , martesAp ,martesCie ,miercolesAp ,miercolesCie ,juevesAp ,juevesCie ,viernesAp ,viernesCie ,sabadoAp ,sabadoCie ,domingoAp ,domingoCie, baja) VALUES ( $1, $2,$3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)', [lunesAp, lunesCie, martesAp, martesCie, miercolesAp, miercolesCie, juevesAp, juevesCie, viernesAp, viernesCie, sabadoAp, sabadoCie, domingoAp, domingoCie, baja])
+    const { lunes, martes, miercoles, jueves, viernes, sabado, domingo } = req.body;
+    pool.query('INSERT INTO horarios (lunes, martes, miercoles, jueves, viernes, sabado, domingo, baja) VALUES ( $1, $2,$3, $4, $5, $6, $7, $8 )', [lunes, martes, miercoles, jueves, viernes, sabado, domingo, false])
         .then(respuesta => console.log(respuesta))
         .then(res.status(201).json('Horario agregado con exito'));
 }
@@ -40,8 +39,8 @@ const getHorarioByID = (req, res) => {
 const updateHorario = (req, res) => {
     console.log('updateHorario');
     const id = req.params.id;
-    const { lunesAp, lunesCie, martesAp, martesCie, miercolesAp, miercolesCie, juevesAp, juevesCie, viernesAp, viernesCie, sabadoAp, sabadoCie, domingoAp, domingoCie } = req.body;
-    pool.query('UPDATE horarios SET lunesap=$1, lunescie=$2, martesap=$3, martescie=$4, miercolesap=$5 , miercolescie= $6, juevesap=$7, juevescie=$8, viernesap=$9, viernescie=$10, sabadoap=$11, sabadocie=$12, domingoap=$13, domingocie=$14  WHERE id=$15', [lunesAp, lunesCie, martesAp, martesCie, miercolesAp, miercolesCie, juevesAp, juevesCie, viernesAp, viernesCie, sabadoAp, sabadoCie, domingoAp, domingoCie, id])
+    const { lunes, martes, miercoles, jueves, viernes, sabado, domingo } = req.body;
+    pool.query('UPDATE horarios SET lunes=$1, martes=$2, miercoles=$3, jueves=$4, viernes=$5, sabado=$6, domingo=$7 WHERE id=$8', [lunes, martes, miercoles, jueves, viernes, sabado, domingo, id])
         .then(respuesta => console.log(respuesta))
         .then(res.status(200).send());
 };
