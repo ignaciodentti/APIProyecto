@@ -113,14 +113,14 @@ const getCategoriaByNombre = (req, res) => {
         nombre = nombreaux[0];
     }
     pool.query('SELECT id FROM categorias WHERE nombre = $1 and baja=false', [nombre])
-        .then(respuesta => res.json(respuesta.rows[0]));
+        .then(respuesta => res.status(200).json(respuesta.rows[0]));
 };
 
 const getCategoriaById = (req, res) => {
     console.log('getCategoriaById');
     const id = req.params.id;
     pool.query('SELECT nombre FROM categorias WHERE id= $1 and baja=false', [id])
-        .then(respuesta => res.json(respuesta.rows[0]));
+        .then(respuesta => res.status(200).json(respuesta.rows[0]));
 };
 
 
