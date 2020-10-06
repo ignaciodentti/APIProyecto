@@ -110,7 +110,13 @@ const getCategoriaByNombre = (req, res) => {
     let nombre = req.params.nombre;
     if (nombre.indexOf(' -') != -1) {
         let nombreaux = nombre.split(' ');
-        nombre = nombreaux[0];
+        for (let index = 0; index < nombreaux.length; index++) {
+            if (nombreaux[index]== '->')
+            {
+                nombre= nombreaux[index + 1];
+            }
+            
+        }
     }
     pool.query('SELECT id FROM categorias WHERE nombre = $1 and baja=false', [nombre])
         .then(respuesta => res.status(200).json(respuesta.rows[0]));
