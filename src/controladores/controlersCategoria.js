@@ -108,16 +108,16 @@ const updateCategoria = (req, res) => {
 const getCategoriaByNombre = (req, res) => {
     console.log('getCategoriaByNombre');
     let nombre = req.params.nombre;
-    if (nombre.indexOf(' -') != -1) {
-        let nombreaux = nombre.split(' ');
-        for (let index = 0; index < nombreaux.length; index++) {
-            if (nombreaux[index]== '->')
-            {
-                nombre= nombreaux[index + 1];
-            }
-            
-        }
+    if (nombre.indexOf(' -> ') != -1) {
+        let nombreaux = nombre.split(' -> ');
+        console.log(nombreaux[0]);
+        console.log(nombreaux[1]);
+
+        nombre = nombreaux[0];
     }
+
+    
+
     pool.query('SELECT id FROM categorias WHERE nombre = $1 and baja=false', [nombre])
         .then(respuesta => res.status(200).json(respuesta.rows[0]));
 };
