@@ -38,24 +38,33 @@ const getPDI = (_req, res) => {
                     for (let index2 = 0; index2 < resp.rows.length; index2++) {
                         if (resp.rows[index2].id == respuesta.rows[index].categoria) {
                             json[index].nombreCategoria = resp.rows[index2].nombre;
-                            //console.log(index);
-                            //console.log(index2);
                         }
                     }
                 }
                 res.status(200).json(json);
             })
-            
+
         })
-    
 };
 
-
-
 const obtenerPDIPendientes = (req, res) => {
+    let json;
+    let index = 0;
     console.log('obtenerPDIPendientes');
     pool.query('SELECT * FROM puntodeinteres WHERE baja=false AND aprobado=false')
-        .then(respuesta => res.status(200).json(respuesta.rows));
+        .then((respuesta) => {
+            json = respuesta.rows;
+            pool.query('SELECT id,nombre FROM categorias').then((resp) => {
+                for (let index = 0; index < respuesta.rows.length; index++) {
+                    for (let index2 = 0; index2 < resp.rows.length; index2++) {
+                        if (resp.rows[index2].id == respuesta.rows[index].categoria) {
+                            json[index].nombreCategoria = resp.rows[index2].nombre;
+                        }
+                    }
+                }
+                res.status(200).json(json);
+            })
+        })
 }
 
 const createPDI = (req, res) => {

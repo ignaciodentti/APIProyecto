@@ -25,17 +25,44 @@ fs.readFile('C:/API/.config', 'utf-8', (err, data) => {
 }); 
 
 const getEvento = (_req, res) => {
-    console.log('getEvento');
+    let json;
+    let index = 0;
+    console.log('getPDI');
     pool.query('SELECT * FROM eventos WHERE baja=false AND aprobado=true')
-        .then(respuesta => {
-            res.status(200).json(respuesta.rows);
+        .then((respuesta) => {
+            json = respuesta.rows;
+            pool.query('SELECT id,nombre FROM categorias').then((resp) => {
+                for (let index = 0; index < respuesta.rows.length; index++) {
+                    for (let index2 = 0; index2 < resp.rows.length; index2++) {
+                        if (resp.rows[index2].id == respuesta.rows[index].categoria) {
+                            json[index].nombreCategoria = resp.rows[index2].nombre;
+                        }
+                    }
+                }
+                res.status(200).json(json);
+            })
+            
         })
 };
 
 const obtenerEventosPendientes = (req, res) => {
+    let json;
+    let index = 0;
     console.log('ObtenerEventosPendientes');
     pool.query('SELECT * FROM eventos WHERE baja=false AND aprobado=false')
-        .then(respuesta => res.status(200).json(respuesta.rows));
+        .then((respuesta) => {
+            json = respuesta.rows;
+            pool.query('SELECT id,nombre FROM categorias').then((resp) => {
+                for (let index = 0; index < respuesta.rows.length; index++) {
+                    for (let index2 = 0; index2 < resp.rows.length; index2++) {
+                        if (resp.rows[index2].id == respuesta.rows[index].categoria) {
+                            json[index].nombreCategoria = resp.rows[index2].nombre;
+                        }
+                    }
+                }
+                res.status(200).json(json);
+            })
+        })
 }
 
 const createEvento = (req, res) => {

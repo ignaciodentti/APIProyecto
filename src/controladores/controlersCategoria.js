@@ -108,8 +108,8 @@ const updateCategoria = (req, res) => {
 const getCategoriaByNombre = (req, res) => {
     console.log('getCategoriaByNombre');
     let nombre = req.params.nombre;
-    if (nombre.indexOf(' -> ') != -1) {
-        let nombreaux = nombre.split(' -> ');
+    if (nombre.indexOf(' → ') != -1) {
+        let nombreaux = nombre.split(' → ');
         nombre = nombreaux[0];
     }
 
