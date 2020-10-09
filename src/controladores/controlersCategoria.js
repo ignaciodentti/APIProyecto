@@ -110,9 +110,6 @@ const getCategoriaByNombre = (req, res) => {
     let nombre = req.params.nombre;
     if (nombre.indexOf(' -> ') != -1) {
         let nombreaux = nombre.split(' -> ');
-        console.log(nombreaux[0]);
-        console.log(nombreaux[1]);
-
         nombre = nombreaux[0];
     }
 

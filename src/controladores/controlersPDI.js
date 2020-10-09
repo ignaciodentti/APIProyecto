@@ -1,6 +1,8 @@
 const { Pool } = require('pg');
 const { } = require('morgan');
 var fs = require('fs');
+const express = require('express');
+const app = express();
 
 
 //VARIABLE CON REFERENCIA A LA RUTA DONDE SE ALMACENAN LAS IMAGENES (ruta relativa desde ésta carpeta).
@@ -8,29 +10,47 @@ var folderImagenPDIAbs; //REEMPLAZAR CON RUTA DEL SERVIDOR EN ARCHIVO C:/API/.co
 
 var pool;
 fs.readFile('C:/API/.config', 'utf-8', (err, data) => {
-    if(err) {
-      console.log('error: ', err);
+    if (err) {
+        console.log('error: ', err);
     } else {
-      const config = JSON.parse(data);
-      pool=  new Pool({
-          host: config.host,
-          user: config.user,
-          password: config.password,
-          database: config.database,
-          port: config.port
-      }); 
-      folderImagenPDIAbs = config.folderImagenPDIAbs;   
+        const config = JSON.parse(data);
+        pool = new Pool({
+            host: config.host,
+            user: config.user,
+            password: config.password,
+            database: config.database,
+            port: config.port
+        });
+        folderImagenPDIAbs = config.folderImagenPDIAbs;
     }
-  }); 
+});
 //PROCEDIMIENTOS - FUNCIONES
 
 const getPDI = (_req, res) => {
+    let json;
+    let index = 0;
     console.log('getPDI');
     pool.query('SELECT * FROM puntodeinteres WHERE baja=false AND aprobado=true')
-        .then(respuesta => {
-            res.status(200).json(respuesta.rows);
-        });
+        .then((respuesta) => {
+            json = respuesta.rows;
+            pool.query('SELECT id,nombre FROM categorias').then((resp) => {
+                for (let index = 0; index < respuesta.rows.length; index++) {
+                    for (let index2 = 0; index2 < resp.rows.length; index2++) {
+                        if (resp.rows[index2].id == respuesta.rows[index].categoria) {
+                            json[index].nombreCategoria = resp.rows[index2].nombre;
+                            //console.log(index);
+                            //console.log(index2);
+                        }
+                    }
+                }
+                res.status(200).json(json);
+            })
+            
+        })
+    
 };
+
+
 
 const obtenerPDIPendientes = (req, res) => {
     console.log('obtenerPDIPendientes');
@@ -42,11 +62,11 @@ const createPDI = (req, res) => {
     console.log('createPDI');
     baja = false;
     const { nombre, descripcion, categoria, calle, numero, provincia, localidad, telefono, precio, email, aprobado, lat, long, imagenes } = req.body;
-    pool.query('SELECT * FROM horarios ORDER BY id desc limit 1', (err,cb)=> {
+    pool.query('SELECT * FROM horarios ORDER BY id desc limit 1', (err, cb) => {
         const idhorario = cb.rows[0].id;
         pool.query('INSERT INTO puntodeinteres (nombre, descripcion, categoria, calle, numero, provincia, localidad, telefono, precio, email, aprobado, baja, imagenes, lat, long, idhorario) VALUES ( $1, $2,$3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16)', [nombre, descripcion, categoria, calle, numero, provincia, localidad, telefono, precio, email, aprobado, baja, imagenes, lat, long, idhorario])
-        .then(respuesta => console.log(respuesta))
-        .then(res.status(201).json({ message: 'PDI agregado con exito' }));
+            .then(respuesta => console.log(respuesta))
+            .then(res.status(201).json({ message: 'PDI agregado con exito' }));
     })
 }
 
@@ -100,4 +120,5 @@ module.exports = {
     deletePDI,
     updatePDI,
     obtenerPDIPendientes,
-    getPDIByID }
+    getPDIByID
+}
