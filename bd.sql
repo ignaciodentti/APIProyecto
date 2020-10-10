@@ -62,7 +62,7 @@ create table categorias(
 create table horarios(
     id serial not null PRIMARY KEY,
     lunes varchar,
-    martes varchar,,
+    martes varchar,
     miercoles varchar,
     jueves varchar,
     viernes varchar,
