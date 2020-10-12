@@ -26,6 +26,10 @@ fs.readFile('C:/API/.config', 'utf-8', (err, data) => {
 });
 //PROCEDIMIENTOS - FUNCIONES
 
+function nameFromPath(str) {
+    return str.split('\\').pop().split('/').pop();
+  }
+
 const getPDI = (_req, res) => {
     let json;
     let index = 0;
@@ -93,9 +97,12 @@ const deletePDI = (req, res) => {
     pool.query('SELECT imagenes FROM puntodeinteres WHERE id =$1', [id])
         .then((query) => {
             for (let index = 0; index < query.rows[0].imagenes.length; index++) {
-                const queryPath = pool.query('SELECT * FROM imagenes WHERE id = $1', [query.rows[0].imagenes[index]])
+                pool.query('SELECT * FROM imagenes WHERE id = $1', [query.rows[0].imagenes[index]])
                     .then((queryPath) => {
+                        console.log('querypath'+ queryPath.rows[0].ruta);
+                        console.log(nameFromPath(queryPath.rows[0].ruta));
                         pathImagen = folderImagenPDIAbs + nameFromPath(queryPath.rows[0].ruta);
+                        console.log('path imagen'+ pathImagen);
                         fs.unlink(pathImagen);
                     })
             }

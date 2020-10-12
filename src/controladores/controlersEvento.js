@@ -24,6 +24,10 @@ fs.readFile('C:/API/.config', 'utf-8', (err, data) => {
   }
 }); 
 
+function nameFromPath(str) {
+    return str.split('\\').pop().split('/').pop();
+  }
+
 const getEvento = (_req, res) => {
     let json;
     let index = 0;
