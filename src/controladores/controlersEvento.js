@@ -96,12 +96,12 @@ const deleteEvento = (req, res) => {
         .then((respuesta) => {
             pool.query('UPDATE horarios SET baja=true WHERE id=$1', [respuesta.rows[0].idhorario])
             for (let index = 0; index < respuesta.rows[0].imagenes.length; index++) {
-                pool.query('UPDATE imagenes SET baja=true WHERE id=$1', [respuesta.rows[0].imagenes[index]]);
+                pool.query('DELETE FROM imagenes WHERE id=$1', [respuesta.rows[0].imagenes[index]]);
             };
         })
     pool.query('UPDATE eventos SET baja=true WHERE id=$1', [id])
         .then(respu => console.log(respu))
-        .then(res.status(200));
+        .then(res.status(200).send());
 };
 
 const updateEvento = (req, res) => {

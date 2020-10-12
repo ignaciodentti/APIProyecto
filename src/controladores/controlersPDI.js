@@ -99,10 +99,8 @@ const deletePDI = (req, res) => {
             for (let index = 0; index < query.rows[0].imagenes.length; index++) {
                 pool.query('SELECT * FROM imagenes WHERE id = $1', [query.rows[0].imagenes[index]])
                     .then((queryPath) => {
-                        console.log('querypath'+ queryPath.rows[0].ruta);
                         console.log(nameFromPath(queryPath.rows[0].ruta));
                         pathImagen = folderImagenPDIAbs + nameFromPath(queryPath.rows[0].ruta);
-                        console.log('path imagen'+ pathImagen);
                         fs.unlink(pathImagen);
                     })
             }
